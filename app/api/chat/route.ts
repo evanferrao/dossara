@@ -72,24 +72,31 @@ export async function POST(req: NextRequest) {
     contextChunks = directChunks;
   }
 
-  // 3. Get document filenames for citations
-  const docIds = [
-    ...new Set(
-      (contextChunks ?? []).map(
-        (c: { document_id: string }) => c.document_id
-      )
-    ),
-  ];
-  const { data: docs } = await supabase
+  // 3. Fetch ALL documents in the workspace (for document awareness)
+  const { data: allDocs } = await supabase
     .from("documents")
-    .select("id, filename")
-    .in("id", docIds.length > 0 ? docIds : ["00000000-0000-0000-0000-000000000000"]);
+    .select("id, filename, status, page_count")
+    .eq("workspace_id", workspaceId)
+    .order("created_at", { ascending: true });
 
-  const docMap = new Map(
-    (docs ?? []).map((d: { id: string; filename: string }) => [d.id, d.filename])
+  const readyDocs = (allDocs ?? []).filter(
+    (d: { status: string }) => d.status === "ready"
   );
 
-  // 4. Build context block
+  // Build document inventory for system prompt
+  const docInventory = readyDocs
+    .map(
+      (d: { filename: string; page_count: number | null }, i: number) =>
+        `${i + 1}. "${d.filename}" (${d.page_count ?? "?"} pages)`
+    )
+    .join("\n");
+
+  // Build a map of doc id → filename (from ALL docs, not just matched ones)
+  const docMap = new Map(
+    (allDocs ?? []).map((d: { id: string; filename: string }) => [d.id, d.filename])
+  );
+
+  // 4. Build context block from retrieved passages
   const contextBlock = (contextChunks ?? [])
     .map(
       (
@@ -97,10 +104,15 @@ export async function POST(req: NextRequest) {
         i: number
       ) => {
         const filename = docMap.get(chunk.document_id) ?? "Unknown";
-        return `[Source ${i + 1}] Document: "${filename}" | Page: ${chunk.page_number}\n${chunk.content}`;
+        return `[Passage ${i + 1}] Document: "${filename}" | Page: ${chunk.page_number}\n${chunk.content}`;
       }
     )
     .join("\n\n---\n\n");
+
+  // Count unique documents referenced in the retrieved passages
+  const referencedDocIds = new Set(
+    (contextChunks ?? []).map((c: { document_id: string }) => c.document_id)
+  );
 
   // 5. Fetch chat history from database
   const { data: historyRows } = await supabase
@@ -118,19 +130,27 @@ export async function POST(req: NextRequest) {
     }));
 
   // 6. Build the system prompt
-  const systemPrompt = `You are DocuMind, an intelligent document assistant. You answer questions based on the provided document context.
+  const noDocsMessage = "No documents have been uploaded yet. Let the user know they need to upload a PDF first.";
+
+  const systemPrompt = `You are DocuMind, an intelligent document assistant. You answer questions based on the user's uploaded documents.
 
 ## Instructions
-- Answer the user's question using ONLY the provided source context below.
-- If the context doesn't contain enough information, say so honestly.
-- Reference specific sources by their number (e.g., "According to Source 1...").
+- Answer the user's question using the provided document context below.
+- If the retrieved passages don't contain enough information, say so honestly, but mention which documents are available for the user to ask about.
+- When referencing specific information, cite the passage number and document name (e.g., "According to Passage 1 from \\"filename.pdf\\"...").
 - Be concise but thorough.
+- When the user asks how many documents or sources you have access to, refer to the "Your Documents" section — NOT the number of retrieved passages.
 - At the very end of your response, on a new line, include a citation block in this exact format:
   <!-- CITATIONS: [{"documentId": "...", "filename": "...", "page": N}, ...] -->
-  Include ONLY the sources you actually referenced in your answer.
+  Include ONLY the documents you actually referenced in your answer.
 
-## Document Context
-${contextBlock || "No documents have been uploaded yet. Let the user know they need to upload a PDF first."}`;
+## Your Documents
+${readyDocs.length > 0
+    ? `You have access to ${readyDocs.length} document(s) uploaded by the user:\n${docInventory}`
+    : noDocsMessage}
+
+## Retrieved Passages (${referencedDocIds.size} document(s), ${(contextChunks ?? []).length} passage(s))
+${contextBlock || "No matching passages found for this query."}`;
 
   // 7. Build the messages array for the LLM (no system messages — use instructions instead)
   const llmMessages = [
