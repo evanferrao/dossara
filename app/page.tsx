@@ -1,0 +1,99 @@
+"use client";
+
+import { useState } from "react";
+import { DocumentPanel } from "@/components/DocumentPanel";
+import { ChatPanel } from "@/components/ChatPanel";
+
+export default function Home() {
+  const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
+
+  return (
+    <main className="h-screen flex flex-col overflow-hidden">
+      {/* Gradient mesh background */}
+      <div className="gradient-mesh" />
+
+      {/* Top bar */}
+      <header
+        className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0"
+        style={{ borderColor: "var(--border-subtle)" }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg border border-[#333]">
+            <svg
+              className="w-5 h-5 text-black"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z"
+              />
+            </svg>
+          </div>
+          <div>
+            <h1
+              className="text-base font-bold tracking-tight"
+              style={{ color: "var(--text-primary)" }}
+            >
+              DocuMind
+            </h1>
+            <p
+              className="text-[11px] leading-none"
+              style={{ color: "var(--text-muted)" }}
+            >
+              Intelligent Document Chat
+            </p>
+          </div>
+        </div>
+
+        {/* Mobile tab switcher */}
+        <div className="flex gap-1 md:hidden">
+          <button
+            onClick={() => setActiveTab("documents")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              activeTab === "documents"
+                ? "bg-white text-black"
+                : "text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            Documents
+          </button>
+          <button
+            onClick={() => setActiveTab("chat")}
+            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              activeTab === "chat"
+                ? "bg-white text-black"
+                : "text-gray-500 hover:text-gray-300"
+            }`}
+          >
+            Chat
+          </button>
+        </div>
+      </header>
+
+      {/* Main content — two-pane layout */}
+      <div className="flex-1 flex min-h-0 p-3 gap-3">
+        {/* Document panel — left */}
+        <div
+          className={`${
+            activeTab === "documents" ? "flex" : "hidden"
+          } md:flex flex-col w-full md:w-1/2 lg:w-[45%] min-h-0`}
+        >
+          <DocumentPanel />
+        </div>
+
+        {/* Chat panel — right */}
+        <div
+          className={`${
+            activeTab === "chat" ? "flex" : "hidden"
+          } md:flex flex-col w-full md:w-1/2 lg:w-[55%] min-h-0`}
+        >
+          <ChatPanel />
+        </div>
+      </div>
+    </main>
+  );
+}
