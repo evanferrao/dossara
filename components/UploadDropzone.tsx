@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useDocuments } from "@/context/DocumentContext";
+import { saveDocumentToCache } from "@/lib/indexeddb";
 
 type UploadState =
   | { phase: "idle" }
@@ -60,6 +61,13 @@ export function UploadDropzone() {
         }
 
         setState({ phase: "uploading", progress: 100 });
+
+        // Save to local cache so we don't have to download it again
+        try {
+          await saveDocumentToCache(documentId, file);
+        } catch (err) {
+          console.warn("Failed to cache document locally:", err);
+        }
 
         // Step 3: Trigger processing
         const processRes = await fetchWithWorkspace("/api/process-document", {

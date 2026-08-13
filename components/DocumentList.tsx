@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useDocuments, type DocumentInfo } from "@/context/DocumentContext";
+import { deleteDocumentFromCache } from "@/lib/indexeddb";
 
 function StatusBadge({ status }: { status: DocumentInfo["status"] }) {
   const config = {
@@ -36,6 +37,7 @@ export function DocumentList() {
     setDeletingId(docId);
     try {
       await deleteDocument(docId);
+      await deleteDocumentFromCache(docId);
     } catch {
       // Error already logged in context
     } finally {

@@ -5,6 +5,7 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useDocuments } from "@/context/DocumentContext";
+import { getDocumentFromCache, saveDocumentToCache } from "@/lib/indexeddb";
 
 // Configure the PDF.js worker from CDN
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
@@ -26,29 +27,57 @@ export function PdfViewer() {
     }
 
     let cancelled = false;
+    let currentObjectUrl: string | null = null;
+    
     setIsLoading(true);
     setError(null);
 
-    fetchWithWorkspace(`/api/document-url?id=${activeDocumentId}`)
-      .then((res) => {
-        if (!res.ok) throw new Error("Document not found");
-        return res.json();
-      })
-      .then((data) => {
+    const loadDocument = async () => {
+      try {
+        // 1. Check local cache first
+        const cachedBlob = await getDocumentFromCache(activeDocumentId);
+        if (cachedBlob) {
+          if (!cancelled) {
+            currentObjectUrl = URL.createObjectURL(cachedBlob);
+            setPdfUrl(currentObjectUrl);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // 2. Fallback to Supabase
+        const urlRes = await fetchWithWorkspace(`/api/document-url?id=${activeDocumentId}`);
+        if (!urlRes.ok) throw new Error("Document not found");
+        const data = await urlRes.json();
+
+        // 3. Download the actual file blob
+        const fileRes = await fetch(data.url);
+        if (!fileRes.ok) throw new Error("Failed to download document");
+        const blob = await fileRes.blob();
+
+        // 4. Save to cache for next time
+        await saveDocumentToCache(activeDocumentId, blob);
+
         if (!cancelled) {
-          setPdfUrl(data.url);
+          currentObjectUrl = URL.createObjectURL(blob);
+          setPdfUrl(currentObjectUrl);
           setIsLoading(false);
         }
-      })
-      .catch((err) => {
+      } catch (err: any) {
         if (!cancelled) {
-          setError(err.message);
+          setError(err.message || "Failed to load document");
           setIsLoading(false);
         }
-      });
+      }
+    };
+
+    loadDocument();
 
     return () => {
       cancelled = true;
+      if (currentObjectUrl) {
+        URL.revokeObjectURL(currentObjectUrl);
+      }
     };
   }, [activeDocumentId, fetchWithWorkspace]);
 
