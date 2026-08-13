@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  documind:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: documind
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+    env_file:
+      - .env.local
+    # Drop all capabilities and restrict privileges for enhanced security
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    # Best practice: define resource limits
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
