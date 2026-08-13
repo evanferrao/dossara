@@ -16,7 +16,7 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ role, content, citations }: ChatMessageProps) {
-  const { setActiveDocumentId, setActivePdfPage } = useDocuments();
+  const { documents, setActiveDocumentId, setActivePdfPage } = useDocuments();
 
   // Strip citation HTML comments from display content
   const displayContent = content
@@ -24,7 +24,12 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
     .trim();
 
   const handleCitationClick = (citation: Citation) => {
-    setActiveDocumentId(citation.documentId);
+    // Resolve document by filename from loaded documents (LLM may hallucinate UUIDs)
+    const matchedDoc = documents.find(
+      (d) => d.filename === citation.filename
+    );
+    const resolvedId = matchedDoc?.id ?? citation.documentId;
+    setActiveDocumentId(resolvedId);
     setActivePdfPage(citation.page);
   };
 

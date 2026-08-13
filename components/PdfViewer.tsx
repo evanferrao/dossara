@@ -30,7 +30,10 @@ export function PdfViewer() {
     setError(null);
 
     fetchWithWorkspace(`/api/document-url?id=${activeDocumentId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Document not found");
+        return res.json();
+      })
       .then((data) => {
         if (!cancelled) {
           setPdfUrl(data.url);
@@ -47,7 +50,7 @@ export function PdfViewer() {
     return () => {
       cancelled = true;
     };
-  }, [activeDocumentId]);
+  }, [activeDocumentId, fetchWithWorkspace]);
 
   // Sync page input with active page
   useEffect(() => {
