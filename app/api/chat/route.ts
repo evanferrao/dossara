@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
         i: number
       ) => {
         const filename = docMap.get(chunk.document_id) ?? "Unknown";
-        return `[Passage ${i + 1}] Document: "${filename}" | Page: ${chunk.page_number}\n${chunk.content}`;
+        return `[Passage ${i + 1}] Document: "${filename}" (ID: ${chunk.document_id}) | Page: ${chunk.page_number}\n${chunk.content}`;
       }
     )
     .join("\n\n---\n\n");
@@ -140,9 +140,9 @@ export async function POST(req: NextRequest) {
 - When referencing specific information, cite the passage number and document name (e.g., "According to Passage 1 from \\"filename.pdf\\"...").
 - Be concise but thorough.
 - When the user asks how many documents or sources you have access to, refer to the "Your Documents" section — NOT the number of retrieved passages.
-- At the very end of your response, on a new line, include a citation block in this exact format:
-  <!-- CITATIONS: [{"documentId": "...", "filename": "...", "page": N}, ...] -->
-  Include ONLY the documents you actually referenced in your answer.
+- CRITICAL: At the very end of your response, on a new line, you MUST include a citation block in this exact JSON format if you referenced any passages:
+  <!-- CITATIONS: [{"documentId": "<ID>", "filename": "<filename>", "page": <page>}] -->
+  Use the exact ID, filename, and page number provided in the passage headers.
 
 ## Your Documents
 ${readyDocs.length > 0
