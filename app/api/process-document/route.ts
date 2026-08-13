@@ -92,7 +92,14 @@ export async function POST(req: NextRequest) {
     // 4. Extract ALL text at once with unpdf
     const arrayBuffer = await downloadRes.arrayBuffer();
     const buffer = new Uint8Array(arrayBuffer);
-    const { getDocumentProxy, extractText } = await import("unpdf");
+    const { getDocumentProxy, extractText, getResolvedPDFJS } = await import("unpdf");
+    
+    // Silence pdfjs warnings to prevent console spam for certain fonts
+    const pdfjs = await getResolvedPDFJS();
+    if (pdfjs && pdfjs.GlobalWorkerOptions) {
+      pdfjs.GlobalWorkerOptions.verbosity = pdfjs.VerbosityLevel.ERRORS;
+    }
+
     const pdf = await getDocumentProxy(buffer);
     const totalPages = pdf.numPages;
 
