@@ -4,6 +4,7 @@ import { groq } from "@ai-sdk/groq";
 import { getServiceSupabase } from "@/lib/supabase/server";
 import { embed } from "@/lib/embeddings";
 import { getWorkspaceId } from "@/lib/workspace";
+import { checkRateLimit } from "@/lib/rate-limit";
 import {
   MODELS,
   TOP_K_CHUNKS,
@@ -13,6 +14,10 @@ import {
 export const maxDuration = 60;
 
 export async function POST(req: NextRequest) {
+  // Rate limit check — runs before any expensive work (embeddings, LLM, Supabase)
+  const rateLimitResponse = checkRateLimit(req);
+  if (rateLimitResponse) return rateLimitResponse;
+
   const supabase = getServiceSupabase();
 
   const workspaceId = getWorkspaceId(req);

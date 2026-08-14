@@ -57,6 +57,33 @@ export function ChatPanel() {
     setMessages,
   } = useChat({
     transport,
+    onError: (error) => {
+      // Surface API errors (like 429 rate limit) as visible chat messages
+      // instead of only logging to the console
+      let errorText =
+        "Something went wrong. Please try again later.";
+
+      // The AI SDK attaches the response body to the error message
+      // Try to parse a JSON message from it
+      try {
+        const jsonMatch = error.message.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          if (parsed.message) errorText = parsed.message;
+        }
+      } catch {
+        // Fall back to the default error text
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: "assistant" as const,
+          parts: [{ type: "text" as const, text: errorText }],
+        },
+      ]);
+    },
     onFinish: ({ message }) => {
       // Parse citations from the finished message
       const text = getMessageText(message);
