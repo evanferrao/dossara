@@ -28,12 +28,17 @@ export function DocumentList() {
   const { documents, activeDocumentId, setActiveDocumentId, setActivePdfPage, deleteDocument, isLoading } =
     useDocuments();
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [documentToDelete, setDocumentToDelete] = useState<string | null>(null);
 
-  const handleDelete = async (e: React.MouseEvent, docId: string) => {
+  const handleDeleteClick = (e: React.MouseEvent, docId: string) => {
     e.stopPropagation();
-    if (!confirm("Delete this document? This will also remove its chunks and cannot be undone.")) {
-      return;
-    }
+    setDocumentToDelete(docId);
+  };
+
+  const confirmDelete = async () => {
+    if (!documentToDelete) return;
+    const docId = documentToDelete;
+    setDocumentToDelete(null);
     setDeletingId(docId);
     try {
       await deleteDocument(docId);
@@ -134,9 +139,9 @@ export function DocumentList() {
 
           {/* Delete button */}
           <button
-            onClick={(e) => handleDelete(e, doc.id)}
+            onClick={(e) => handleDeleteClick(e, doc.id)}
             disabled={deletingId === doc.id}
-            className="absolute top-2 right-2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/20"
+            className="absolute top-2 right-2 p-1.5 rounded-lg opacity-100 transition-colors hover:bg-red-500/20"
             title="Delete document"
           >
             {deletingId === doc.id ? (
@@ -159,6 +164,32 @@ export function DocumentList() {
           </button>
         </div>
       ))}
+
+      {/* Delete Confirmation Modal */}
+      {documentToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setDocumentToDelete(null)}>
+          <div className="bg-[#111] border border-[#333] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-bold tracking-tight text-white mb-2">Delete document?</h3>
+            <p className="text-sm text-gray-400 mb-5">
+              This will also remove its chunks and cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setDocumentToDelete(null); }}
+                className="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); confirmDelete(); }}
+                className="px-3 py-1.5 text-sm font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
