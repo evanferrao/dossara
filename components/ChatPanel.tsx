@@ -319,7 +319,7 @@ export function ChatPanel() {
         className="p-4 border-t"
         style={{ borderColor: "var(--border-subtle)" }}
       >
-        <div className="flex gap-3 items-end">
+        <div className="flex gap-3 items-stretch">
           <textarea
             ref={inputRef}
             value={inputValue}
@@ -337,7 +337,7 @@ export function ChatPanel() {
             type="button"
             onClick={handleSend}
             disabled={!inputValue.trim() || isLoading}
-            className="btn-primary px-4 py-2.5 flex-shrink-0"
+            className="btn-primary px-4 flex-shrink-0 flex items-center justify-center"
           >
             <svg
               className="w-4 h-4"
