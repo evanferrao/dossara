@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
     // Silence pdfjs warnings to prevent console spam for certain fonts
     const pdfjs = await getResolvedPDFJS();
     if (pdfjs && pdfjs.GlobalWorkerOptions) {
-      pdfjs.GlobalWorkerOptions.verbosity = pdfjs.VerbosityLevel.ERRORS;
+      (pdfjs.GlobalWorkerOptions as any).verbosity = pdfjs.VerbosityLevel.ERRORS;
     }
 
     const pdf = await getDocumentProxy(buffer);
