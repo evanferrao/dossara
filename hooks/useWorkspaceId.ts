@@ -2,7 +2,7 @@
 
 import { useRef, useSyncExternalStore } from "react";
 
-const STORAGE_KEY = "documind-workspace-id";
+const STORAGE_KEY = "dossara-workspace-id";
 
 function generateUUID(): string {
   // Use crypto.randomUUID if available, otherwise fallback

@@ -1,4 +1,4 @@
--- DocuMind Database Schema
+-- Dossara Database Schema
 -- Run this in the Supabase SQL Editor after enabling the vector extension
 
 create extension if not exists vector;

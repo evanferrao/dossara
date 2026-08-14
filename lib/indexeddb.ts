@@ -1,4 +1,4 @@
-export const DB_NAME = "documind_db";
+export const DB_NAME = "dossara_db";
 export const STORE_NAME = "pdfs";
 export const DB_VERSION = 1;
 

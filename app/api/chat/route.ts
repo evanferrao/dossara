@@ -132,7 +132,7 @@ export async function POST(req: NextRequest) {
   // 6. Build the system prompt
   const noDocsMessage = "No documents have been uploaded yet. Let the user know they need to upload a PDF first.";
 
-  const systemPrompt = `You are DocuMind, an intelligent document assistant. You answer questions based on the user's uploaded documents.
+  const systemPrompt = `You are Dossara, an intelligent document assistant. You answer questions based on the user's uploaded documents.
 
 ## Instructions
 - Answer the user's question using the provided document context below.

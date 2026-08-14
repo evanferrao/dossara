@@ -38,7 +38,7 @@ export default function Home() {
               className="text-base font-bold tracking-tight"
               style={{ color: "var(--text-primary)" }}
             >
-              DocuMind
+              Dossara
             </h1>
             <p
               className="text-[11px] leading-none"

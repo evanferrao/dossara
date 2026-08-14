@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DocuMind — Intelligent Document Chat",
+  title: "Dossara — Intelligent Document Chat",
   description:
     "Upload PDFs and chat with your documents using AI. Get instant answers with source citations and page references.",
   keywords: ["PDF", "AI", "chat", "documents", "RAG", "citations"],
