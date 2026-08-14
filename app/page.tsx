@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { DocumentPanel } from "@/components/DocumentPanel";
 import { ChatPanel } from "@/components/ChatPanel";
+import { LandingOverlay } from "@/components/LandingOverlay";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
 
   return (
+    <LandingOverlay>
     <main className="h-dvh flex flex-col overflow-hidden">
       {/* Gradient mesh background */}
       <div className="gradient-mesh" />
@@ -95,5 +97,6 @@ export default function Home() {
         </div>
       </div>
     </main>
+    </LandingOverlay>
   );
 }
