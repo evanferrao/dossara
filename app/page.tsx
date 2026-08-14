@@ -8,7 +8,7 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
 
   return (
-    <main className="h-screen flex flex-col overflow-hidden">
+    <main className="h-dvh flex flex-col overflow-hidden">
       {/* Gradient mesh background */}
       <div className="gradient-mesh" />
 
