@@ -36,16 +36,20 @@ export function cosineSimilarity(a: number[], b: number[]): number {
  */
 export async function searchChunks(
   queryEmbedding: number[],
+  documentIds: string[],
   topK: number = 5
 ): Promise<SearchResult[]> {
   const allChunks = await getAllChunks();
 
-  if (allChunks.length === 0) {
+  if (allChunks.length === 0 || documentIds.length === 0) {
     return [];
   }
 
+  // Filter chunks by valid document IDs
+  const validChunks = allChunks.filter(chunk => documentIds.includes(chunk.document_id));
+
   // Score every chunk
-  const scored: SearchResult[] = allChunks.map((chunk) => ({
+  const scored: SearchResult[] = validChunks.map((chunk) => ({
     chunk,
     similarity: cosineSimilarity(queryEmbedding, chunk.embedding),
   }));

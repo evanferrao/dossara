@@ -11,6 +11,7 @@ import type { ModelKey } from "@/lib/constants";
 import { TOP_K_CHUNKS, HISTORY_LIMIT, DEFAULT_MODEL } from "@/lib/constants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { useDocuments } from "@/context/DocumentContext";
+import { useChats } from "@/context/ChatContext";
 import { embed } from "@/lib/embeddings";
 import { searchChunks } from "@/lib/vectorSearch";
 import {
@@ -69,6 +70,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const { documents } = useDocuments();
+  const { activeChatId } = useChats();
 
   // We need a ref to track the latest context for the transport body
   const contextRef = useRef<{
@@ -94,6 +96,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         if (customApiKey && init?.body) {
           try {
             const body = JSON.parse(init.body as string);
+            // @ts-expect-error dangerouslyAllowBrowser is sometimes undocumented but required for client-side use
             const groq = createGroq({ apiKey: customApiKey, dangerouslyAllowBrowser: true });
             
             const systemPrompt = buildSystemPrompt({
@@ -217,7 +220,9 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
       // Save assistant message to IndexedDB
       try {
+        if (!activeChatId) return;
         await saveChatMessage({
+          chat_id: activeChatId,
           role: "assistant",
           content: cleanContent,
           citations,
@@ -233,7 +238,8 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
   // Load chat history from IndexedDB on mount
   useEffect(() => {
-    getChatMessages()
+    if (!activeChatId) return;
+    getChatMessages(activeChatId)
       .then((msgs) => {
         if (msgs.length > 0) {
           const loaded: UIMessage[] = msgs.map((m) => ({
@@ -251,10 +257,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             }
           });
           setStoredCitations(citMap);
+        } else {
+          setMessages([]);
+          setStoredCitations(new Map());
         }
       })
       .catch(console.error);
-  }, [setMessages]);
+  }, [setMessages, activeChatId]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -269,8 +278,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     setIsEmbedding(true);
 
     try {
+      if (!activeChatId) return;
       // 1. Save user message to IndexedDB
       await saveChatMessage({
+        chat_id: activeChatId,
         role: "user",
         content: userText,
         created_at: new Date().toISOString(),
@@ -280,13 +291,15 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       const queryEmbedding = await embed(userText);
 
       // 3. Search for relevant chunks
-      const results = await searchChunks(queryEmbedding, TOP_K_CHUNKS);
-
-      // 4. Get all documents for context
-      const allDocs = await getDocuments();
+      const allDocs = await getDocuments(activeChatId);
       const readyDocs = allDocs.filter(
         (d: StoredDocument) => d.status === "ready"
       );
+      const readyDocIds = readyDocs.map((d: StoredDocument) => d.id);
+      
+      const results = await searchChunks(queryEmbedding, readyDocIds, TOP_K_CHUNKS);
+
+      // 4. Get all documents for context
 
       // Build document inventory
       const docInventory = readyDocs
@@ -348,7 +361,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         },
       ]);
     }
-  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages]);
+  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages, activeChatId]);
 
   // Handle textarea key events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -360,7 +373,9 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
   const clearChat = async () => {
     try {
-      await clearChatMessages();
+      if (activeChatId) {
+        await clearChatMessages(activeChatId);
+      }
       setMessages([]);
       setStoredCitations(new Map());
     } catch (err) {

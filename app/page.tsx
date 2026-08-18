@@ -5,10 +5,12 @@ import { DocumentPanel } from "@/components/DocumentPanel";
 import { ChatPanel } from "@/components/ChatPanel";
 import { LandingOverlay } from "@/components/LandingOverlay";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { Sidebar } from "@/components/Sidebar";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <LandingOverlay>
@@ -22,7 +24,16 @@ export default function Home() {
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg border border-[#333]">
+          <button 
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="p-2 rounded-md hover:bg-white/10"
+            title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg border border-[#333] hidden md:flex">
             <svg
               className="w-5 h-5 text-black"
               fill="none"
@@ -87,7 +98,7 @@ export default function Home() {
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
-            Custom API Key
+            <span className="hidden sm:inline">Custom API Key</span>
           </button>
           
           {/* GitHub link */}
@@ -95,7 +106,7 @@ export default function Home() {
             href={process.env.NEXT_PUBLIC_GITHUB_SOURCE ?? "https://github.com/evanferrao/dossara"}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-ghost p-2 rounded-lg"
+            className="btn-ghost p-2 rounded-lg hidden sm:block"
             title="View source on GitHub"
           >
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -105,24 +116,57 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Main content — two-pane layout */}
-      <div className="flex-1 flex min-h-0 p-3 gap-3">
-        {/* Document panel — left */}
-        <div
-          className={`${
-            activeTab === "documents" ? "flex" : "hidden"
-          } md:flex flex-col w-full md:w-1/2 lg:w-[45%] min-h-0`}
+      {/* Main content — layout */}
+      <div className="flex-1 flex min-h-0 overflow-hidden relative">
+        {/* Sidebar container */}
+        <div 
+          className={`absolute z-40 md:relative md:flex h-full transition-all duration-300 ease-in-out ${
+            isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full md:translate-x-0 md:w-0 overflow-hidden"
+          }`}
         >
-          <DocumentPanel />
+          <div className="w-64 h-full flex-shrink-0">
+            <Sidebar onClose={() => setIsSidebarOpen(false)} />
+          </div>
         </div>
 
-        {/* Chat panel — right */}
-        <div
-          className={`${
-            activeTab === "chat" ? "flex" : "hidden"
-          } md:flex flex-col w-full md:w-1/2 lg:w-[55%] min-h-0`}
-        >
-          <ChatPanel onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)} />
+        {/* Collapsible hover area (Desktop only) */}
+        {!isSidebarOpen && (
+          <div 
+            className="hidden md:flex flex-col items-center justify-center w-6 h-full bg-transparent hover:bg-white/5 cursor-e-resize transition-colors border-r flex-shrink-0 z-10"
+            style={{ borderColor: "var(--border-subtle)" }}
+            onClick={() => setIsSidebarOpen(true)}
+            title="Expand sidebar"
+          >
+            <div className="h-12 w-1 rounded-full bg-white/20" />
+          </div>
+        )}
+
+        {/* Overlay for mobile sidebar */}
+        {isSidebarOpen && (
+          <div 
+            className="absolute inset-0 bg-black/50 z-30 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        <div className="flex-1 flex min-h-0 p-3 gap-3 w-full max-w-full">
+          {/* Document panel */}
+          <div
+            className={`${
+              activeTab === "documents" ? "flex" : "hidden"
+            } md:flex flex-col w-full md:flex-1 lg:w-[40%] min-h-0 min-w-0`}
+          >
+            <DocumentPanel />
+          </div>
+
+          {/* Chat panel */}
+          <div
+            className={`${
+              activeTab === "chat" ? "flex" : "hidden"
+            } md:flex flex-col w-full md:flex-1 lg:w-[60%] min-h-0 min-w-0`}
+          >
+            <ChatPanel onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)} />
+          </div>
         </div>
       </div>
     </main>

@@ -44,11 +44,14 @@ function mapProcessingState(ps: ProcessingState): UploadState {
   }
 }
 
+import { useChats } from "@/context/ChatContext";
+
 export function UploadDropzone() {
   const [state, setState] = useState<UploadState>({ phase: "idle" });
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { refreshDocuments, setActiveDocumentId } = useDocuments();
+  const { activeChatId } = useChats();
   const { processingState, processDocument } = useProcessDocument();
 
   // Sync processing state to upload state
@@ -77,7 +80,8 @@ export function UploadDropzone() {
         setState({ phase: "extracting" });
 
         // Process entirely in-browser
-        await processDocument(documentId, file);
+        if (!activeChatId) throw new Error("No active chat");
+        await processDocument(documentId, file, activeChatId);
 
         // Set as active and refresh list
         setActiveDocumentId(documentId);
@@ -89,7 +93,7 @@ export function UploadDropzone() {
         });
       }
     },
-    [processDocument, refreshDocuments, setActiveDocumentId]
+    [processDocument, refreshDocuments, setActiveDocumentId, activeChatId]
   );
 
   const onDrop = useCallback(

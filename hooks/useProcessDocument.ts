@@ -31,7 +31,8 @@ interface UseProcessDocumentReturn {
   processingState: ProcessingState;
   processDocument: (
     documentId: string,
-    file: File
+    file: File,
+    chatId: string
   ) => Promise<void>;
 }
 
@@ -46,7 +47,7 @@ export function useProcessDocument(): UseProcessDocumentReturn {
   const isProcessingRef = useRef(false);
 
   const processDocument = useCallback(
-    async (documentId: string, file: File) => {
+    async (documentId: string, file: File, chatId: string) => {
       if (isProcessingRef.current) return;
       isProcessingRef.current = true;
 
@@ -57,6 +58,7 @@ export function useProcessDocument(): UseProcessDocumentReturn {
         // 2. Create document metadata
         const doc: StoredDocument = {
           id: documentId,
+          chat_id: chatId,
           filename: file.name,
           status: "processing",
           page_count: null,

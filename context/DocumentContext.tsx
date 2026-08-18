@@ -37,15 +37,19 @@ interface DocumentContextType {
 
 const DocumentContext = createContext<DocumentContextType | null>(null);
 
+import { useChats } from "./ChatContext";
+
 export function DocumentProvider({ children }: { children: ReactNode }) {
+  const { activeChatId } = useChats();
   const [documents, setDocuments] = useState<DocumentInfo[]>([]);
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
   const [activePdfPage, setActivePdfPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshDocuments = useCallback(async () => {
+    if (!activeChatId) return;
     try {
-      const docs = await getDocuments();
+      const docs = await getDocuments(activeChatId);
       setDocuments(
         docs.map((d: StoredDocument) => ({
           id: d.id,
@@ -62,7 +66,7 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [activeChatId]);
 
   const deleteDocumentAction = useCallback(
     async (id: string) => {

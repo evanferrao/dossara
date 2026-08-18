@@ -22,6 +22,8 @@ export const metadata: Metadata = {
   keywords: ["PDF", "AI", "chat", "documents", "RAG", "privacy", "local", "browser"],
 };
 
+import { ChatProvider } from "@/context/ChatContext";
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
@@ -34,7 +36,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           fontFamily: "var(--font-inter), system-ui, sans-serif",
         }}
       >
-        <DocumentProvider>{children}</DocumentProvider>
+        <ChatProvider>
+          <DocumentProvider>{children}</DocumentProvider>
+        </ChatProvider>
       </body>
     </html>
   );
