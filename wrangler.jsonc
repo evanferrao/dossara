@@ -1,0 +1,5 @@
+{
+  "name": "dossara-proxy",
+  "compatibility_date": "2026-08-15",
+  "main": "cloudflare/workers.js"
+}

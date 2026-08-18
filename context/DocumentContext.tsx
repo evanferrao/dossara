@@ -87,6 +87,11 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
   );
 
   useEffect(() => {
+    setActiveDocumentId(null);
+    setActivePdfPage(1);
+  }, [activeChatId]);
+
+  useEffect(() => {
     refreshDocuments();
   }, [refreshDocuments]);
 

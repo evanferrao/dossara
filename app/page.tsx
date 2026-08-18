@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DocumentPanel } from "@/components/DocumentPanel";
 import { ChatPanel } from "@/components/ChatPanel";
 import { LandingOverlay } from "@/components/LandingOverlay";
@@ -11,6 +11,42 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Resizing state
+  const [docWidthPercent, setDocWidthPercent] = useState(40);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      // Calculate new width relative to the window width
+      const sidebarWidth = isSidebarOpen ? 256 : 0; // 64 * 4px = 256px
+      const availableWidth = window.innerWidth - sidebarWidth - 24; // 24px for padding
+      let mouseX = e.clientX - sidebarWidth - 12; // 12px for left padding
+      
+      let newPercent = (mouseX / availableWidth) * 100;
+      // Constrain between 20% and 80%
+      newPercent = Math.max(20, Math.min(80, newPercent));
+      setDocWidthPercent(newPercent);
+    };
+
+    const handleMouseUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mouseup", handleMouseUp);
+    
+    // Add user-select-none to body to prevent text selection while dragging
+    document.body.style.userSelect = 'none';
+
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("mouseup", handleMouseUp);
+      document.body.style.userSelect = '';
+    };
+  }, [isDragging, isSidebarOpen]);
 
   return (
     <LandingOverlay>
@@ -149,21 +185,40 @@ export default function Home() {
           />
         )}
 
-        <div className="flex-1 flex min-h-0 p-3 gap-3 w-full max-w-full">
+        <div className="flex-1 flex min-h-0 p-3 w-full max-w-full">
           {/* Document panel */}
           <div
             className={`${
               activeTab === "documents" ? "flex" : "hidden"
-            } md:flex flex-col w-full md:flex-1 lg:w-[40%] min-h-0 min-w-0`}
+            } md:flex flex-col w-full min-h-0 min-w-0 pr-1.5 md:pr-0`}
+            style={{ 
+              width: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${docWidthPercent}% - 6px)` : '100%',
+              flexBasis: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${docWidthPercent}% - 6px)` : '100%',
+              flexShrink: 0
+            }}
           >
             <DocumentPanel />
+          </div>
+
+          {/* Resizer */}
+          <div
+            className="hidden md:flex flex-col w-3 cursor-col-resize hover:bg-white/5 active:bg-white/10 transition-colors z-10 justify-center items-center rounded-sm group select-none"
+            onMouseDown={() => setIsDragging(true)}
+            title="Drag to resize"
+          >
+             <div className="w-0.5 h-10 bg-white/10 group-hover:bg-white/30 group-active:bg-white/50 rounded-full transition-colors" />
           </div>
 
           {/* Chat panel */}
           <div
             className={`${
               activeTab === "chat" ? "flex" : "hidden"
-            } md:flex flex-col w-full md:flex-1 lg:w-[60%] min-h-0 min-w-0`}
+            } md:flex flex-col w-full min-h-0 min-w-0 pl-1.5 md:pl-0`}
+            style={{ 
+              width: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
+              flexBasis: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
+              flexShrink: 0
+            }}
           >
             <ChatPanel onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)} />
           </div>

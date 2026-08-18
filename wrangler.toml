@@ -1,0 +1,2 @@
+[vars]
+MAX_CHAT_PER_IP_PER_DAY = "5"

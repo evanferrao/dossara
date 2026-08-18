@@ -38,7 +38,7 @@ function getMessageText(msg: UIMessage): string {
     .join("");
 }
 
-const CITATION_RE = /<!-- CITATIONS:\s*(\[.*?\])\s*-->/s;
+const CITATION_RE = /<!-- CITATIONS:\s*(\[.*?\])(?:\s*-->)?/s;
 
 interface ChatPanelProps {
   onOpenApiKeyModal?: () => void;
@@ -90,7 +90,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
   // Build transport — sends context along with messages
   const transport = useMemo(() => {
     return new DefaultChatTransport({
-      api: "/api/chat",
+      api: process.env.NEXT_PUBLIC_WORKER_URL || "/api/chat",
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
         const customApiKey = typeof window !== "undefined" ? localStorage.getItem("dossara_groq_api_key") : null;
         if (customApiKey && init?.body) {
@@ -211,7 +211,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             return next;
           });
           cleanContent = text
-            .replace(new RegExp("<!-- CITATIONS:\\s*\\[.*?\\]\\s*-->", "s"), "")
+            .replace(new RegExp("<!-- CITATIONS:\\s*\\[.*?\\](?:\\s*-->)?", "s"), "")
             .trim();
         } catch {
           // Ignore parse errors
