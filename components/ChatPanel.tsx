@@ -62,6 +62,14 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       localStorage.setItem("dossara_custom_model", modelKey);
     }
   }, [modelKey]);
+
+  const [isOllamaEnabled, setIsOllamaEnabled] = useState(false);
+  const [ollamaModelName, setOllamaModelName] = useState("");
+
+  useEffect(() => {
+    setIsOllamaEnabled(localStorage.getItem("dossara_ollama_enabled") === "true");
+    setOllamaModelName(localStorage.getItem("dossara_ollama_model") || "llama3");
+  }, []);
   const [storedCitations, setStoredCitations] = useState<
     Map<string, Citation[]>
   >(new Map());
@@ -92,13 +100,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     return new DefaultChatTransport({
       api: process.env.NEXT_PUBLIC_WORKER_URL || "/api/chat",
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-        const customApiKey = typeof window !== "undefined" ? localStorage.getItem("dossara_groq_api_key") : null;
-        if (customApiKey && init?.body) {
+        const ollamaEnabled = typeof window !== "undefined" && localStorage.getItem("dossara_ollama_enabled") === "true";
+        if (ollamaEnabled && init?.body) {
           try {
             const body = JSON.parse(init.body as string);
-            // @ts-expect-error dangerouslyAllowBrowser is sometimes undocumented but required for client-side use
-            const groq = createGroq({ apiKey: customApiKey, dangerouslyAllowBrowser: true });
-            
+            const ollamaUrl = localStorage.getItem("dossara_ollama_url") || "http://localhost:11434";
+            const ollamaModel = localStorage.getItem("dossara_ollama_model") || "llama3";
+
             const systemPrompt = buildSystemPrompt({
               docCount: body.docCount ?? 0,
               docInventory: body.docInventory ?? "",
@@ -106,22 +114,97 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               chunkCount: body.chunkCount ?? 0,
               context: body.context ?? ""
             });
-            
-            const llmMessages = await convertToModelMessages(body.messages ?? []);
-            
+
+            let llmMessages = await convertToModelMessages(body.messages ?? []);
+
+            // Strip out complex Vercel AI SDK parts (like item_reference) that crash the OpenAI provider
+            llmMessages = llmMessages.map((m: any) => {
+              if (Array.isArray(m.content)) {
+                const filtered = m.content.filter((part: any) =>
+                  ['text', 'image', 'tool-call', 'tool-result'].includes(part.type)
+                );
+                // If it's completely empty after filtering, provide a fallback empty string to pass ModelMessage schema
+                if (filtered.length === 0) {
+                  return { ...m, content: '' };
+                }
+                // Convert pure text arrays to string to avoid schema issues
+                if (filtered.every((p: any) => p.type === 'text')) {
+                  return { ...m, content: filtered.map((p: any) => p.text).join('') };
+                }
+                return { ...m, content: filtered };
+              }
+              return m;
+            });
+
+            // Import dynamically since this is a client component
+            const { createOpenAI } = await import('@ai-sdk/openai');
+
+            const ollamaProvider = createOpenAI({
+              baseURL: `${ollamaUrl.replace(/\/$/, '')}/v1`,
+              apiKey: 'ollama', // Optional, but required by SDK type signature
+              // @ts-expect-error - 'compatibility' flag may not exist in this older AI SDK version but is useful for compatible backends
+              compatibility: 'compatible'
+            });
+
+            const result = streamText({
+              model: ollamaProvider.chat(ollamaModel),
+              instructions: systemPrompt,
+              messages: llmMessages,
+            });
+
+            return result.toUIMessageStreamResponse();
+          } catch (error) {
+            console.error("Ollama API error:", error);
+            throw error;
+          }
+        }
+
+        const customApiKey = typeof window !== "undefined" ? localStorage.getItem("dossara_groq_api_key") : null;
+        if (customApiKey && init?.body) {
+          try {
+            const body = JSON.parse(init.body as string);
+            // @ts-expect-error dangerouslyAllowBrowser is sometimes undocumented but required for client-side use
+            const groq = createGroq({ apiKey: customApiKey, dangerouslyAllowBrowser: true });
+
+            const systemPrompt = buildSystemPrompt({
+              docCount: body.docCount ?? 0,
+              docInventory: body.docInventory ?? "",
+              referencedDocCount: body.referencedDocCount ?? 0,
+              chunkCount: body.chunkCount ?? 0,
+              context: body.context ?? ""
+            });
+
+            let llmMessages = await convertToModelMessages(body.messages ?? []);
+
+            llmMessages = llmMessages.map((m: any) => {
+              if (Array.isArray(m.content)) {
+                const filtered = m.content.filter((part: any) =>
+                  ['text', 'image', 'tool-call', 'tool-result'].includes(part.type)
+                );
+                if (filtered.length === 0) {
+                  return { ...m, content: '' };
+                }
+                if (filtered.every((p: any) => p.type === 'text')) {
+                  return { ...m, content: filtered.map((p: any) => p.text).join('') };
+                }
+                return { ...m, content: filtered };
+              }
+              return m;
+            });
+
             const result = streamText({
               model: groq(body.model || DEFAULT_MODEL),
               instructions: systemPrompt,
               messages: llmMessages,
             });
-            
+
             return result.toUIMessageStreamResponse();
           } catch (error) {
             console.error("Direct API error:", error);
             throw error;
           }
         }
-        
+
         // Default behavior
         return fetch(input, init);
       },
@@ -186,6 +269,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         {
           id: `error-${Date.now()}`,
           role: "assistant" as const,
+          content: errorText,
           parts: [{ type: "text" as const, text: errorText }],
         },
       ]);
@@ -245,6 +329,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           const loaded: UIMessage[] = msgs.map((m) => ({
             id: `db-${m.id}`,
             role: m.role as "user" | "assistant",
+            content: m.content,
             parts: [{ type: "text" as const, text: m.content }],
           }));
           setMessages(loaded);
@@ -296,7 +381,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         (d: StoredDocument) => d.status === "ready"
       );
       const readyDocIds = readyDocs.map((d: StoredDocument) => d.id);
-      
+
       const results = await searchChunks(queryEmbedding, readyDocIds, TOP_K_CHUNKS);
 
       // 4. Get all documents for context
@@ -420,7 +505,16 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         </div>
 
         <div className="flex items-center gap-2">
-          <ModelSelector value={modelKey} onChange={setModelKey} />
+          {isOllamaEnabled ? (
+            <div
+              className="text-xs px-3 py-1.5 rounded-lg font-medium"
+              style={{ background: "var(--bg-tertiary)", borderColor: "var(--border-subtle)", borderWidth: 1 }}
+            >
+              ollama/{ollamaModelName}
+            </div>
+          ) : (
+            <ModelSelector value={modelKey} onChange={setModelKey} />
+          )}
           {messages.length > 0 && (
             <button
               onClick={clearChat}
@@ -590,11 +684,11 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               <button onClick={() => setShowRateLimitPrompt(false)} className="btn-ghost px-4 py-2 text-sm">
                 Not now
               </button>
-              <button 
+              <button
                 onClick={() => {
                   setShowRateLimitPrompt(false);
                   if (onOpenApiKeyModal) onOpenApiKeyModal();
-                }} 
+                }}
                 className="btn-primary px-4 py-2 text-sm"
               >
                 Yes, set API key

@@ -7,6 +7,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
   const { chats, activeChatId, setActiveChatId, createNewChat, deleteChatById, renameChat, isLoading } = useChats();
   const [editingChatId, setEditingChatId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
+  const [chatToDelete, setChatToDelete] = useState<string | null>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
 
   const handleNewChat = async () => {
@@ -116,9 +117,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      if (confirm("Are you sure you want to delete this chat and all its documents?")) {
-                        deleteChatById(chat.id);
-                      }
+                      setChatToDelete(chat.id);
                     }}
                     className={`p-1.5 rounded-md hover:bg-white/10 ${
                       chats.length <= 1 ? "hidden" : ""
@@ -196,9 +195,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm("Are you sure you want to delete this chat and all its documents?")) {
-                      deleteChatById(chat.id);
-                    }
+                    setChatToDelete(chat.id);
                   }}
                   className={`p-1.5 rounded-md hover:bg-white/10 ${
                     chats.length <= 1 ? "hidden" : ""
@@ -215,6 +212,36 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           ))
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {chatToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setChatToDelete(null)}>
+          <div className="bg-[#111] border border-[#333] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-bold tracking-tight text-white mb-2">Delete chat?</h3>
+            <p className="text-sm text-gray-400 mb-5">
+              This will also remove all its documents and cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={(e) => { e.stopPropagation(); setChatToDelete(null); }}
+                className="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  deleteChatById(chatToDelete); 
+                  setChatToDelete(null); 
+                }}
+                className="px-3 py-1.5 text-sm font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -24,16 +24,6 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
     .replace(new RegExp("<!-- CITATIONS:\\s*\\[.*?\\](?:\\s*-->)?", "s"), "")
     .trim();
 
-  const handleCitationClick = (citation: Citation) => {
-    // Resolve document by filename from loaded documents (LLM may hallucinate UUIDs)
-    const matchedDoc = documents.find(
-      (d) => d.filename === citation.filename
-    );
-    const resolvedId = matchedDoc?.id ?? citation.documentId;
-    setActiveDocumentId(resolvedId);
-    setActivePdfPage(citation.page);
-  };
-
   return (
     <div
       className={`flex gap-3 animate-fade-in ${
@@ -91,15 +81,28 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
         {/* Citations */}
         {citations && citations.length > 0 && (
           <div className="flex flex-wrap gap-2 mt-2 ml-1">
-            {citations.map((citation, i) => (
-              <CitationBadge
-                key={i}
-                documentId={citation.documentId}
-                filename={citation.filename}
-                page={citation.page}
-                onClick={() => handleCitationClick(citation)}
-              />
-            ))}
+            {citations.map((citation, i) => {
+              const matchedDoc = documents.find(
+                (d) => (citation.filename && d.filename === citation.filename) || 
+                       (citation.documentId && d.id === citation.documentId)
+              ) || (documents.length === 1 ? documents[0] : null);
+
+              const resolvedId = matchedDoc?.id ?? citation.documentId;
+              const resolvedFilename = matchedDoc?.filename ?? citation.filename;
+
+              return (
+                <CitationBadge
+                  key={i}
+                  documentId={resolvedId}
+                  filename={resolvedFilename}
+                  page={citation.page}
+                  onClick={() => {
+                    if (resolvedId) setActiveDocumentId(resolvedId);
+                    if (citation.page) setActivePdfPage(Number(citation.page));
+                  }}
+                />
+              );
+            })}
           </div>
         )}
       </div>

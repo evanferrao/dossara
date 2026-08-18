@@ -5,11 +5,13 @@ import { DocumentPanel } from "@/components/DocumentPanel";
 import { ChatPanel } from "@/components/ChatPanel";
 import { LandingOverlay } from "@/components/LandingOverlay";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
+import { OllamaModal } from "@/components/OllamaModal";
 import { Sidebar } from "@/components/Sidebar";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
+  const [isOllamaModalOpen, setIsOllamaModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   // Resizing state
@@ -49,7 +51,7 @@ export default function Home() {
   }, [isDragging, isSidebarOpen]);
 
   return (
-    <LandingOverlay>
+    <LandingOverlay onOpenOllama={() => setIsOllamaModalOpen(true)}>
     <main className="h-dvh flex flex-col overflow-hidden">
       {/* Gradient mesh background */}
       <div className="gradient-mesh" />
@@ -135,6 +137,17 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4v-3.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
             </svg>
             <span className="hidden sm:inline">Custom API Key</span>
+          </button>
+          
+          <button
+            onClick={() => setIsOllamaModalOpen(true)}
+            className="btn-ghost flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+            title="Local Ollama Settings"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+            <span className="hidden sm:inline">Ollama</span>
           </button>
           
           {/* GitHub link */}
@@ -226,6 +239,7 @@ export default function Home() {
       </div>
     </main>
       <ApiKeyModal isOpen={isApiKeyModalOpen} onClose={() => setIsApiKeyModalOpen(false)} />
+      <OllamaModal isOpen={isOllamaModalOpen} onClose={() => setIsOllamaModalOpen(false)} />
     </LandingOverlay>
   );
 }

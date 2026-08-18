@@ -13,8 +13,9 @@ export function CitationBadge({
   onClick,
 }: CitationBadgeProps) {
   // Truncate long filenames
+  const safeFilename = filename || "Unknown Document";
   const displayName =
-    filename.length > 20 ? filename.slice(0, 17) + "…" : filename;
+    safeFilename.length > 20 ? safeFilename.slice(0, 17) + "…" : safeFilename;
 
   return (
     <button

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -8,7 +8,7 @@ import { useDocuments } from "@/context/DocumentContext";
 import { getDocumentFromCache } from "@/lib/indexeddb";
 
 // Configure the PDF.js worker from CDN
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export function PdfViewer() {
   const { activeDocumentId, activePdfPage, setActivePdfPage } = useDocuments();
@@ -17,6 +17,13 @@ export function PdfViewer() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pageInputValue, setPageInputValue] = useState("");
+
+  // Memoize options to prevent unnecessary re-renders that destroy the worker
+  const documentOptions = useMemo(() => ({
+    cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+    cMapPacked: true,
+    standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+  }), []);
 
   // Load PDF from IndexedDB when active document changes
   useEffect(() => {
@@ -137,6 +144,7 @@ export function PdfViewer() {
     );
   }
 
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* Navigation bar */}
@@ -183,6 +191,7 @@ export function PdfViewer() {
         {pdfUrl && (
           <Document
             file={pdfUrl}
+            options={documentOptions}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
               <div className="flex items-center justify-center py-20">
