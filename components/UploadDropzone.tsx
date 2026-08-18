@@ -1,21 +1,68 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { useDocuments } from "@/context/DocumentContext";
-import { saveDocumentToCache } from "@/lib/indexeddb";
+import {
+  useProcessDocument,
+  type ProcessingState,
+} from "@/hooks/useProcessDocument";
 
 type UploadState =
   | { phase: "idle" }
-  | { phase: "uploading"; progress: number }
+  | { phase: "extracting" }
   | { phase: "processing"; cursor: number; pageCount: number }
   | { phase: "ready" }
   | { phase: "failed"; error: string };
+
+function generateUUID(): string {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+function mapProcessingState(ps: ProcessingState): UploadState {
+  switch (ps.phase) {
+    case "idle":
+      return { phase: "idle" };
+    case "extracting":
+      return { phase: "extracting" };
+    case "embedding":
+      return {
+        phase: "processing",
+        cursor: ps.cursor,
+        pageCount: ps.pageCount,
+      };
+    case "ready":
+      return { phase: "ready" };
+    case "failed":
+      return { phase: "failed", error: ps.error ?? "Processing failed" };
+  }
+}
 
 export function UploadDropzone() {
   const [state, setState] = useState<UploadState>({ phase: "idle" });
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { refreshDocuments, setActiveDocumentId, fetchWithWorkspace } = useDocuments();
+  const { refreshDocuments, setActiveDocumentId } = useDocuments();
+  const { processingState, processDocument } = useProcessDocument();
+
+  // Sync processing state to upload state
+  useEffect(() => {
+    const mapped = mapProcessingState(processingState);
+    if (processingState.phase !== "idle") {
+      setState(mapped);
+    }
+    if (processingState.phase === "ready") {
+      // Reset to idle after showing success
+      const timer = setTimeout(() => setState({ phase: "idle" }), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [processingState]);
 
   const handleFile = useCallback(
     async (file: File) => {
@@ -25,94 +72,16 @@ export function UploadDropzone() {
       }
 
       try {
-        // Step 1: Get signed upload URL
-        setState({ phase: "uploading", progress: 0 });
+        const documentId = generateUUID();
 
-        const urlRes = await fetchWithWorkspace("/api/upload-url", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ filename: file.name }),
-        });
+        setState({ phase: "extracting" });
 
-        if (!urlRes.ok) throw new Error("Failed to get upload URL");
-        const { signedUrl, token, documentId } = await urlRes.json();
+        // Process entirely in-browser
+        await processDocument(documentId, file);
 
-        // Step 2: PUT file directly to Supabase Storage
-        setState({ phase: "uploading", progress: 50 });
-
-        const uploadRes = await fetch(signedUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type || "application/pdf",
-            "x-upsert": "true",
-          },
-          body: file,
-        });
-
-        if (!uploadRes.ok) {
-          // Try with token as query param if PUT fails
-          const urlWithToken = `${signedUrl}&token=${token}`;
-          const retryRes = await fetch(urlWithToken, {
-            method: "PUT",
-            headers: { "Content-Type": file.type || "application/pdf" },
-            body: file,
-          });
-          if (!retryRes.ok) throw new Error("Failed to upload file");
-        }
-
-        setState({ phase: "uploading", progress: 100 });
-
-        // Save to local cache so we don't have to download it again
-        try {
-          await saveDocumentToCache(documentId, file);
-        } catch (err) {
-          console.warn("Failed to cache document locally:", err);
-        }
-
-        // Step 3: Trigger processing
-        const processRes = await fetchWithWorkspace("/api/process-document", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ documentId }),
-        });
-
-        if (!processRes.ok) throw new Error("Failed to start processing");
-
-        setState({ phase: "processing", cursor: 0, pageCount: 0 });
-
-        // Step 4: Poll status
-        const pollInterval = setInterval(async () => {
-          try {
-            const statusRes = await fetchWithWorkspace(
-              `/api/document-status?id=${documentId}`
-            );
-            if (!statusRes.ok) return;
-            const status = await statusRes.json();
-
-            if (status.status === "processing") {
-              setState({
-                phase: "processing",
-                cursor: status.cursor ?? 0,
-                pageCount: status.pageCount ?? 0,
-              });
-            } else if (status.status === "ready") {
-              clearInterval(pollInterval);
-              setState({ phase: "ready" });
-              setActiveDocumentId(documentId);
-              refreshDocuments();
-              // Reset to idle after a moment
-              setTimeout(() => setState({ phase: "idle" }), 3000);
-            } else if (status.status === "failed") {
-              clearInterval(pollInterval);
-              setState({
-                phase: "failed",
-                error: status.errorMessage || "Processing failed",
-              });
-            }
-          } catch {
-            // Keep polling on transient errors
-          }
-        }, 2500);
+        // Set as active and refresh list
+        setActiveDocumentId(documentId);
+        await refreshDocuments();
       } catch (err) {
         setState({
           phase: "failed",
@@ -120,7 +89,7 @@ export function UploadDropzone() {
         });
       }
     },
-    [refreshDocuments, setActiveDocumentId, fetchWithWorkspace]
+    [processDocument, refreshDocuments, setActiveDocumentId]
   );
 
   const onDrop = useCallback(
@@ -198,26 +167,23 @@ export function UploadDropzone() {
               Drop a PDF here or click to upload
             </p>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Supports PDF files up to 50MB
+              Processed locally in your browser — your data never leaves this device
             </p>
           </div>
         )}
 
-        {state.phase === "uploading" && (
+        {state.phase === "extracting" && (
           <div className="animate-fade-in">
             <div className="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
             <p
               className="text-sm font-medium"
               style={{ color: "var(--text-primary)" }}
             >
-              Uploading…
+              Extracting text…
             </p>
-            <div className="w-48 mx-auto mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-tertiary)" }}>
-              <div
-                className="h-full rounded-full bg-white transition-all duration-500"
-                style={{ width: `${state.progress}%` }}
-              />
-            </div>
+            <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>
+              Reading PDF pages
+            </p>
           </div>
         )}
 
@@ -228,7 +194,7 @@ export function UploadDropzone() {
               className="text-sm font-medium"
               style={{ color: "var(--text-primary)" }}
             >
-              Processing…
+              Generating embeddings…
             </p>
             {state.pageCount > 0 && (
               <>

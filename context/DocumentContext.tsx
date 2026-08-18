@@ -8,7 +8,11 @@ import React, {
   useEffect,
   type ReactNode,
 } from "react";
-import { useWorkspaceFetch } from "@/hooks/useWorkspaceId";
+import {
+  getDocuments,
+  deleteDocumentFull,
+  type StoredDocument,
+} from "@/lib/indexeddb";
 
 export interface DocumentInfo {
   id: string;
@@ -29,7 +33,6 @@ interface DocumentContextType {
   refreshDocuments: () => Promise<void>;
   deleteDocument: (id: string) => Promise<void>;
   isLoading: boolean;
-  fetchWithWorkspace: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
 
 const DocumentContext = createContext<DocumentContextType | null>(null);
@@ -39,33 +42,32 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
   const [activeDocumentId, setActiveDocumentId] = useState<string | null>(null);
   const [activePdfPage, setActivePdfPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const { workspaceId, fetchWithWorkspace } = useWorkspaceFetch();
 
   const refreshDocuments = useCallback(async () => {
-    if (!workspaceId) return;
     try {
-      const res = await fetchWithWorkspace("/api/documents");
-      if (res.ok) {
-        const data = await res.json();
-        setDocuments(data.documents ?? []);
-      }
+      const docs = await getDocuments();
+      setDocuments(
+        docs.map((d: StoredDocument) => ({
+          id: d.id,
+          filename: d.filename,
+          status: d.status,
+          page_count: d.page_count,
+          cursor: d.cursor,
+          error_message: d.error_message,
+          created_at: d.created_at,
+        }))
+      );
     } catch (err) {
       console.error("Failed to fetch documents:", err);
     } finally {
       setIsLoading(false);
     }
-  }, [workspaceId, fetchWithWorkspace]);
+  }, []);
 
-  const deleteDocument = useCallback(
+  const deleteDocumentAction = useCallback(
     async (id: string) => {
       try {
-        const res = await fetchWithWorkspace(`/api/documents?id=${id}`, {
-          method: "DELETE",
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || "Failed to delete document");
-        }
+        await deleteDocumentFull(id);
         // If deleted doc was active, clear it
         if (activeDocumentId === id) {
           setActiveDocumentId(null);
@@ -77,7 +79,7 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
         throw err;
       }
     },
-    [fetchWithWorkspace, activeDocumentId, refreshDocuments]
+    [activeDocumentId, refreshDocuments]
   );
 
   useEffect(() => {
@@ -93,9 +95,8 @@ export function DocumentProvider({ children }: { children: ReactNode }) {
         setActiveDocumentId,
         setActivePdfPage,
         refreshDocuments,
-        deleteDocument,
+        deleteDocument: deleteDocumentAction,
         isLoading,
-        fetchWithWorkspace,
       }}
     >
       {children}

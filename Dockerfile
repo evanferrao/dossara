@@ -3,7 +3,6 @@ FROM node:22-slim AS base
 
 # 1. Install dependencies only when needed
 FROM base AS deps
-RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 
 COPY package.json package-lock.json* ./
@@ -40,9 +39,6 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 # Copy static assets and public files
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Copy libonnxruntime.so to system libs to bypass dlopen path resolution issues
-RUN find /app/node_modules/onnxruntime-node/bin -name "libonnxruntime.so*" -exec cp {} /usr/lib/ \; || true
 
 USER nextjs
 

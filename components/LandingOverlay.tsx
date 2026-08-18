@@ -58,8 +58,8 @@ export function LandingOverlay({ children }: { children: React.ReactNode }) {
                 className="text-base max-w-sm"
                 style={{ color: "var(--text-muted)" }}
               >
-                Intelligent Document Chat — Upload PDFs and get AI-powered
-                answers with source citations.
+                Intelligent Document Chat — Upload PDFs and chat with AI.
+                All processing happens locally in your browser.
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export function LandingOverlay({ children }: { children: React.ReactNode }) {
 
           {/* Tech badges */}
           <div className="flex flex-wrap justify-center gap-2 max-w-md">
-            {["Next.js 16", "React 19", "TypeScript", "Groq", "pgvector", "Docker"].map(
+            {["Next.js 16", "React 19", "TypeScript", "Groq", "Privacy-First", "Docker"].map(
               (tech) => (
                 <span
                   key={tech}

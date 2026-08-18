@@ -200,8 +200,7 @@ All tunable parameters are exposed as environment variables with sensible defaul
 | `HISTORY_LIMIT` | `10` | Chat history messages included in LLM prompt |
 | `PAGES_PER_BATCH` | `10` | PDF pages processed per batch |
 | `MAX_CHAT_PER_IP_PER_DAY` | `20` | Rate limit for the public demo |
-| `NEXT_PUBLIC_MODEL_FAST` | `llama-3.1-8b-instant` | Fast Groq model |
-| `NEXT_PUBLIC_MODEL_VERSATILE` | `llama-3.3-70b-versatile` | High-quality Groq model |
+| `NEXT_PUBLIC_MODELS` | `openai/gpt-oss-20b,openai/gpt-oss-120b` | Comma-separated list of Groq models to use (first is default) |
 
 ---
 

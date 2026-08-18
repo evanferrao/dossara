@@ -16,10 +16,10 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dossara — Intelligent Document Chat",
+  title: "Dossara — Privacy-First Document Chat",
   description:
-    "Upload PDFs and chat with your documents using AI. Get instant answers with source citations and page references.",
-  keywords: ["PDF", "AI", "chat", "documents", "RAG", "citations"],
+    "Upload PDFs and chat with your documents using AI. All processing happens locally in your browser — your data never leaves your device.",
+  keywords: ["PDF", "AI", "chat", "documents", "RAG", "privacy", "local", "browser"],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

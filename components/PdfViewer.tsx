@@ -5,20 +5,20 @@ import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { useDocuments } from "@/context/DocumentContext";
-import { getDocumentFromCache, saveDocumentToCache } from "@/lib/indexeddb";
+import { getDocumentFromCache } from "@/lib/indexeddb";
 
 // Configure the PDF.js worker from CDN
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.mjs`;
 
 export function PdfViewer() {
-  const { activeDocumentId, activePdfPage, setActivePdfPage, fetchWithWorkspace } = useDocuments();
+  const { activeDocumentId, activePdfPage, setActivePdfPage } = useDocuments();
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pageInputValue, setPageInputValue] = useState("");
 
-  // Fetch signed URL when active document changes
+  // Load PDF from IndexedDB when active document changes
   useEffect(() => {
     if (!activeDocumentId) {
       setPdfUrl(null);
@@ -34,38 +34,21 @@ export function PdfViewer() {
 
     const loadDocument = async () => {
       try {
-        // 1. Check local cache first
         const cachedBlob = await getDocumentFromCache(activeDocumentId);
-        if (cachedBlob) {
-          if (!cancelled) {
-            currentObjectUrl = URL.createObjectURL(cachedBlob);
-            setPdfUrl(currentObjectUrl);
-            setIsLoading(false);
-          }
-          return;
+        if (!cachedBlob) {
+          throw new Error("Document not found in local storage");
         }
 
-        // 2. Fallback to Supabase
-        const urlRes = await fetchWithWorkspace(`/api/document-url?id=${activeDocumentId}`);
-        if (!urlRes.ok) throw new Error("Document not found");
-        const data = await urlRes.json();
-
-        // 3. Download the actual file blob
-        const fileRes = await fetch(data.url);
-        if (!fileRes.ok) throw new Error("Failed to download document");
-        const blob = await fileRes.blob();
-
-        // 4. Save to cache for next time
-        await saveDocumentToCache(activeDocumentId, blob);
-
         if (!cancelled) {
-          currentObjectUrl = URL.createObjectURL(blob);
+          currentObjectUrl = URL.createObjectURL(cachedBlob);
           setPdfUrl(currentObjectUrl);
           setIsLoading(false);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (!cancelled) {
-          setError(err.message || "Failed to load document");
+          setError(
+            err instanceof Error ? err.message : "Failed to load document"
+          );
           setIsLoading(false);
         }
       }
@@ -79,7 +62,7 @@ export function PdfViewer() {
         URL.revokeObjectURL(currentObjectUrl);
       }
     };
-  }, [activeDocumentId, fetchWithWorkspace]);
+  }, [activeDocumentId]);
 
   // Sync page input with active page
   useEffect(() => {

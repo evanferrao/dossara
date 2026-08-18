@@ -1,4 +1,3 @@
-import "./polyfills";
 import { EMBEDDING_MODEL } from "./constants";
 
 // Lazy-loaded singleton pipeline
@@ -8,12 +7,16 @@ let pipelineInstance: any = null;
 /**
  * Returns a cached feature-extraction pipeline.
  * Model is downloaded on first call and reused afterwards.
+ * Runs entirely in the browser via WebAssembly.
  */
 async function getPipeline() {
   if (!pipelineInstance) {
-    // Dynamic import to avoid issues with Next.js bundling
-    const { pipeline } = await import("@xenova/transformers");
-    pipelineInstance = await pipeline("feature-extraction", EMBEDDING_MODEL);
+    // Dynamically import the pre-bundled web version to avoid SSR and Turbopack issues
+    // @ts-ignore
+    const transformers = await import("@xenova/transformers/dist/transformers.min.js");
+    transformers.env.allowLocalModels = false;
+    
+    pipelineInstance = await transformers.pipeline("feature-extraction", EMBEDDING_MODEL);
   }
   return pipelineInstance;
 }

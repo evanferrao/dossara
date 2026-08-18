@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 
 const STORAGE_KEY = "dossara-workspace-id";
 
@@ -47,25 +47,4 @@ function getServerSnapshot(): string {
  */
 export function useWorkspaceId(): string {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-}
-
-/**
- * Creates a fetch wrapper that automatically includes the workspace ID header.
- */
-export function useWorkspaceFetch() {
-  const workspaceId = useWorkspaceId();
-  const workspaceIdRef = useRef(workspaceId);
-  workspaceIdRef.current = workspaceId;
-
-  const fetchWithWorkspace = useRef(
-    (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-      const headers = new Headers(init?.headers);
-      if (workspaceIdRef.current) {
-        headers.set("x-workspace-id", workspaceIdRef.current);
-      }
-      return fetch(input, { ...init, headers });
-    }
-  );
-
-  return { workspaceId, fetchWithWorkspace: fetchWithWorkspace.current };
 }

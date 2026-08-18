@@ -2,13 +2,24 @@
 
 import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, streamText, convertToModelMessages } from "ai";
+import { createGroq } from "@ai-sdk/groq";
 import type { UIMessage } from "ai";
 import { ChatMessage } from "./ChatMessage";
 import { ModelSelector } from "./ModelSelector";
 import type { ModelKey } from "@/lib/constants";
+import { TOP_K_CHUNKS, HISTORY_LIMIT, DEFAULT_MODEL } from "@/lib/constants";
+import { buildSystemPrompt } from "@/lib/prompt";
 import { useDocuments } from "@/context/DocumentContext";
-import { useWorkspaceId } from "@/hooks/useWorkspaceId";
+import { embed } from "@/lib/embeddings";
+import { searchChunks } from "@/lib/vectorSearch";
+import {
+  getDocuments,
+  saveChatMessage,
+  getChatMessages,
+  clearChatMessages,
+  type StoredDocument,
+} from "@/lib/indexeddb";
 
 interface Citation {
   documentId: string;
@@ -28,27 +39,109 @@ function getMessageText(msg: UIMessage): string {
 
 const CITATION_RE = /<!-- CITATIONS:\s*(\[.*?\])\s*-->/s;
 
-export function ChatPanel() {
-  const [modelKey, setModelKey] = useState<ModelKey>("fast");
+interface ChatPanelProps {
+  onOpenApiKeyModal?: () => void;
+}
+
+export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
+  const [modelKey, setModelKey] = useState<string>(DEFAULT_MODEL);
+  const [showRateLimitPrompt, setShowRateLimitPrompt] = useState(false);
+
+  // Load from local storage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("dossara_custom_model");
+    if (saved) {
+      setModelKey(saved);
+    }
+  }, []);
+
+  // Save to local storage when changed
+  useEffect(() => {
+    if (modelKey) {
+      localStorage.setItem("dossara_custom_model", modelKey);
+    }
+  }, [modelKey]);
   const [storedCitations, setStoredCitations] = useState<
     Map<string, Citation[]>
   >(new Map());
   const [inputValue, setInputValue] = useState("");
+  const [isEmbedding, setIsEmbedding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const workspaceId = useWorkspaceId();
-  const { fetchWithWorkspace } = useDocuments();
+  const { documents } = useDocuments();
 
-  // Build transport with the current model selection and workspace header
-  const transport = useMemo(
-    () =>
-      new DefaultChatTransport({
-        api: "/api/chat",
-        body: { model: modelKey },
-        headers: workspaceId ? { "x-workspace-id": workspaceId } : undefined,
-      }),
-    [modelKey, workspaceId]
-  );
+  // We need a ref to track the latest context for the transport body
+  const contextRef = useRef<{
+    context: string;
+    docInventory: string;
+    docCount: number;
+    chunkCount: number;
+    referencedDocCount: number;
+  }>({
+    context: "",
+    docInventory: "",
+    docCount: 0,
+    chunkCount: 0,
+    referencedDocCount: 0,
+  });
+
+  // Build transport — sends context along with messages
+  const transport = useMemo(() => {
+    return new DefaultChatTransport({
+      api: "/api/chat",
+      fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+        const customApiKey = typeof window !== "undefined" ? localStorage.getItem("dossara_groq_api_key") : null;
+        if (customApiKey && init?.body) {
+          try {
+            const body = JSON.parse(init.body as string);
+            const groq = createGroq({ apiKey: customApiKey, dangerouslyAllowBrowser: true });
+            
+            const systemPrompt = buildSystemPrompt({
+              docCount: body.docCount ?? 0,
+              docInventory: body.docInventory ?? "",
+              referencedDocCount: body.referencedDocCount ?? 0,
+              chunkCount: body.chunkCount ?? 0,
+              context: body.context ?? ""
+            });
+            
+            const llmMessages = await convertToModelMessages(body.messages ?? []);
+            
+            const result = streamText({
+              model: groq(body.model || DEFAULT_MODEL),
+              instructions: systemPrompt,
+              messages: llmMessages,
+            });
+            
+            return result.toUIMessageStreamResponse();
+          } catch (error) {
+            console.error("Direct API error:", error);
+            throw error;
+          }
+        }
+        
+        // Default behavior
+        return fetch(input, init);
+      },
+      body: {
+        model: modelKey,
+        get context() {
+          return contextRef.current.context;
+        },
+        get docInventory() {
+          return contextRef.current.docInventory;
+        },
+        get docCount() {
+          return contextRef.current.docCount;
+        },
+        get chunkCount() {
+          return contextRef.current.chunkCount;
+        },
+        get referencedDocCount() {
+          return contextRef.current.referencedDocCount;
+        },
+      },
+    });
+  }, [modelKey]);
 
   const {
     messages,
@@ -58,18 +151,28 @@ export function ChatPanel() {
   } = useChat({
     transport,
     onError: (error) => {
-      // Surface API errors (like 429 rate limit) as visible chat messages
-      // instead of only logging to the console
       let errorText =
         "Something went wrong. Please try again later.";
+      let isRateLimit = false;
 
-      // The AI SDK attaches the response body to the error message
-      // Try to parse a JSON message from it
       try {
+        // AI SDK might wrap non-JSON responses in error.message
+        if (error.message.toLowerCase().includes("rate limit") || error.message.includes("429")) {
+          isRateLimit = true;
+        }
+
         const jsonMatch = error.message.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed.message) errorText = parsed.message;
+          if (parsed.message) {
+            errorText = parsed.message;
+            if (errorText.toLowerCase().includes("rate limit")) {
+              isRateLimit = true;
+            }
+          }
+        } else if (error.message && !error.message.includes("JSON")) {
+          // If it's a plain string like "Rate limit exceeded..."
+          errorText = error.message.replace(/.*?:\s*/, ""); // Strip "Error: "
         }
       } catch {
         // Fall back to the default error text
@@ -83,70 +186,169 @@ export function ChatPanel() {
           parts: [{ type: "text" as const, text: errorText }],
         },
       ]);
+
+      if (isRateLimit) {
+        setShowRateLimitPrompt(true);
+      }
     },
-    onFinish: ({ message }) => {
+    onFinish: async ({ message }) => {
       // Parse citations from the finished message
       const text = getMessageText(message);
       const citationMatch = text.match(CITATION_RE);
+
+      let citations: Citation[] | null = null;
+      let cleanContent = text;
+
       if (citationMatch) {
         try {
-          const citations: Citation[] = JSON.parse(citationMatch[1]);
+          citations = JSON.parse(citationMatch[1]);
           setStoredCitations((prev) => {
             const next = new Map(prev);
-            next.set(message.id, citations);
+            next.set(message.id, citations!);
             return next;
           });
+          cleanContent = text
+            .replace(new RegExp("<!-- CITATIONS:\\s*\\[.*?\\]\\s*-->", "s"), "")
+            .trim();
         } catch {
           // Ignore parse errors
         }
+      }
+
+      // Save assistant message to IndexedDB
+      try {
+        await saveChatMessage({
+          role: "assistant",
+          content: cleanContent,
+          citations,
+          created_at: new Date().toISOString(),
+        });
+      } catch (err) {
+        console.error("Failed to save assistant message:", err);
       }
     },
   });
 
   const isLoading = status === "submitted" || status === "streaming";
 
-  // Load chat history on mount
+  // Load chat history from IndexedDB on mount
   useEffect(() => {
-    if (!workspaceId) return;
-    fetchWithWorkspace("/api/chat-history")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.messages && data.messages.length > 0) {
-          const loaded: UIMessage[] = data.messages.map(
-            (m: { id: string; role: string; content: string; citations?: Citation[] }) => ({
-              id: m.id,
-              role: m.role as "user" | "assistant",
-              parts: [{ type: "text" as const, text: m.content }],
-            })
-          );
+    getChatMessages()
+      .then((msgs) => {
+        if (msgs.length > 0) {
+          const loaded: UIMessage[] = msgs.map((m) => ({
+            id: `db-${m.id}`,
+            role: m.role as "user" | "assistant",
+            parts: [{ type: "text" as const, text: m.content }],
+          }));
           setMessages(loaded);
 
           // Load citations
           const citMap = new Map<string, Citation[]>();
-          data.messages.forEach(
-            (m: { id: string; role: string; citations?: Citation[] }) => {
-              if (m.role === "assistant" && m.citations) {
-                citMap.set(m.id, m.citations);
-              }
+          msgs.forEach((m) => {
+            if (m.role === "assistant" && m.citations) {
+              citMap.set(`db-${m.id}`, m.citations);
             }
-          );
+          });
           setStoredCitations(citMap);
         }
       })
       .catch(console.error);
-  }, [setMessages, workspaceId, fetchWithWorkspace]);
+  }, [setMessages]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = useCallback(() => {
-    if (inputValue.trim() && !isLoading) {
-      sendMessage({ text: inputValue.trim() });
-      setInputValue("");
+  const handleSend = useCallback(async () => {
+    if (!inputValue.trim() || isLoading || isEmbedding) return;
+
+    const userText = inputValue.trim();
+    setInputValue("");
+    setIsEmbedding(true);
+
+    try {
+      // 1. Save user message to IndexedDB
+      await saveChatMessage({
+        role: "user",
+        content: userText,
+        created_at: new Date().toISOString(),
+      });
+
+      // 2. Embed the query client-side
+      const queryEmbedding = await embed(userText);
+
+      // 3. Search for relevant chunks
+      const results = await searchChunks(queryEmbedding, TOP_K_CHUNKS);
+
+      // 4. Get all documents for context
+      const allDocs = await getDocuments();
+      const readyDocs = allDocs.filter(
+        (d: StoredDocument) => d.status === "ready"
+      );
+
+      // Build document inventory
+      const docInventory = readyDocs
+        .map(
+          (d: StoredDocument, i: number) =>
+            `${i + 1}. "${d.filename}" (${d.page_count ?? "?"} pages)`
+        )
+        .join("\n");
+
+      // Build doc id → filename map
+      const docMap = new Map(
+        allDocs.map((d: StoredDocument) => [d.id, d.filename])
+      );
+
+      // Build context block
+      const contextBlock = results
+        .map((r, i) => {
+          const filename = docMap.get(r.chunk.document_id) ?? "Unknown";
+          return `[Passage ${i + 1}] Document: "${filename}" (ID: ${r.chunk.document_id}) | Page: ${r.chunk.page_number}\n${r.chunk.content}`;
+        })
+        .join("\n\n---\n\n");
+
+      // Count unique documents referenced
+      const referencedDocIds = new Set(
+        results.map((r) => r.chunk.document_id)
+      );
+
+      // 5. Update context ref for transport
+      contextRef.current = {
+        context: contextBlock,
+        docInventory,
+        docCount: readyDocs.length,
+        chunkCount: results.length,
+        referencedDocCount: referencedDocIds.size,
+      };
+
+      // 6. Build chat history for LLM (limit to recent messages)
+      // The messages state already has the full history;
+      // we trim it for the API call via the transport body
+
+      setIsEmbedding(false);
+
+      // 7. Send to LLM via transport
+      sendMessage({ text: userText });
+    } catch (err) {
+      console.error("Failed to process message:", err);
+      setIsEmbedding(false);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `error-${Date.now()}`,
+          role: "assistant" as const,
+          parts: [
+            {
+              type: "text" as const,
+              text: "Failed to process your message. Please try again.",
+            },
+          ],
+        },
+      ]);
     }
-  }, [inputValue, isLoading, sendMessage]);
+  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages]);
 
   // Handle textarea key events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -158,7 +360,7 @@ export function ChatPanel() {
 
   const clearChat = async () => {
     try {
-      await fetchWithWorkspace("/api/chat-history", { method: "DELETE" });
+      await clearChatMessages();
       setMessages([]);
       setStoredCitations(new Map());
     } catch (err) {
@@ -255,8 +457,8 @@ export function ChatPanel() {
                 Start a conversation
               </p>
               <p className="text-xs max-w-xs mx-auto">
-                Upload a PDF and ask questions about its content. I&apos;ll find
-                relevant passages and cite my sources.
+                Upload a PDF and ask questions about its content. Everything is
+                processed locally — your data never leaves this device.
               </p>
             </div>
           </div>
@@ -278,35 +480,41 @@ export function ChatPanel() {
           );
         })}
 
-        {isLoading && messages[messages.length - 1]?.role === "user" && (
+        {(isLoading || isEmbedding) && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 animate-fade-in">
             <div className="w-8 h-8 rounded-full bg-[#111] border border-[#333] flex items-center justify-center flex-shrink-0">
               <span className="text-xs font-bold text-white">D</span>
             </div>
             <div className="bg-transparent text-white px-4 py-3 rounded-2xl">
-              <div className="flex gap-1.5">
-                <span
-                  className="w-2 h-2 rounded-full bg-white animate-pulse"
-                  style={{
-                    background: "var(--accent-primary)",
-                    animationDelay: "0ms",
-                  }}
-                />
-                <span
-                  className="w-2 h-2 rounded-full animate-pulse"
-                  style={{
-                    background: "var(--accent-primary)",
-                    animationDelay: "200ms",
-                  }}
-                />
-                <span
-                  className="w-2 h-2 rounded-full animate-pulse"
-                  style={{
-                    background: "var(--accent-primary)",
-                    animationDelay: "400ms",
-                  }}
-                />
-              </div>
+              {isEmbedding ? (
+                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  Searching documents…
+                </p>
+              ) : (
+                <div className="flex gap-1.5">
+                  <span
+                    className="w-2 h-2 rounded-full bg-white animate-pulse"
+                    style={{
+                      background: "var(--accent-primary)",
+                      animationDelay: "0ms",
+                    }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{
+                      background: "var(--accent-primary)",
+                      animationDelay: "200ms",
+                    }}
+                  />
+                  <span
+                    className="w-2 h-2 rounded-full animate-pulse"
+                    style={{
+                      background: "var(--accent-primary)",
+                      animationDelay: "400ms",
+                    }}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -336,7 +544,7 @@ export function ChatPanel() {
           <button
             type="button"
             onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading}
+            disabled={!inputValue.trim() || isLoading || isEmbedding}
             className="btn-primary px-4 flex-shrink-0 flex items-center justify-center"
           >
             <svg
@@ -355,6 +563,31 @@ export function ChatPanel() {
           </button>
         </div>
       </div>
+      {/* Rate Limit Prompt Dialog */}
+      {showRateLimitPrompt && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+          <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
+            <h2 className="text-lg font-bold text-white mb-2">Usage Limit Reached</h2>
+            <p className="text-xs text-gray-400 mb-6">
+              You've exceeded the free demo limit. Would you like to enter your own Groq API key to continue using the app natively with unmetered usage?
+            </p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowRateLimitPrompt(false)} className="btn-ghost px-4 py-2 text-sm">
+                Not now
+              </button>
+              <button 
+                onClick={() => {
+                  setShowRateLimitPrompt(false);
+                  if (onOpenApiKeyModal) onOpenApiKeyModal();
+                }} 
+                className="btn-primary px-4 py-2 text-sm"
+              >
+                Yes, set API key
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

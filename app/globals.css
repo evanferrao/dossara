@@ -136,6 +136,22 @@ body {
   color: var(--text-primary);
 }
 
+.btn-danger {
+  background: transparent;
+  color: var(--error);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-danger:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+}
+
 /* ── Input Base ──────────────────────────────────────────── */
 .input-base {
   background: var(--bg-primary);
