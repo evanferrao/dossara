@@ -56,7 +56,14 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     }
   }, [isOpen]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isEnabled) {
+      const success = await handleTest();
+      if (!success) {
+        return;
+      }
+    }
+
     if (ollamaUrl.trim()) {
       localStorage.setItem("dossara_ollama_url", ollamaUrl.trim());
     }
@@ -69,7 +76,7 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     window.location.reload();
   };
 
-  const handleTest = async () => {
+  const handleTest = async (): Promise<boolean> => {
     setTestStatus("testing");
     setTestMessage("");
     setAvailableModels([]);
@@ -88,14 +95,17 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
       if (models.includes(modelName.trim()) || models.includes(`${modelName.trim()}:latest`)) {
         setTestStatus("success");
         setTestMessage("Model is available!");
+        return true;
       } else {
         setTestStatus("model_not_found");
         setTestMessage(`Model '${modelName}' not found. Please pull the model.`);
         setAvailableModels(models);
+        return false;
       }
     } catch (error: any) {
       setTestStatus("error");
       setTestMessage(`Backend unreachable: ${error.message || "Network error"}`);
+      return false;
     }
   };
 
@@ -287,8 +297,12 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           <button onClick={onClose} className="btn-ghost px-4 py-2 text-sm">
             Cancel
           </button>
-          <button onClick={handleSave} className="btn-primary px-4 py-2 text-sm">
-            Save & Reload
+          <button 
+            onClick={handleSave} 
+            disabled={isPrecaching}
+            className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isPrecaching ? "Downloading..." : "Save & Reload"}
           </button>
         </div>
       </div>
