@@ -99,7 +99,7 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
+      <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[600px] max-w-[95vw] max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col">
         <h2 className="text-lg font-bold text-white mb-2">Local Ollama Support</h2>
         <p className="text-xs text-gray-400 mb-4">
           Connect to your local Ollama instance for maximum privacy.

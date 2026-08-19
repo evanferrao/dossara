@@ -1,0 +1,16 @@
+{
+  "name": "Dossara",
+  "short_name": "Dossara",
+  "description": "Privacy-First Document Chat",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
