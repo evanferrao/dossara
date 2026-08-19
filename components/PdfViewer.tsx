@@ -7,8 +7,8 @@ import "react-pdf/dist/Page/TextLayer.css";
 import { useDocuments } from "@/context/DocumentContext";
 import { getDocumentFromCache } from "@/lib/indexeddb";
 
-// Configure the PDF.js worker from CDN
-pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Configure the PDF.js worker from local public folder
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.mjs";
 
 export function PdfViewer() {
   const { activeDocumentId, activePdfPage, setActivePdfPage } = useDocuments();
@@ -20,9 +20,9 @@ export function PdfViewer() {
 
   // Memoize options to prevent unnecessary re-renders that destroy the worker
   const documentOptions = useMemo(() => ({
-    cMapUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/cmaps/`,
+    cMapUrl: "/pdfjs/cmaps/",
     cMapPacked: true,
-    standardFontDataUrl: `https://unpkg.com/pdfjs-dist@${pdfjs.version}/standard_fonts/`,
+    standardFontDataUrl: "/pdfjs/standard_fonts/",
   }), []);
 
   // Load PDF from IndexedDB when active document changes

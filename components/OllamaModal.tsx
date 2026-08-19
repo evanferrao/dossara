@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { precacheEmbeddingModel } from "@/lib/embeddings";
 
 type Platform = "linux" | "mac" | "windows";
 
@@ -41,6 +42,9 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   const [testStatus, setTestStatus] = useState<"idle" | "testing" | "success" | "error" | "model_not_found">("idle");
   const [testMessage, setTestMessage] = useState("");
   const [availableModels, setAvailableModels] = useState<string[]>([]);
+  
+  const [isPrecaching, setIsPrecaching] = useState(false);
+  const [precacheStatus, setPrecacheStatus] = useState<"idle" | "success" | "error">("idle");
 
   useEffect(() => {
     if (isOpen) {
@@ -92,6 +96,20 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     } catch (error: any) {
       setTestStatus("error");
       setTestMessage(`Backend unreachable: ${error.message || "Network error"}`);
+    }
+  };
+
+  const handlePrecacheModels = async () => {
+    setIsPrecaching(true);
+    setPrecacheStatus("idle");
+    try {
+      await precacheEmbeddingModel();
+      setPrecacheStatus("success");
+    } catch (err) {
+      console.error(err);
+      setPrecacheStatus("error");
+    } finally {
+      setIsPrecaching(false);
     }
   };
 
@@ -178,7 +196,13 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           <input 
             type="checkbox" 
             checked={isEnabled} 
-            onChange={(e) => setIsEnabled(e.target.checked)}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setIsEnabled(checked);
+              if (checked && precacheStatus === "idle") {
+                handlePrecacheModels();
+              }
+            }}
             className="rounded bg-[#333] border-transparent focus:border-transparent focus:ring-0 text-white"
           />
           Enable Local Ollama
@@ -237,6 +261,26 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               )}
             </div>
           )}
+
+          <div className="mb-4 pt-4 border-t border-[#333]">
+            <div className="flex justify-between items-center">
+              <div>
+                <h3 className="text-sm text-gray-300 font-medium">Offline AI Models</h3>
+                <p className="text-xs text-gray-500">Embedding models are automatically downloaded for offline use.</p>
+              </div>
+              <div className="text-xs font-medium">
+                {isPrecaching ? (
+                  <span className="text-blue-400">Downloading...</span>
+                ) : precacheStatus === "success" ? (
+                  <span className="text-green-500">Downloaded ✓</span>
+                ) : precacheStatus === "error" ? (
+                  <span className="text-red-500">Download Failed</span>
+                ) : (
+                  <span className="text-gray-500">Pending</span>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 mt-2">

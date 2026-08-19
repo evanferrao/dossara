@@ -82,7 +82,7 @@ export function useProcessDocument(): UseProcessDocumentReturn {
 
         if (extension === 'pdf') {
           const { pdfjs } = await import("react-pdf");
-          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+          pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.mjs";
 
           const arrayBuffer = await file.arrayBuffer();
           const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;

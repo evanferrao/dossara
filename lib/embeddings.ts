@@ -22,6 +22,14 @@ async function getPipeline() {
 }
 
 /**
+ * Precache the embedding model by forcing it to download and initialize.
+ * This is useful for caching the model for offline usage before processing any document.
+ */
+export async function precacheEmbeddingModel(): Promise<void> {
+  await getPipeline();
+}
+
+/**
  * Embed a single text string → float array of EMBEDDING_DIMENSIONS length.
  */
 export async function embed(text: string): Promise<number[]> {
