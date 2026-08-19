@@ -69,8 +69,11 @@ export function UploadDropzone() {
 
   const handleFile = useCallback(
     async (file: File) => {
-      if (!file.name.toLowerCase().endsWith(".pdf")) {
-        setState({ phase: "failed", error: "Only PDF files are supported" });
+      const ext = file.name.split('.').pop()?.toLowerCase() || '';
+      const allowedExts = ['pdf', 'docx', 'odt', 'txt', 'md', 'csv'];
+      
+      if (!allowedExts.includes(ext)) {
+        setState({ phase: "failed", error: `Please upload a supported file (${allowedExts.join(', ')})` });
         return;
       }
 
@@ -141,7 +144,7 @@ export function UploadDropzone() {
         <input
           ref={fileInputRef}
           type="file"
-          accept=".pdf"
+          accept=".pdf,.docx,.odt,.txt,.md,.csv"
           onChange={onFileSelect}
           className="hidden"
         />

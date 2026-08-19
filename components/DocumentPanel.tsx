@@ -4,9 +4,9 @@ import dynamic from "next/dynamic";
 import { UploadDropzone } from "./UploadDropzone";
 import { DocumentList } from "./DocumentList";
 
-// Dynamic import with SSR disabled — react-pdf uses browser APIs
-const PdfViewer = dynamic(
-  () => import("./PdfViewer").then((mod) => mod.PdfViewer),
+// Dynamic import with SSR disabled — react-pdf and others use browser APIs
+const DocumentViewer = dynamic(
+  () => import("./DocumentViewer").then((mod) => mod.DocumentViewer),
   {
     ssr: false,
     loading: () => (
@@ -50,7 +50,7 @@ export function DocumentPanel() {
             Documents
           </h2>
           <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-            Upload & view PDFs
+            Upload & view documents
           </p>
         </div>
       </div>
@@ -74,12 +74,12 @@ export function DocumentPanel() {
         <DocumentList />
       </div>
 
-      {/* PDF Viewer */}
+      {/* Document Viewer */}
       <div
         className="flex-1 border-t min-h-0 flex flex-col"
         style={{ borderColor: "var(--border-subtle)" }}
       >
-        <PdfViewer />
+        <DocumentViewer />
       </div>
     </div>
   );

@@ -9,6 +9,7 @@
 import { useState, useCallback, useRef } from "react";
 import { chunkPages } from "@/lib/chunker";
 import { embed } from "@/lib/embeddings";
+import { extractDocx, extractOdt, extractText } from "@/lib/extractors";
 import {
   saveDocumentToCache,
   saveDocument,
@@ -74,31 +75,53 @@ export function useProcessDocument(): UseProcessDocumentReturn {
           pageCount: 0,
         });
 
-        // 3. Extract text from PDF using pdfjs-dist
-        const { pdfjs } = await import("react-pdf");
-        pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+        // 3. Extract text based on file type
+        let allPageTexts: string[] = [];
+        let totalPages = 1;
+        const extension = file.name.split('.').pop()?.toLowerCase() || '';
 
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-        const totalPages = pdf.numPages;
+        if (extension === 'pdf') {
+          const { pdfjs } = await import("react-pdf");
+          pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-        await updateDocument(documentId, { page_count: totalPages });
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+          totalPages = pdf.numPages;
 
-        setProcessingState({
-          phase: "extracting",
-          cursor: 0,
-          pageCount: totalPages,
-        });
+          await updateDocument(documentId, { page_count: totalPages });
+          setProcessingState({
+            phase: "extracting",
+            cursor: 0,
+            pageCount: totalPages,
+          });
 
-        // Extract text from all pages
-        const allPageTexts: string[] = [];
-        for (let i = 1; i <= totalPages; i++) {
-          const page = await pdf.getPage(i);
-          const textContent = await page.getTextContent();
-          const text = textContent.items
-            .map((item: any) => ("str" in item ? item.str : ""))
-            .join(" ");
-          allPageTexts.push(text);
+          for (let i = 1; i <= totalPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const text = textContent.items
+              .map((item: any) => ("str" in item ? item.str : ""))
+              .join(" ");
+            allPageTexts.push(text);
+          }
+        } else {
+          setProcessingState({
+            phase: "extracting",
+            cursor: 0,
+            pageCount: 1,
+          });
+
+          if (extension === 'docx') {
+            allPageTexts = await extractDocx(file);
+          } else if (extension === 'odt') {
+            allPageTexts = await extractOdt(file);
+          } else if (['txt', 'md', 'csv'].includes(extension)) {
+            allPageTexts = await extractText(file);
+          } else {
+            throw new Error(`Unsupported file type: ${extension}`);
+          }
+          
+          totalPages = allPageTexts.length;
+          await updateDocument(documentId, { page_count: totalPages });
         }
 
         // 4. Process pages in batches: chunk + embed
