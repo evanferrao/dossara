@@ -35,6 +35,7 @@ interface UseProcessDocumentReturn {
     file: File,
     chatId: string
   ) => Promise<void>;
+  resetProcessingState: () => void;
 }
 
 export function useProcessDocument(): UseProcessDocumentReturn {
@@ -43,6 +44,10 @@ export function useProcessDocument(): UseProcessDocumentReturn {
     cursor: 0,
     pageCount: 0,
   });
+
+  const resetProcessingState = useCallback(() => {
+    setProcessingState({ phase: "idle", cursor: 0, pageCount: 0 });
+  }, []);
 
   // Prevent concurrent processing
   const isProcessingRef = useRef(false);
@@ -206,5 +211,6 @@ export function useProcessDocument(): UseProcessDocumentReturn {
     []
   );
 
-  return { processingState, processDocument };
+  return { processingState, processDocument, resetProcessingState };
 }
+

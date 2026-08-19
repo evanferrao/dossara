@@ -73,12 +73,12 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
   const [storedCitations, setStoredCitations] = useState<
     Map<string, Citation[]>
   >(new Map());
-  const [inputValue, setInputValue] = useState("");
+  const { documents } = useDocuments();
+  const { activeChatId, chatDrafts, setChatDraft } = useChats();
+  const [inputValue, setInputValue] = useState(chatDrafts[activeChatId] || "");
   const [isEmbedding, setIsEmbedding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const { documents } = useDocuments();
-  const { activeChatId } = useChats();
 
   // We need a ref to track the latest context for the transport body
   const contextRef = useRef<{
@@ -360,6 +360,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
     const userText = inputValue.trim();
     setInputValue("");
+    setChatDraft(activeChatId, "");
     setIsEmbedding(true);
 
     try {
@@ -446,7 +447,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         },
       ]);
     }
-  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages, activeChatId]);
+  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages, activeChatId, setChatDraft]);
 
   // Handle textarea key events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -640,7 +641,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           <textarea
             ref={inputRef}
             value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setChatDraft(activeChatId, e.target.value);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Ask about your documents…"
             rows={1}

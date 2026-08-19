@@ -7,12 +7,14 @@ import { LandingOverlay } from "@/components/LandingOverlay";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { OllamaModal } from "@/components/OllamaModal";
 import { Sidebar } from "@/components/Sidebar";
+import { useChats } from "@/context/ChatContext";
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<"documents" | "chat">("documents");
   const [isApiKeyModalOpen, setIsApiKeyModalOpen] = useState(false);
   const [isOllamaModalOpen, setIsOllamaModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { activeChatId } = useChats();
 
   // Resizing state
   const [docWidthPercent, setDocWidthPercent] = useState(40);
@@ -210,7 +212,7 @@ export default function Home() {
               flexShrink: 0
             }}
           >
-            <DocumentPanel />
+            <DocumentPanel key={activeChatId} />
           </div>
 
           {/* Resizer */}
@@ -233,7 +235,7 @@ export default function Home() {
               flexShrink: 0
             }}
           >
-            <ChatPanel onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)} />
+            <ChatPanel key={activeChatId} onOpenApiKeyModal={() => setIsApiKeyModalOpen(true)} />
           </div>
         </div>
       </div>

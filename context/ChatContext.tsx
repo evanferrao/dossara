@@ -11,6 +11,8 @@ interface ChatContextType {
   deleteChatById: (id: string) => Promise<void>;
   renameChat: (id: string, title: string) => Promise<void>;
   isLoading: boolean;
+  chatDrafts: Record<string, string>;
+  setChatDraft: (id: string, draft: string) => void;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -30,6 +32,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
   const [chats, setChats] = useState<StoredChat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string>("default");
   const [isLoading, setIsLoading] = useState(true);
+  const [chatDrafts, setChatDrafts] = useState<Record<string, string>>({});
+
+  const setChatDraft = useCallback((id: string, draft: string) => {
+    setChatDrafts((prev) => ({ ...prev, [id]: draft }));
+  }, []);
 
   const loadChats = useCallback(async () => {
     try {
@@ -86,7 +93,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
         createNewChat,
         deleteChatById,
         renameChat,
-        isLoading
+        isLoading,
+        chatDrafts,
+        setChatDraft,
       }}
     >
       {children}

@@ -52,7 +52,7 @@ export function UploadDropzone() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { refreshDocuments, setActiveDocumentId } = useDocuments();
   const { activeChatId } = useChats();
-  const { processingState, processDocument } = useProcessDocument();
+  const { processingState, processDocument, resetProcessingState } = useProcessDocument();
 
   // Sync processing state to upload state
   useEffect(() => {
@@ -272,11 +272,12 @@ export function UploadDropzone() {
             <button
               onClick={(e) => {
                 e.stopPropagation();
+                resetProcessingState();
                 setState({ phase: "idle" });
               }}
               className="btn-ghost text-xs mt-3"
             >
-              Try again
+              Dismiss
             </button>
           </div>
         )}
