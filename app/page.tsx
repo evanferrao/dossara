@@ -6,6 +6,7 @@ import { ChatPanel } from "@/components/ChatPanel";
 import { LandingOverlay } from "@/components/LandingOverlay";
 import { ApiKeyModal } from "@/components/ApiKeyModal";
 import { OllamaModal } from "@/components/OllamaModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Sidebar } from "@/components/Sidebar";
 import { useChats } from "@/context/ChatContext";
 
@@ -61,21 +62,22 @@ export default function Home() {
       {/* Top bar */}
       <header
         className="flex items-center justify-between px-6 py-3 border-b flex-shrink-0"
-        style={{ borderColor: "var(--border-subtle)" }}
+        style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
       >
         <div className="flex items-center gap-3">
           <button 
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 rounded-md hover:bg-white/10"
+            className="p-2 rounded-lg hover:bg-[var(--secondary)] transition-colors"
             title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
-            <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{ color: "var(--text-primary)" }}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center shadow-lg border border-[#333] hidden md:flex">
+          <div className="w-9 h-9 rounded-xl bg-[var(--secondary)] flex items-center justify-center shadow-sm border border-[var(--border-subtle)] hidden md:flex">
             <svg
-              className="w-5 h-5 text-black"
+              className="w-5 h-5"
+              style={{ color: "var(--primary)" }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -105,31 +107,35 @@ export default function Home() {
         </div>
 
         {/* Mobile tab switcher */}
-        <div className="flex gap-1 md:hidden">
+        <div className="flex gap-1 md:hidden bg-[var(--secondary)] p-1 rounded-lg border border-[var(--border-subtle)]">
           <button
             onClick={() => setActiveTab("documents")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeTab === "documents"
-                ? "bg-white text-black"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-[var(--bg-primary)] shadow-sm font-semibold"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
+            style={{ color: activeTab === "documents" ? "var(--text-primary)" : undefined }}
           >
             Documents
           </button>
           <button
             onClick={() => setActiveTab("chat")}
-            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeTab === "chat"
-                ? "bg-white text-black"
-                : "text-gray-500 hover:text-gray-300"
+                ? "bg-[var(--bg-primary)] shadow-sm font-semibold"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
             }`}
+            style={{ color: activeTab === "chat" ? "var(--text-primary)" : undefined }}
           >
             Chat
           </button>
         </div>
 
-        {/* Set API Key button */}
+        {/* Action buttons */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
+
           <button
             onClick={() => setIsApiKeyModalOpen(true)}
             className="btn-ghost flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
@@ -157,13 +163,12 @@ export default function Home() {
             href={process.env.NEXT_PUBLIC_GITHUB_SOURCE ?? "https://github.com/evanferrao/dossara"}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-ghost flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium"
+            className="btn-ghost p-2 rounded-lg hidden sm:block"
             title="View source on GitHub"
           >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
             </svg>
-            <span className="hidden sm:inline">Source Code</span>
           </a>
         </div>
       </header>
@@ -184,19 +189,20 @@ export default function Home() {
         {/* Collapsible hover area (Desktop only) */}
         {!isSidebarOpen && (
           <div 
-            className="hidden md:flex flex-col items-center justify-center w-6 h-full bg-transparent hover:bg-white/5 cursor-e-resize transition-colors border-r flex-shrink-0 z-10"
+            className="hidden md:flex flex-col items-center justify-center w-6 h-full bg-transparent hover:bg-[var(--secondary)] cursor-e-resize transition-colors border-r flex-shrink-0 z-10"
             style={{ borderColor: "var(--border-subtle)" }}
             onClick={() => setIsSidebarOpen(true)}
             title="Expand sidebar"
           >
-            <div className="h-12 w-1 rounded-full bg-white/20" />
+            <div className="h-12 w-1 rounded-full bg-[var(--border-medium)]" />
           </div>
         )}
 
         {/* Overlay for mobile sidebar */}
         {isSidebarOpen && (
           <div 
-            className="absolute inset-0 bg-black/50 z-30 md:hidden"
+            className="absolute inset-0 backdrop-blur-sm z-30 md:hidden"
+            style={{ background: "var(--backdrop-overlay)" }}
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
@@ -218,11 +224,11 @@ export default function Home() {
 
           {/* Resizer */}
           <div
-            className="hidden md:flex flex-col w-3 cursor-col-resize hover:bg-white/5 active:bg-white/10 transition-colors z-10 justify-center items-center rounded-sm group select-none"
+            className="hidden md:flex flex-col w-3 cursor-col-resize hover:bg-[var(--secondary)] active:bg-[var(--bg-tertiary)] transition-colors z-10 justify-center items-center rounded-sm group select-none"
             onMouseDown={() => setIsDragging(true)}
             title="Drag to resize"
           >
-             <div className="w-0.5 h-10 bg-white/10 group-hover:bg-white/30 group-active:bg-white/50 rounded-full transition-colors" />
+             <div className="w-0.5 h-10 bg-[var(--border-medium)] group-hover:bg-[var(--primary)] group-active:bg-[var(--primary)] rounded-full transition-colors" />
           </div>
 
           {/* Chat panel */}

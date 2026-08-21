@@ -57,23 +57,23 @@ export function DocxViewer() {
   }, [activeDocumentId]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-50 overflow-hidden">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-primary)] overflow-hidden">
       {isLoading && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+          <div className="w-10 h-10 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
         </div>
       )}
       
       {error && (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm text-red-400">{error}</p>
+          <p className="text-sm" style={{ color: "var(--error)" }}>{error}</p>
         </div>
       )}
       
       <div 
         ref={containerRef} 
         className={`flex-1 overflow-auto p-4 ${isLoading || error ? 'hidden' : 'block'}`}
-        style={{ backgroundColor: "#f9fafb" }}
+        style={{ backgroundColor: "var(--bg-primary)" }}
       />
     </div>
   );

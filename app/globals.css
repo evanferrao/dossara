@@ -1,39 +1,61 @@
 @import "tailwindcss";
 
-/* ── Design System Tokens (Vercel-like Theme) ─────────────── */
+/* ── Design System Tokens (Warm Editorial Theme) ─────────── */
 :root {
-  /* High contrast dark theme */
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #111111;
-  --bg-glass: rgba(10, 10, 10, 0.8);
-  --bg-glass-hover: rgba(17, 17, 17, 0.9);
+  /* Realtime Colors Authoritative Palette (Light) */
+  --bg-primary: #FAF7EF;
+  --bg-secondary: #EEE6D3;
+  --bg-tertiary: #E6DCBF;
+  --bg-card: #FAF7EF;
+  --bg-card-secondary: #EEE6D3;
 
-  --text-primary: #ededed;
-  --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-primary: #25231D;
+  --text-secondary: #5C5549;
+  --text-muted: #847C6F;
+  --text-inverse: #FAF7EF;
 
-  --accent-primary: #ffffff;
-  --accent-primary-hover: #e5e5e5;
-  --accent-secondary: #cccccc;
-  --accent-glow: rgba(255, 255, 255, 0.1);
+  --primary: #89621F;
+  --primary-hover: #755318;
+  --primary-active: #614413;
+  --primary-light: rgba(137, 98, 31, 0.1);
+  --primary-border: rgba(137, 98, 31, 0.25);
 
-  --border-subtle: #27272a;
-  --border-medium: #3f3f46;
-  --border-accent: #ffffff;
+  --secondary: #EEE6D3;
+  --secondary-hover: #E3D9C3;
+  --secondary-active: #D8CCB3;
+  --secondary-border: #DFD5BD;
 
-  --success: #10b981;
-  --warning: #f5a623;
-  --error: #ef4444;
+  --accent-primary: #89621F;
+  --accent-primary-hover: #755318;
+  --accent: #A24E34;
+  --accent-hover: #8D4129;
+  --accent-light: rgba(162, 78, 52, 0.1);
+
+  --border-subtle: #E8E0CE;
+  --border-medium: #D9CEB8;
+  --border-accent: #89621F;
+
+  --backdrop-overlay: rgba(37, 35, 29, 0.4);
+  --landing-backdrop: rgba(250, 247, 239, 0.88);
+  --dropzone-hover: #EAE1CB;
+
+  --success: #2F6F4E;
+  --success-bg: rgba(47, 111, 78, 0.1);
+  --warning: #B36B00;
+  --warning-bg: rgba(179, 107, 0, 0.1);
+  --error: #A24E34;
+  --error-bg: rgba(162, 78, 52, 0.1);
+  --error-border: rgba(162, 78, 52, 0.25);
 
   --radius-sm: 4px;
   --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 12px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
   --radius-full: 9999px;
 
-  --shadow-glow: 0 0 10px rgba(255, 255, 255, 0.05);
-  --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(37, 35, 29, 0.05);
+  --shadow-md: 0 4px 12px rgba(37, 35, 29, 0.08);
+  --shadow-lg: 0 12px 32px rgba(37, 35, 29, 0.12);
 
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -41,6 +63,58 @@
   --transition-fast: 150ms ease;
   --transition-base: 200ms ease;
   --transition-slow: 300ms ease;
+}
+
+.dark,
+[data-theme="dark"] {
+  /* Warm Editorial Dark Palette */
+  --bg-primary: #181614;
+  --bg-secondary: #221E1A;
+  --bg-tertiary: #2D2822;
+  --bg-card: #1C1916;
+  --bg-card-secondary: #24201C;
+
+  --text-primary: #FAF7EF;
+  --text-secondary: #C8BFB0;
+  --text-muted: #8E8577;
+  --text-inverse: #181614;
+
+  --primary: #D4A359;
+  --primary-hover: #E2B56F;
+  --primary-active: #C29347;
+  --primary-light: rgba(212, 163, 89, 0.15);
+  --primary-border: rgba(212, 163, 89, 0.3);
+
+  --secondary: #26221C;
+  --secondary-hover: #312C24;
+  --secondary-active: #3C362D;
+  --secondary-border: #383128;
+
+  --accent-primary: #D4A359;
+  --accent-primary-hover: #E2B56F;
+  --accent: #E07255;
+  --accent-hover: #EB8368;
+  --accent-light: rgba(224, 114, 85, 0.15);
+
+  --border-subtle: #332D26;
+  --border-medium: #463E34;
+  --border-accent: #D4A359;
+
+  --backdrop-overlay: rgba(12, 11, 9, 0.65);
+  --landing-backdrop: rgba(24, 22, 20, 0.88);
+  --dropzone-hover: #2E2922;
+
+  --success: #4EAA7B;
+  --success-bg: rgba(78, 170, 123, 0.15);
+  --warning: #DDA032;
+  --warning-bg: rgba(221, 160, 50, 0.15);
+  --error: #E07255;
+  --error-bg: rgba(224, 114, 85, 0.15);
+  --error-border: rgba(224, 114, 85, 0.3);
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.5);
 }
 
 @theme inline {
@@ -93,19 +167,19 @@ body {
 
 /* ── Button Base ─────────────────────────────────────────── */
 .btn-primary {
-  background: var(--accent-primary);
-  color: #000000;
+  background: var(--primary);
+  color: var(--text-inverse);
   font-weight: 500;
   padding: 8px 16px;
   border-radius: var(--radius-md);
-  border: 1px solid var(--accent-primary);
+  border: 1px solid var(--primary);
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .btn-primary:hover {
-  background: var(--accent-primary-hover);
-  border-color: var(--accent-primary-hover);
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
 }
 
 .btn-primary:active {
@@ -116,6 +190,32 @@ body {
   background: var(--border-medium);
   border-color: var(--border-medium);
   color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--secondary);
+  color: var(--text-primary);
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--secondary-border);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-secondary:hover {
+  background: var(--secondary-hover);
+  border-color: var(--border-medium);
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
   transform: none;
 }
@@ -132,8 +232,9 @@ body {
 }
 
 .btn-ghost:hover {
-  background: var(--bg-secondary);
+  background: var(--secondary);
   color: var(--text-primary);
+  border-color: var(--border-subtle);
 }
 
 .btn-danger {
@@ -148,8 +249,9 @@ body {
 }
 
 .btn-danger:hover {
-  background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
+  background: var(--error-bg);
+  color: var(--accent-hover);
+  border-color: var(--error-border);
 }
 
 /* ── Input Base ──────────────────────────────────────────── */
@@ -169,7 +271,8 @@ body {
 }
 
 .input-base:focus {
-  border-color: var(--text-secondary);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
 }
 
 /* ── Status Badges ───────────────────────────────────────── */
@@ -183,25 +286,31 @@ body {
   font-weight: 500;
   border: 1px solid var(--border-subtle);
   background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .badge-success {
   color: var(--success);
-  border-color: rgba(16, 185, 129, 0.2);
+  background: var(--success-bg);
+  border-color: rgba(47, 111, 78, 0.25);
 }
 
 .badge-warning {
   color: var(--warning);
-  border-color: rgba(245, 166, 35, 0.2);
+  background: var(--warning-bg);
+  border-color: rgba(179, 107, 0, 0.25);
 }
 
 .badge-error {
   color: var(--error);
-  border-color: rgba(239, 68, 68, 0.2);
+  background: var(--error-bg);
+  border-color: var(--error-border);
 }
 
 .badge-processing {
-  color: var(--text-primary);
+  color: var(--primary);
+  background: var(--primary-light);
+  border-color: var(--primary-border);
 }
 
 /* ── Animations ──────────────────────────────────────────── */
@@ -235,9 +344,9 @@ body {
 .shimmer-bg {
   background: linear-gradient(
     90deg,
-    var(--bg-secondary) 0%,
+    var(--secondary) 0%,
     var(--border-subtle) 50%,
-    var(--bg-secondary) 100%
+    var(--secondary) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
@@ -252,17 +361,17 @@ body {
 .dropzone {
   border: 1px dashed var(--border-medium);
   border-radius: var(--radius-lg);
-  padding: 40px 24px;
+  padding: 36px 24px;
   text-align: center;
   transition: all var(--transition-fast);
   cursor: pointer;
-  background: var(--bg-secondary);
+  background: var(--secondary);
 }
 
 .dropzone:hover,
 .dropzone.active {
-  border-color: var(--text-secondary);
-  background: var(--bg-tertiary);
+  border-color: var(--primary);
+  background: var(--dropzone-hover);
 }
 
 /* ── PDF Viewer ──────────────────────────────────────────── */
@@ -272,15 +381,17 @@ body {
 
 .react-pdf__Page__canvas {
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-md);
 }
 
 .react-pdf__Page__textContent {
   opacity: 0;
 }
 
-/* ── Gradient Mesh (Disabled for Vercel Theme) ───────────── */
+/* ── Gradient Mesh ───────────────────────────────────────── */
 .gradient-mesh {
   display: none;
 }
+
 

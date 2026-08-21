@@ -76,10 +76,10 @@ export function DocumentList() {
       {documents.map((doc) => (
         <div
           key={doc.id}
-          className={`group relative w-full text-left px-3 py-3 rounded-xl transition-all ${
+          className={`group relative w-full text-left px-3 py-3 rounded-xl transition-all border ${
             activeDocumentId === doc.id
-              ? "bg-[#111] border border-[#333]"
-              : "hover:bg-white/5 border border-transparent"
+              ? "bg-[var(--secondary)] border-[var(--border-subtle)] shadow-xs"
+              : "hover:bg-[var(--secondary)]/60 border-transparent"
           } ${doc.status !== "ready" ? "opacity-60" : ""}`}
         >
           <button
@@ -94,15 +94,14 @@ export function DocumentList() {
             <div className="flex items-start gap-3">
               {/* File icon */}
               <div
-                className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center mt-0.5"
-                style={{ background: "var(--bg-tertiary)" }}
+                className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center mt-0.5 bg-[var(--bg-primary)] border border-[var(--border-subtle)]"
               >
                 <svg
                   className="w-4 h-4"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  style={{ color: "#fff" }}
+                  style={{ color: "var(--primary)" }}
                   strokeWidth={1.5}
                 >
                   <path
@@ -139,14 +138,15 @@ export function DocumentList() {
           <button
             onClick={(e) => handleDeleteClick(e, doc.id)}
             disabled={deletingId === doc.id}
-            className="absolute top-2 right-2 p-1.5 rounded-lg opacity-100 transition-colors hover:bg-red-500/20"
+            className="absolute top-2 right-2 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-all hover:bg-[var(--error-bg)]"
             title="Delete document"
           >
             {deletingId === doc.id ? (
-              <div className="w-3.5 h-3.5 rounded-full border-2 border-red-400/30 border-t-red-400 animate-spin" />
+              <div className="w-3.5 h-3.5 rounded-full border-2 border-[var(--error)]/30 border-t-[var(--error)] animate-spin" />
             ) : (
               <svg
-                className="w-3.5 h-3.5 text-red-400"
+                className="w-3.5 h-3.5"
+                style={{ color: "var(--error)" }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -165,22 +165,28 @@ export function DocumentList() {
 
       {/* Delete Confirmation Modal */}
       {documentToDelete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setDocumentToDelete(null)}>
-          <div className="bg-[#111] border border-[#333] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-base font-bold tracking-tight text-white mb-2">Delete document?</h3>
-            <p className="text-sm text-gray-400 mb-5">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: "var(--backdrop-overlay)" }} onClick={() => setDocumentToDelete(null)}>
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-xl p-5 max-w-xs w-full shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-bold tracking-tight mb-2" style={{ color: "var(--text-primary)" }}>Delete document?</h3>
+            <p className="text-sm mb-5" style={{ color: "var(--text-secondary)" }}>
               This will also remove its chunks and cannot be undone.
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={(e) => { e.stopPropagation(); setDocumentToDelete(null); }}
-                className="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="px-3 py-1.5 text-sm font-medium transition-colors rounded-lg hover:bg-[var(--secondary)]"
+                style={{ color: "var(--text-secondary)" }}
               >
                 Cancel
               </button>
               <button
                 onClick={(e) => { e.stopPropagation(); confirmDelete(); }}
-                className="px-3 py-1.5 text-sm font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                style={{
+                  color: "var(--error)",
+                  background: "var(--error-bg)",
+                  border: "1px solid var(--error-border)"
+                }}
               >
                 Delete
               </button>

@@ -477,9 +477,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#333]">
+          <div className="w-8 h-8 rounded-lg bg-[var(--secondary)] flex items-center justify-center border border-[var(--border-subtle)]">
             <svg
-              className="w-4 h-4 text-black"
+              className="w-4 h-4"
+              style={{ color: "var(--primary)" }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -509,7 +510,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           {isOllamaEnabled ? (
             <div
               className="text-xs px-3 py-1.5 rounded-lg font-medium"
-              style={{ background: "var(--bg-tertiary)", borderColor: "var(--border-subtle)", borderWidth: 1 }}
+              style={{ background: "var(--secondary)", borderColor: "var(--border-subtle)", borderWidth: 1, color: "var(--text-primary)" }}
             >
               ollama/{ollamaModelName}
             </div>
@@ -548,13 +549,14 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             style={{ color: "var(--text-muted)" }}
           >
             <div className="text-center py-20 animate-fade-in">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[#111] border border-[#333] flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[var(--secondary)] border border-[var(--border-subtle)] flex items-center justify-center">
                 <svg
-                  className="w-10 h-10 opacity-40 text-white"
+                  className="w-10 h-10 opacity-75"
+                  style={{ color: "var(--primary)" }}
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                  strokeWidth={1}
+                  strokeWidth={1.5}
                 >
                   <path
                     strokeLinecap="round"
@@ -563,11 +565,11 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium mb-1">
+              <p className="text-sm font-medium mb-1" style={{ color: "var(--text-primary)" }}>
                 Start a conversation
               </p>
-              <p className="text-xs max-w-xs mx-auto">
-                Upload a PDF and ask questions about its content. Everything is
+              <p className="text-xs max-w-xs mx-auto" style={{ color: "var(--text-secondary)" }}>
+                Upload a document and ask questions about its content. Everything is
                 processed locally — your data never leaves this device.
               </p>
             </div>
@@ -592,34 +594,34 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
         {(isLoading || isEmbedding) && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 animate-fade-in">
-            <div className="w-8 h-8 rounded-full bg-[#111] border border-[#333] flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-bold text-white">D</span>
+            <div className="w-8 h-8 rounded-full bg-[var(--secondary)] border border-[var(--border-subtle)] flex items-center justify-center flex-shrink-0">
+              <span className="text-xs font-bold" style={{ color: "var(--primary)" }}>D</span>
             </div>
-            <div className="bg-transparent text-white px-4 py-3 rounded-2xl">
+            <div className="bg-transparent px-4 py-3 rounded-2xl" style={{ color: "var(--text-primary)" }}>
               {isEmbedding ? (
                 <p className="text-xs" style={{ color: "var(--text-muted)" }}>
                   Searching documents…
                 </p>
               ) : (
-                <div className="flex gap-1.5">
+                <div className="flex gap-1.5 items-center h-5">
                   <span
-                    className="w-2 h-2 rounded-full bg-white animate-pulse"
+                    className="w-2 h-2 rounded-full animate-pulse"
                     style={{
-                      background: "var(--accent-primary)",
+                      background: "var(--primary)",
                       animationDelay: "0ms",
                     }}
                   />
                   <span
                     className="w-2 h-2 rounded-full animate-pulse"
                     style={{
-                      background: "var(--accent-primary)",
+                      background: "var(--primary)",
                       animationDelay: "200ms",
                     }}
                   />
                   <span
                     className="w-2 h-2 rounded-full animate-pulse"
                     style={{
-                      background: "var(--accent-primary)",
+                      background: "var(--primary)",
                       animationDelay: "400ms",
                     }}
                   />
@@ -635,7 +637,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       {/* Input */}
       <div
         className="p-4 border-t"
-        style={{ borderColor: "var(--border-subtle)" }}
+        style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
       >
         <div className="flex gap-3 items-stretch">
           <textarea
@@ -648,7 +650,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             onKeyDown={handleKeyDown}
             placeholder="Ask about your documents…"
             rows={1}
-            className="input-base flex-1 resize-none min-h-[42px] max-h-[120px]"
+            className="input-base flex-1 resize-none min-h-[42px] max-h-[120px] bg-[var(--secondary)] focus:bg-[var(--bg-primary)]"
             style={{
               height: "auto",
               overflow: inputValue.split("\n").length > 1 ? "auto" : "hidden",
@@ -678,10 +680,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       </div>
       {/* Rate Limit Prompt Dialog */}
       {showRateLimitPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
-            <h2 className="text-lg font-bold text-white mb-2">Usage Limit Reached</h2>
-            <p className="text-xs text-gray-400 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in" style={{ background: "var(--backdrop-overlay)" }}>
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
+            <h2 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>Usage Limit Reached</h2>
+            <p className="text-xs mb-6" style={{ color: "var(--text-secondary)" }}>
               You've exceeded the free demo limit. Would you like to enter your own Groq API key to continue using the app natively with unmetered usage?
             </p>
             <div className="flex justify-end gap-2">

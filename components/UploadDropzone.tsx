@@ -151,13 +151,13 @@ export function UploadDropzone() {
 
         {state.phase === "idle" && (
           <div className="animate-fade-in">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#111] border border-[#333] flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-subtle)] shadow-sm flex items-center justify-center">
               <svg
                 className="w-8 h-8"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                style={{ color: "var(--accent-primary)" }}
+                style={{ color: "var(--primary)" }}
                 strokeWidth={1.5}
               >
                 <path
@@ -171,17 +171,17 @@ export function UploadDropzone() {
               className="text-sm font-medium mb-1"
               style={{ color: "var(--text-primary)" }}
             >
-              Drop a PDF here or click to upload
+              Drop a document here or click to upload
             </p>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Processed locally in your browser — your data never leaves this device
+              PDF, DOCX, TXT, MD • Processed locally in browser
             </p>
           </div>
         )}
 
         {state.phase === "extracting" && (
           <div className="animate-fade-in">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
             <p
               className="text-sm font-medium"
               style={{ color: "var(--text-primary)" }}
@@ -189,14 +189,14 @@ export function UploadDropzone() {
               Extracting text…
             </p>
             <p className="text-xs mt-1" style={{ color: "var(--text-secondary)" }}>
-              Reading PDF pages
+              Reading document pages
             </p>
           </div>
         )}
 
         {state.phase === "processing" && (
           <div className="animate-fade-in">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-purple-500/30 border-t-purple-500 animate-spin-slow" />
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
             <p
               className="text-sm font-medium"
               style={{ color: "var(--text-primary)" }}
@@ -213,8 +213,9 @@ export function UploadDropzone() {
                 </p>
                 <div className="w-48 mx-auto mt-3 h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-tertiary)" }}>
                   <div
-                    className="h-full rounded-full bg-white transition-all duration-500"
+                    className="h-full rounded-full transition-all duration-500"
                     style={{
+                      background: "var(--primary)",
                       width: `${(state.cursor / state.pageCount) * 100}%`,
                     }}
                   />
@@ -226,9 +227,10 @@ export function UploadDropzone() {
 
         {state.phase === "ready" && (
           <div className="animate-fade-in">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-emerald-500/20 flex items-center justify-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[var(--success-bg)] flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-emerald-400"
+                className="w-6 h-6"
+                style={{ color: "var(--success)" }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -242,7 +244,8 @@ export function UploadDropzone() {
               </svg>
             </div>
             <p
-              className="text-sm font-medium text-emerald-400"
+              className="text-sm font-medium"
+              style={{ color: "var(--success)" }}
             >
               Ready! Document processed successfully.
             </p>
@@ -251,9 +254,10 @@ export function UploadDropzone() {
 
         {state.phase === "failed" && (
           <div className="animate-fade-in">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-red-500/20 flex items-center justify-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-[var(--error-bg)] flex items-center justify-center">
               <svg
-                className="w-6 h-6 text-red-400"
+                className="w-6 h-6"
+                style={{ color: "var(--error)" }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -266,7 +270,7 @@ export function UploadDropzone() {
                 />
               </svg>
             </div>
-            <p className="text-sm font-medium text-red-400">
+            <p className="text-sm font-medium" style={{ color: "var(--error)" }}>
               {state.error}
             </p>
             <button

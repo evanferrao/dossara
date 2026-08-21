@@ -51,7 +51,7 @@ export function DocumentViewer() {
 
   return (
     <div className="flex-1 flex items-center justify-center">
-      <p className="text-sm text-red-400">Unsupported file format for viewing.</p>
+      <p className="text-sm" style={{ color: "var(--error)" }}>Unsupported file format for viewing.</p>
     </div>
   );
 }

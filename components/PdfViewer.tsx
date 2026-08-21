@@ -131,7 +131,7 @@ export function PdfViewer() {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+        <div className="w-10 h-10 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
       </div>
     );
   }
@@ -139,18 +139,18 @@ export function PdfViewer() {
   if (error) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <p className="text-sm text-red-400">{error}</p>
+        <p className="text-sm" style={{ color: "var(--error)" }}>{error}</p>
       </div>
     );
   }
 
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-primary)]">
       {/* Navigation bar */}
       <div
         className="flex items-center justify-between px-4 py-2 border-b"
-        style={{ borderColor: "var(--border-subtle)" }}
+        style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
       >
         <button
           onClick={() => goToPage(activePdfPage - 1)}
@@ -195,11 +195,11 @@ export function PdfViewer() {
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
               <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+                <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
               </div>
             }
             error={
-              <p className="text-sm text-red-400 py-20 text-center">
+              <p className="text-sm py-20 text-center" style={{ color: "var(--error)" }}>
                 Failed to load PDF
               </p>
             }

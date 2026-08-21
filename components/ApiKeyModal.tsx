@@ -29,10 +29,10 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-      <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
-        <h2 className="text-lg font-bold text-white mb-2">Set Groq API Key</h2>
-        <p className="text-xs text-gray-400 mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in" style={{ background: "var(--backdrop-overlay)" }}>
+      <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
+        <h2 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>Set Groq API Key</h2>
+        <p className="text-xs mb-4" style={{ color: "var(--text-secondary)" }}>
           Enter your own Groq API key to bypass the backend and make Dossara a completely static app. Your key is stored locally in your browser.
           <br /><br />
           Don't have a key? Get one for free at{" "}
@@ -40,7 +40,8 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
             href="https://console.groq.com/keys"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:underline"
+            className="font-medium hover:underline"
+            style={{ color: "var(--primary)" }}
           >
             https://console.groq.com/keys
           </a>.
@@ -51,7 +52,7 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           onChange={(e) => setApiKey(e.target.value)}
           placeholder="gsk_..."
           className="input-base w-full mb-4 px-3 py-2 text-sm"
-          style={{ background: "var(--bg-tertiary)", borderColor: "var(--border-subtle)" }}
+          style={{ background: "var(--secondary)", borderColor: "var(--border-subtle)" }}
         />
         <div className="flex justify-between items-center">
           <button onClick={handleDelete} className="btn-danger px-3 py-2 text-sm">

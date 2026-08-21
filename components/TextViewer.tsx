@@ -62,26 +62,26 @@ export function TextViewer() {
   }, [activeDocumentId, activeDoc, ext]);
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-900 overflow-hidden">
+    <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-primary)] overflow-hidden">
       {isLoading && (
         <div className="flex-1 flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+          <div className="w-10 h-10 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
         </div>
       )}
       
       {error && (
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-sm text-red-400">{error}</p>
+          <p className="text-sm" style={{ color: "var(--error)" }}>{error}</p>
         </div>
       )}
       
       {!isLoading && !error && (
         <div className="flex-1 overflow-auto p-8">
-          <div className="max-w-4xl mx-auto prose dark:prose-invert">
+          <div className="max-w-4xl mx-auto prose text-[var(--text-primary)] prose-headings:text-[var(--text-primary)] prose-p:text-[var(--text-primary)] prose-strong:text-[var(--text-primary)] prose-a:text-[var(--primary)] prose-code:bg-[var(--secondary)] prose-code:text-[var(--text-primary)] prose-pre:bg-[var(--secondary)] prose-pre:text-[var(--text-primary)]">
             {ext === "md" ? (
               <ReactMarkdown>{content}</ReactMarkdown>
             ) : (
-              <pre className="whitespace-pre-wrap font-sans text-sm text-gray-800 dark:text-gray-200 bg-transparent border-0">
+              <pre className="whitespace-pre-wrap font-sans text-sm text-[var(--text-primary)] bg-transparent border-0">
                 {content}
               </pre>
             )}

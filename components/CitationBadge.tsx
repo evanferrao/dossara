@@ -22,13 +22,15 @@ export function CitationBadge({
       onClick={onClick}
       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
                  transition-all cursor-pointer
-                 bg-[#111] text-white border border-[#333]
-                 hover:bg-[#222] hover:border-[#555]
-                 active:scale-95"
+                 bg-[var(--secondary)] border border-[var(--border-subtle)]
+                 hover:bg-[var(--secondary-hover)] hover:border-[var(--primary)]
+                 active:scale-95 shadow-xs"
+      style={{ color: "var(--text-primary)" }}
       title={`${filename} — Page ${page}`}
     >
       <svg
         className="w-3 h-3"
+        style={{ color: "var(--accent)" }}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -41,7 +43,7 @@ export function CitationBadge({
         />
       </svg>
       <span>{displayName}</span>
-      <span className="opacity-60">p.{page}</span>
+      <span className="font-normal" style={{ color: "var(--text-muted)" }}>p.{page}</span>
     </button>
   );
 }

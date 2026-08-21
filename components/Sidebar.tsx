@@ -65,7 +65,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
         <div className="space-y-1 cursor-default" onClick={e => e.stopPropagation()} title="">
           {isLoading ? (
             <div className="text-center py-10" style={{ color: "var(--text-muted)" }}>
-              <div className="w-5 h-5 mx-auto rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+              <div className="w-5 h-5 mx-auto rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
             </div>
           ) : chats.length === 0 ? (
             <p className="text-xs text-center mt-10" style={{ color: "var(--text-muted)" }}>
@@ -75,8 +75,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
             chats.map((chat) => (
               <div
                 key={chat.id}
-                className={`group flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-colors ${
-                  activeChatId === chat.id ? "bg-white/10" : "hover:bg-white/5"
+                className={`group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all border ${
+                  activeChatId === chat.id
+                    ? "bg-[var(--secondary)] border-[var(--border-subtle)] shadow-xs"
+                    : "hover:bg-[var(--secondary)]/60 border-transparent"
                 }`}
                 onClick={() => setActiveChatId(chat.id)}
               >
@@ -88,12 +90,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                       onChange={(e) => setEditingTitle(e.target.value)}
                       onBlur={() => handleRenameSubmit(chat.id)}
                       onKeyDown={(e) => handleKeyDown(e, chat.id)}
-                      className="w-full bg-black/50 border border-white/20 rounded px-1 text-sm text-white outline-none"
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--primary)] rounded px-1.5 py-0.5 text-sm text-[var(--text-primary)] outline-none"
                       onClick={(e) => e.stopPropagation()}
                     />
                   ) : (
                     <>
-                      <p className="text-sm truncate" style={{ color: "var(--text-primary)" }}>
+                      <p className="text-sm truncate font-medium" style={{ color: "var(--text-primary)" }}>
                         {chat.title}
                       </p>
                       <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
@@ -106,7 +108,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                 <div className={`flex items-center opacity-0 group-hover:opacity-100 transition-opacity ${editingChatId === chat.id ? 'hidden' : ''}`}>
                   <button
                     onClick={(e) => startEditing(e, chat.id, chat.title)}
-                    className="p-1.5 rounded-md hover:bg-white/10"
+                    className="p-1.5 rounded-md hover:bg-[var(--bg-tertiary)]"
                     style={{ color: "var(--text-muted)" }}
                     title="Rename Chat"
                   >
@@ -119,7 +121,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                       e.stopPropagation();
                       setChatToDelete(chat.id);
                     }}
-                    className={`p-1.5 rounded-md hover:bg-white/10 ${
+                    className={`p-1.5 rounded-md hover:bg-[var(--bg-tertiary)] ${
                       chats.length <= 1 ? "hidden" : ""
                     }`}
                     style={{ color: "var(--text-muted)" }}
@@ -140,7 +142,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
       <div className="flex-1 overflow-y-auto p-2 space-y-1 md:hidden">
         {isLoading ? (
           <div className="text-center py-10" style={{ color: "var(--text-muted)" }}>
-            <div className="w-5 h-5 mx-auto rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+            <div className="w-5 h-5 mx-auto rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
           </div>
         ) : chats.length === 0 ? (
           <p className="text-xs text-center mt-10" style={{ color: "var(--text-muted)" }}>
@@ -150,8 +152,10 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
           chats.map((chat) => (
             <div
               key={chat.id}
-              className={`group flex items-center justify-between px-3 py-2.5 rounded-md cursor-pointer transition-colors ${
-                activeChatId === chat.id ? "bg-white/10" : "hover:bg-white/5"
+              className={`group flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer transition-all border ${
+                activeChatId === chat.id
+                  ? "bg-[var(--secondary)] border-[var(--border-subtle)] shadow-xs"
+                  : "hover:bg-[var(--secondary)]/60 border-transparent"
               }`}
               onClick={() => {
                 setActiveChatId(chat.id);
@@ -166,12 +170,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     onChange={(e) => setEditingTitle(e.target.value)}
                     onBlur={() => handleRenameSubmit(chat.id)}
                     onKeyDown={(e) => handleKeyDown(e, chat.id)}
-                    className="w-full bg-black/50 border border-white/20 rounded px-1 text-sm text-white outline-none"
+                    className="w-full bg-[var(--bg-primary)] border border-[var(--primary)] rounded px-1.5 py-0.5 text-sm text-[var(--text-primary)] outline-none"
                     onClick={(e) => e.stopPropagation()}
                   />
                 ) : (
                   <>
-                    <p className="text-sm truncate" style={{ color: "var(--text-primary)" }}>
+                    <p className="text-sm truncate font-medium" style={{ color: "var(--text-primary)" }}>
                       {chat.title}
                     </p>
                     <p className="text-xs truncate" style={{ color: "var(--text-muted)" }}>
@@ -184,7 +188,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
               <div className={`flex items-center opacity-0 group-hover:opacity-100 transition-opacity ${editingChatId === chat.id ? 'hidden' : ''}`}>
                 <button
                   onClick={(e) => startEditing(e, chat.id, chat.title)}
-                  className="p-1.5 rounded-md hover:bg-white/10"
+                  className="p-1.5 rounded-md hover:bg-[var(--bg-tertiary)]"
                   style={{ color: "var(--text-muted)" }}
                   title="Rename Chat"
                 >
@@ -197,7 +201,7 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                     e.stopPropagation();
                     setChatToDelete(chat.id);
                   }}
-                  className={`p-1.5 rounded-md hover:bg-white/10 ${
+                  className={`p-1.5 rounded-md hover:bg-[var(--bg-tertiary)] ${
                     chats.length <= 1 ? "hidden" : ""
                   }`}
                   style={{ color: "var(--text-muted)" }}
@@ -215,16 +219,17 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
 
       {/* Delete Confirmation Modal */}
       {chatToDelete && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setChatToDelete(null)}>
-          <div className="bg-[#111] border border-[#333] rounded-xl p-5 max-w-xs w-full shadow-2xl" onClick={e => e.stopPropagation()}>
-            <h3 className="text-base font-bold tracking-tight text-white mb-2">Delete chat?</h3>
-            <p className="text-sm text-gray-400 mb-5">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: "var(--backdrop-overlay)" }} onClick={() => setChatToDelete(null)}>
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] rounded-xl p-5 max-w-xs w-full shadow-xl" onClick={e => e.stopPropagation()}>
+            <h3 className="text-base font-bold tracking-tight mb-2" style={{ color: "var(--text-primary)" }}>Delete chat?</h3>
+            <p className="text-sm mb-5" style={{ color: "var(--text-secondary)" }}>
               This will also remove all its documents and cannot be undone.
             </p>
             <div className="flex justify-end gap-2">
               <button
                 onClick={(e) => { e.stopPropagation(); setChatToDelete(null); }}
-                className="px-3 py-1.5 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                className="px-3 py-1.5 text-sm font-medium transition-colors rounded-lg hover:bg-[var(--secondary)]"
+                style={{ color: "var(--text-secondary)" }}
               >
                 Cancel
               </button>
@@ -234,7 +239,12 @@ export function Sidebar({ onClose }: { onClose?: () => void }) {
                   deleteChatById(chatToDelete); 
                   setChatToDelete(null); 
                 }}
-                className="px-3 py-1.5 text-sm font-medium text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg hover:bg-red-500/20 transition-colors"
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                style={{
+                  color: "var(--error)",
+                  background: "var(--error-bg)",
+                  border: "1px solid var(--error-border)"
+                }}
               >
                 Delete
               </button>

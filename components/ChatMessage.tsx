@@ -32,11 +32,12 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
     >
       {/* Avatar */}
       <div
-          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-semibold ${
             role === "user"
-              ? "bg-white text-black"
-              : "bg-[#111] border border-[#333] text-white"
+              ? "bg-[var(--primary)] text-[var(--text-inverse)] shadow-xs"
+              : "bg-[var(--secondary)] border border-[var(--border-subtle)] shadow-xs"
           }`}
+          style={{ color: role === "assistant" ? "var(--primary)" : undefined }}
       >
         {role === "user" ? "U" : "D"}
       </div>
@@ -50,8 +51,8 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
         <div
             className={`px-4 py-3 rounded-2xl ${
               role === "user"
-                ? "bg-[#111] border border-[#333] text-white"
-                : "bg-transparent text-white"
+                ? "bg-[var(--secondary)] border border-[var(--border-subtle)] shadow-xs"
+                : "bg-transparent"
             }`}
           style={{ color: "var(--text-primary)" }}
         >
@@ -59,18 +60,18 @@ export function ChatMessage({ role, content, citations }: ChatMessageProps) {
           <div className="text-sm">
             <ReactMarkdown
               components={{
-                p: ({node, ...props}) => <p className="mt-2 first:mt-0" {...props} />,
-                strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+                p: ({node, ...props}) => <p className="mt-2 first:mt-0 leading-relaxed" {...props} />,
+                strong: ({node, ...props}) => <strong className="font-semibold" style={{ color: "var(--text-primary)" }} {...props} />,
                 em: ({node, ...props}) => <em className="italic" {...props} />,
-                ul: ({node, ...props}) => <ul className="list-disc list-inside mt-2" {...props} />,
-                ol: ({node, ...props}) => <ol className="list-decimal list-inside mt-2" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc list-inside mt-2 space-y-1" {...props} />,
+                ol: ({node, ...props}) => <ol className="list-decimal list-inside mt-2 space-y-1" {...props} />,
                 li: ({node, ...props}) => <li className="mt-1" {...props} />,
-                h1: ({node, ...props}) => <h1 className="text-xl font-bold mt-4 mb-2 first:mt-0" {...props} />,
-                h2: ({node, ...props}) => <h2 className="text-lg font-bold mt-4 mb-2 first:mt-0" {...props} />,
-                h3: ({node, ...props}) => <h3 className="text-base font-bold mt-3 mb-1 first:mt-0" {...props} />,
-                code: ({node, ...props}) => <code className="bg-black/30 px-1 py-0.5 rounded font-mono text-xs" {...props} />,
-                pre: ({node, ...props}) => <pre className="bg-black/30 p-3 rounded-lg mt-2 mb-2 overflow-x-auto text-xs" {...props} />,
-                a: ({node, ...props}) => <a className="underline hover:opacity-80" target="_blank" rel="noopener noreferrer" {...props} />
+                h1: ({node, ...props}) => <h1 className="text-xl font-bold mt-4 mb-2 first:mt-0" style={{ color: "var(--text-primary)" }} {...props} />,
+                h2: ({node, ...props}) => <h2 className="text-lg font-bold mt-4 mb-2 first:mt-0" style={{ color: "var(--text-primary)" }} {...props} />,
+                h3: ({node, ...props}) => <h3 className="text-base font-bold mt-3 mb-1 first:mt-0" style={{ color: "var(--text-primary)" }} {...props} />,
+                code: ({node, ...props}) => <code className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] px-1.5 py-0.5 rounded font-mono text-xs text-[var(--text-primary)]" {...props} />,
+                pre: ({node, ...props}) => <pre className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-3 rounded-lg mt-2 mb-2 overflow-x-auto text-xs text-[var(--text-primary)]" {...props} />,
+                a: ({node, ...props}) => <a className="underline hover:opacity-80 font-medium" style={{ color: "var(--primary)" }} target="_blank" rel="noopener noreferrer" {...props} />
               }}
             >
               {displayContent}

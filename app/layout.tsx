@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#ffffff",
+  themeColor: "#181614",
 };
 
 export const metadata: Metadata = {
@@ -28,14 +28,44 @@ export const metadata: Metadata = {
 };
 
 import { ChatProvider } from "@/context/ChatContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { PwaRegister } from "@/components/PwaRegister";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} h-full`}
     >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var saved = localStorage.getItem('dossara_theme');
+                  var isDark = true;
+                  if (saved === 'light') {
+                    isDark = false;
+                  } else if (saved === 'dark') {
+                    isDark = true;
+                  } else if (saved === 'system') {
+                    isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  }
+                  if (isDark) {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body
         className="min-h-full flex flex-col antialiased"
         style={{
@@ -43,9 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         }}
       >
         <PwaRegister />
-        <ChatProvider>
-          <DocumentProvider>{children}</DocumentProvider>
-        </ChatProvider>
+        <ThemeProvider>
+          <ChatProvider>
+            <DocumentProvider>{children}</DocumentProvider>
+          </ChatProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -37,8 +37,9 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
             }}
             className="appearance-none input-base text-xs py-1.5 px-3 pr-8 cursor-pointer"
             style={{
-              background: "var(--bg-tertiary)",
+              background: "var(--secondary)",
               borderColor: "var(--border-subtle)",
+              color: "var(--text-primary)",
             }}
           >
             {MODELS.map((model) => (
@@ -79,10 +80,10 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#111] border border-[#333] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
-            <h2 className="text-lg font-bold text-white mb-2">Set Custom Model</h2>
-            <p className="text-xs text-gray-400 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in" style={{ background: "var(--backdrop-overlay)" }}>
+          <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
+            <h2 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>Set Custom Model</h2>
+            <p className="text-xs mb-4" style={{ color: "var(--text-secondary)" }}>
               Enter the exact ID of the model you wish to use.
               <br /><br />
               See available models at{" "}
@@ -90,7 +91,8 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
                 href="https://console.groq.com/docs/models"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-400 hover:underline"
+                className="font-medium hover:underline"
+                style={{ color: "var(--primary)" }}
               >
                 https://console.groq.com/docs/models
               </a>.
@@ -101,7 +103,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
               onChange={(e) => setTempModel(e.target.value)}
               placeholder="e.g. llama3-70b-8192"
               className="input-base w-full mb-4 px-3 py-2 text-sm"
-              style={{ background: "var(--bg-tertiary)", borderColor: "var(--border-subtle)" }}
+              style={{ background: "var(--secondary)", borderColor: "var(--border-subtle)" }}
               autoFocus
               onKeyDown={(e) => {
                 if (e.key === "Enter") handleSave();

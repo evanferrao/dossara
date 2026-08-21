@@ -11,7 +11,7 @@ const DocumentViewer = dynamic(
     ssr: false,
     loading: () => (
       <div className="flex-1 flex items-center justify-center">
-        <div className="w-8 h-8 rounded-full border-2 border-indigo-500/30 border-t-indigo-500 animate-spin-slow" />
+        <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
       </div>
     ),
   }
@@ -27,9 +27,10 @@ export function DocumentPanel() {
         className="px-5 py-4 border-b flex items-center gap-3"
         style={{ borderColor: "var(--border-subtle)" }}
       >
-        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center border border-[#333]">
+        <div className="w-8 h-8 rounded-lg bg-[var(--secondary)] flex items-center justify-center border border-[var(--border-subtle)]">
           <svg
-            className="w-4 h-4 text-black"
+            className="w-4 h-4"
+            style={{ color: "var(--primary)" }}
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
