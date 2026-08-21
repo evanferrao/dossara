@@ -51,9 +51,16 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     if (isOpen) {
       setOllamaUrl(localStorage.getItem("dossara_ollama_url") || "http://localhost:11434");
       setModelName(localStorage.getItem("dossara_ollama_model") || "llama3");
-      setIsEnabled(localStorage.getItem("dossara_ollama_enabled") === "true");
+      const enabled = localStorage.getItem("dossara_ollama_enabled") === "true";
+      setIsEnabled(enabled);
       setTestStatus("idle");
       setTestMessage("");
+
+      if (enabled) {
+        handlePrecacheModels();
+      } else {
+        setPrecacheStatus("idle");
+      }
     }
   }, [isOpen]);
 
@@ -246,7 +253,7 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
             onChange={(e) => {
               const checked = e.target.checked;
               setIsEnabled(checked);
-              if (checked && precacheStatus === "idle") {
+              if (checked) {
                 handlePrecacheModels();
               }
             }}
@@ -317,11 +324,29 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               </div>
               <div className="text-xs font-medium">
                 {isPrecaching ? (
-                  <span style={{ color: "var(--primary)" }}>Loading embeddings...</span>
+                  <span className="flex items-center gap-1.5" style={{ color: "var(--primary)" }}>
+                    <span className="w-2.5 h-2.5 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin inline-block" />
+                    Loading embeddings...
+                  </span>
                 ) : precacheStatus === "success" ? (
                   <span style={{ color: "var(--success)" }}>Loaded</span>
                 ) : precacheStatus === "error" ? (
-                  <span style={{ color: "var(--error)" }}>Failed to load</span>
+                  <div className="flex items-center gap-2">
+                    <span style={{ color: "var(--error)" }}>Failed to load</span>
+                    <button
+                      type="button"
+                      onClick={handlePrecacheModels}
+                      className="underline text-xs cursor-pointer hover:opacity-80"
+                      style={{ color: "var(--primary)" }}
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : isEnabled ? (
+                  <span className="flex items-center gap-1.5" style={{ color: "var(--primary)" }}>
+                    <span className="w-2.5 h-2.5 rounded-full border-2 border-[var(--primary)] border-t-transparent animate-spin inline-block" />
+                    Loading embeddings...
+                  </span>
                 ) : (
                   <span style={{ color: "var(--text-muted)" }}>Pending</span>
                 )}
