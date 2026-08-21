@@ -191,13 +191,49 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
               </div>
             )}
             {platform === 'mac' && (
-              <div className="mt-2">
-                <CopyableCode code={`# Placeholder for Mac guide\nOLLAMA_ORIGINS=* OLLAMA_HOST=0.0.0.0 ollama serve`} />
+              <div className="mt-2 space-y-3">
+                <div>
+                  <p className="font-medium mb-1" style={{ color: "var(--text-primary)" }}>Temporary Setup (Terminal):</p>
+                  <CopyableCode code={`osascript -e 'quit app "Ollama"' 2>/dev/null\npkill -x ollama 2>/dev/null\nbrew services stop ollama 2>/dev/null\nOLLAMA_ORIGINS="*" OLLAMA_HOST="0.0.0.0:11434" ollama serve`} />
+                </div>
               </div>
             )}
             {platform === 'windows' && (
-              <div className="mt-2">
-                <CopyableCode code={`REM Placeholder for Windows guide\nset OLLAMA_ORIGINS=* && set OLLAMA_HOST=0.0.0.0 && ollama serve`} />
+              <div className="mt-2 space-y-3">
+                <div>
+                  <p className="font-medium mb-1" style={{ color: "var(--text-primary)" }}>Temporary Setup (Command Prompt):</p>
+                  <CopyableCode code={`set OLLAMA_ORIGINS=* && set OLLAMA_HOST=0.0.0.0:11434 && ollama serve`} />
+                </div>
+                <div>
+                  <p className="font-medium mb-1" style={{ color: "var(--text-primary)" }}>Permanent Setup:</p>
+                  <ol className="list-decimal list-inside space-y-2" style={{ color: "var(--text-secondary)" }}>
+                    <li>
+                      Open <strong style={{ color: "var(--text-primary)" }}>Windows Settings → System → Advanced system settings → Environment Variables</strong>.
+                    </li>
+                    <li>
+                      Under <strong style={{ color: "var(--text-primary)" }}>User variables</strong>, add:
+                      <div className="mt-1 space-y-1.5 pl-2">
+                        <div>
+                          <span className="text-[11px] block font-mono" style={{ color: "var(--text-muted)" }}>Variable 1:</span>
+                          <CopyableCode code="OLLAMA_ORIGINS=*" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] block font-mono" style={{ color: "var(--text-muted)" }}>Variable 2:</span>
+                          <CopyableCode code="OLLAMA_HOST=0.0.0.0:11434" />
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      Make sure Ollama is enabled in:
+                      <div className="mt-1 pl-2">
+                        <code className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] px-1.5 py-0.5 rounded font-mono text-[var(--text-primary)]">Task Manager → Startup apps → Ollama → Enabled</code>
+                      </div>
+                    </li>
+                    <li>
+                      Restart Windows for environment variables to take effect.
+                    </li>
+                  </ol>
+                </div>
               </div>
             )}
           </div>
