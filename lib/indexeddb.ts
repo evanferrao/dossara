@@ -46,8 +46,10 @@ export interface StoredChatMessage {
   role: "user" | "assistant";
   content: string;
   citations?: { documentId: string; filename: string; page: number }[] | null;
+  webCitations?: { title: string; url: string; source: string; favicon?: string }[] | null;
   created_at: string;
 }
+
 
 // ── Database connection ────────────────────────────────────────────────────────
 

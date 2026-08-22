@@ -11,6 +11,13 @@ export const PAGES_PER_BATCH = Number(process.env.PAGES_PER_BATCH ?? 10);
 
 /** Number of chunks to retrieve for context */
 export const TOP_K_CHUNKS = Number(process.env.TOP_K_CHUNKS ?? 5);
+export const TOP_K_LOCAL = TOP_K_CHUNKS;
+export const TOP_K_WEB = Number(process.env.TOP_K_WEB ?? 5);
+export const MAX_WEB_CONTENT_CHARS_PER_RESULT = Number(
+  process.env.MAX_WEB_CONTENT_CHARS_PER_RESULT ?? 6000
+);
+export const WEB_MIN_SCORE = Number(process.env.WEB_MIN_SCORE ?? 0.5);
+
 /** Number of chat history messages to include */
 export const HISTORY_LIMIT = Number(process.env.HISTORY_LIMIT ?? 10);
 
@@ -22,3 +29,4 @@ export const MODELS = (
 
 export type ModelKey = string;
 export const DEFAULT_MODEL: ModelKey = MODELS[0];
+

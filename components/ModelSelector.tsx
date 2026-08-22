@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { MODELS, type ModelKey } from "@/lib/constants";
+import { useState } from "react";
+import { MODELS, DEFAULT_MODEL, type ModelKey } from "@/lib/constants";
 
 interface ModelSelectorProps {
   value: ModelKey;
@@ -12,7 +12,7 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tempModel, setTempModel] = useState("");
 
-  const isCustomModel = value && !MODELS.includes(value);
+  const isCustomModel = Boolean(value && !MODELS.includes(value));
 
   const handleSave = () => {
     if (tempModel.trim()) {
@@ -21,12 +21,17 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
     setIsModalOpen(false);
   };
 
+  const handleReset = () => {
+    localStorage.removeItem("dossara_custom_model");
+    onChange(DEFAULT_MODEL);
+  };
+
   return (
     <>
       <div className="relative flex items-center gap-2">
         <div className="relative">
           <select
-            value={isCustomModel ? value : value}
+            value={value}
             onChange={(e) => {
               if (e.target.value === "custom") {
                 setTempModel("");
@@ -68,7 +73,8 @@ export function ModelSelector({ value, onChange }: ModelSelectorProps) {
         
         {isCustomModel && (
           <button
-            onClick={() => onChange(MODELS[0])}
+            type="button"
+            onClick={handleReset}
             className="text-xs btn-ghost p-1.5 rounded-md flex-shrink-0"
             title="Reset to default model"
           >

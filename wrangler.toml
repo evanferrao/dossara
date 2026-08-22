@@ -1,2 +1,8 @@
+name = "dossara-proxy"
+compatibility_date = "2026-08-15"
+main = "cloudflare/workers.js"
+
 [vars]
-MAX_CHAT_PER_IP_PER_DAY = "5"
+MAX_REQUESTS_PER_CLIENT = "10"
+MAX_CHAT_PER_IP_PER_DAY = "10"
+ALLOWED_ORIGIN = "*"

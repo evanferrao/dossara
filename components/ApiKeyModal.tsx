@@ -23,6 +23,8 @@ export function ApiKeyModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   const handleDelete = () => {
     localStorage.removeItem("dossara_groq_api_key");
+    localStorage.removeItem("dossara_custom_model");
+    localStorage.removeItem("dossara_selected_model");
     window.location.reload();
   };
 

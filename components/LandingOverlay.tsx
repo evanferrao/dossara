@@ -69,7 +69,10 @@ export function LandingOverlay({ children, onOpenOllama }: { children: React.Rea
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
               {/* Experience Demo — primary action */}
               <button
-                onClick={() => setDismissed(true)}
+                onClick={() => {
+                  localStorage.setItem("dossara_ollama_enabled", "false");
+                  setDismissed(true);
+                }}
                 className="btn-primary w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer shadow-sm"
               >
                 <svg

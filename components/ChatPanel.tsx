@@ -5,28 +5,27 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, streamText, convertToModelMessages } from "ai";
 import { createGroq } from "@ai-sdk/groq";
 import type { UIMessage } from "ai";
-import { ChatMessage } from "./ChatMessage";
+import { ChatMessage, type Citation } from "./ChatMessage";
+import type { WebCitation } from "./WebCitationBadge";
 import { ModelSelector } from "./ModelSelector";
+import { WebSearchToggle } from "./WebSearchToggle";
 import type { ModelKey } from "@/lib/constants";
-import { TOP_K_CHUNKS, HISTORY_LIMIT, DEFAULT_MODEL } from "@/lib/constants";
+import { TOP_K_LOCAL, TOP_K_WEB, DEFAULT_MODEL, MODELS } from "@/lib/constants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { useDocuments } from "@/context/DocumentContext";
 import { useChats } from "@/context/ChatContext";
-import { embed } from "@/lib/embeddings";
-import { searchChunks } from "@/lib/vectorSearch";
+import { retrieveLocal, buildHybridContext } from "@/lib/rag";
+import { getWebSearchProvider } from "@/lib/web-search/provider";
+import type { WebSearchConfig } from "@/lib/web-search/types";
 import {
-  getDocuments,
+  loadWebSearchConfig,
+  saveWebSearchConfig,
+} from "@/lib/settings/web-search-settings";
+import {
   saveChatMessage,
   getChatMessages,
   clearChatMessages,
-  type StoredDocument,
 } from "@/lib/indexeddb";
-
-interface Citation {
-  documentId: string;
-  filename: string;
-  page: number;
-}
 
 /**
  * Extract text content from a UIMessage's parts array.
@@ -38,7 +37,8 @@ function getMessageText(msg: UIMessage): string {
     .join("");
 }
 
-const CITATION_RE = /<!-- CITATIONS:\s*(\[.*?\])(?:\s*-->)?/s;
+const CITATION_RE = /<!--\s*CITATIONS:\s*(\[.*?\])(?:\s*-->)?/s;
+const WEB_CITATION_RE = /<!--\s*WEB_CITATIONS:\s*(\[.*?\])(?:\s*-->)?/s;
 
 interface ChatPanelProps {
   onOpenApiKeyModal?: () => void;
@@ -48,21 +48,42 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
   const [modelKey, setModelKey] = useState<string>(DEFAULT_MODEL);
   const [showRateLimitPrompt, setShowRateLimitPrompt] = useState(false);
 
-  // Load from local storage on mount
+  // Load model preference from local storage on mount
   useEffect(() => {
-    const saved = localStorage.getItem("dossara_custom_model");
-    if (saved) {
-      setModelKey(saved);
+    const customApiKey = localStorage.getItem("dossara_groq_api_key");
+    const savedCustom = localStorage.getItem("dossara_custom_model");
+    const savedSelected = localStorage.getItem("dossara_selected_model");
+
+    if (savedCustom) {
+      if (MODELS.includes(savedCustom)) {
+        setModelKey(savedCustom);
+        localStorage.setItem("dossara_selected_model", savedCustom);
+        localStorage.removeItem("dossara_custom_model");
+      } else if (customApiKey) {
+        setModelKey(savedCustom);
+      } else {
+        localStorage.removeItem("dossara_custom_model");
+        setModelKey(DEFAULT_MODEL);
+      }
+    } else if (savedSelected && MODELS.includes(savedSelected)) {
+      setModelKey(savedSelected);
     }
   }, []);
 
-  // Save to local storage when changed
+  // Save model preference to local storage when changed
   useEffect(() => {
     if (modelKey) {
-      localStorage.setItem("dossara_custom_model", modelKey);
+      if (MODELS.includes(modelKey)) {
+        localStorage.setItem("dossara_selected_model", modelKey);
+        localStorage.removeItem("dossara_custom_model");
+      } else {
+        localStorage.setItem("dossara_custom_model", modelKey);
+        localStorage.setItem("dossara_selected_model", modelKey);
+      }
     }
   }, [modelKey]);
 
+  // Ollama configuration
   const [isOllamaEnabled, setIsOllamaEnabled] = useState(false);
   const [ollamaModelName, setOllamaModelName] = useState("");
 
@@ -70,80 +91,178 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     setIsOllamaEnabled(localStorage.getItem("dossara_ollama_enabled") === "true");
     setOllamaModelName(localStorage.getItem("dossara_ollama_model") || "llama3");
   }, []);
-  const [storedCitations, setStoredCitations] = useState<
-    Map<string, Citation[]>
+
+  // Web Search Configuration
+  const [webSearchConfig, setWebSearchConfig] = useState<WebSearchConfig>(() =>
+    loadWebSearchConfig()
+  );
+
+  const handleWebSearchConfigChange = (newConfig: WebSearchConfig) => {
+    setWebSearchConfig(newConfig);
+    saveWebSearchConfig(newConfig);
+  };
+
+  // Citations storage
+  const [storedCitations, setStoredCitations] = useState<Map<string, Citation[]>>(
+    new Map()
+  );
+  const [storedWebCitations, setStoredWebCitations] = useState<
+    Map<string, WebCitation[]>
   >(new Map());
+
   const { documents } = useDocuments();
   const { activeChatId, chatDrafts, setChatDraft } = useChats();
   const [inputValue, setInputValue] = useState(chatDrafts[activeChatId] || "");
-  const [isEmbedding, setIsEmbedding] = useState(false);
+  const [retrievalStatusText, setRetrievalStatusText] = useState("Searching documents…");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // We need a ref to track the latest context for the transport body
-  const contextRef = useRef<{
-    context: string;
-    docInventory: string;
-    docCount: number;
-    chunkCount: number;
-    referencedDocCount: number;
-  }>({
-    context: "",
-    docInventory: "",
-    docCount: 0,
-    chunkCount: 0,
-    referencedDocCount: 0,
-  });
+  // Keep refs for active values needed in transport.fetch without recreating transport
+  const activeChatIdRef = useRef(activeChatId);
+  activeChatIdRef.current = activeChatId;
 
-  // Build transport — sends context along with messages
+  const webSearchConfigRef = useRef(webSearchConfig);
+  webSearchConfigRef.current = webSearchConfig;
+
+  // Build transport — handles retrieval and sends context along with messages
   const transport = useMemo(() => {
     return new DefaultChatTransport({
       api: process.env.NEXT_PUBLIC_WORKER_URL || "/api/chat",
       fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
-        const ollamaEnabled = typeof window !== "undefined" && localStorage.getItem("dossara_ollama_enabled") === "true";
+        const currentChatId = activeChatIdRef.current;
+        const currentSearchConfig = webSearchConfigRef.current;
+
+        let hybridContext = {
+          context: "",
+          docInventory: "",
+          docCount: 0,
+          chunkCount: 0,
+          referencedDocCount: 0,
+          webSourceCount: 0,
+        };
+
+        if (init?.body) {
+          try {
+            const body = JSON.parse(init.body as string);
+            const messagesArray = body.messages ?? [];
+            const lastMsg = messagesArray[messagesArray.length - 1];
+
+            // Extract the user query text
+            let userQuery = "";
+            if (lastMsg) {
+              if (typeof lastMsg.content === "string") {
+                userQuery = lastMsg.content;
+              } else if (Array.isArray(lastMsg.parts)) {
+                userQuery = lastMsg.parts
+                  .filter((p: any) => p.type === "text")
+                  .map((p: any) => p.text)
+                  .join("");
+              }
+            }
+
+            // Persist user message to IndexedDB asynchronously
+            if (currentChatId && userQuery.trim()) {
+              saveChatMessage({
+                chat_id: currentChatId,
+                role: "user",
+                content: userQuery.trim(),
+                created_at: new Date().toISOString(),
+              }).catch(console.error);
+            }
+
+            // Perform retrieval
+            if (userQuery.trim()) {
+              const isWebSearchOn = currentSearchConfig.enabled;
+              setRetrievalStatusText(
+                isWebSearchOn ? "Searching documents & web…" : "Searching documents…"
+              );
+
+              let localData: { results: any[]; readyDocs: any[] } = {
+                results: [],
+                readyDocs: [],
+              };
+              let webResults: any[] = [];
+
+              if (isWebSearchOn) {
+                const webProvider = getWebSearchProvider(currentSearchConfig);
+                const [localRes, webRes] = await Promise.all([
+                  retrieveLocal(userQuery, currentChatId, TOP_K_LOCAL),
+                  webProvider
+                    .search(userQuery, {
+                      maxResults: currentSearchConfig.maxResults || TOP_K_WEB,
+                      timeRange: currentSearchConfig.timeRange,
+                    })
+                    .catch((err) => {
+                      console.warn("Web search retrieval error:", err);
+                      return [];
+                    }),
+                ]);
+                localData = localRes;
+                webResults = webRes;
+              } else {
+                localData = await retrieveLocal(userQuery, currentChatId, TOP_K_LOCAL);
+              }
+
+              hybridContext = buildHybridContext({
+                localResults: localData.results,
+                webResults,
+                readyDocs: localData.readyDocs,
+              });
+            }
+          } catch (err) {
+            console.error("Context assembly error:", err);
+          }
+        }
+
+        setRetrievalStatusText("Synthesizing answer…");
+
+        // 1. Ollama Provider
+        const ollamaEnabled =
+          typeof window !== "undefined" &&
+          localStorage.getItem("dossara_ollama_enabled") === "true";
+
         if (ollamaEnabled && init?.body) {
           try {
             const body = JSON.parse(init.body as string);
-            const ollamaUrl = localStorage.getItem("dossara_ollama_url") || "http://localhost:11434";
-            const ollamaModel = localStorage.getItem("dossara_ollama_model") || "llama3";
+            const ollamaUrl =
+              localStorage.getItem("dossara_ollama_url") || "http://localhost:11434";
+            const ollamaModel =
+              localStorage.getItem("dossara_ollama_model") || "llama3";
 
             const systemPrompt = buildSystemPrompt({
-              docCount: body.docCount ?? 0,
-              docInventory: body.docInventory ?? "",
-              referencedDocCount: body.referencedDocCount ?? 0,
-              chunkCount: body.chunkCount ?? 0,
-              context: body.context ?? ""
+              docCount: hybridContext.docCount,
+              docInventory: hybridContext.docInventory,
+              referencedDocCount: hybridContext.referencedDocCount,
+              chunkCount: hybridContext.chunkCount,
+              webSourceCount: hybridContext.webSourceCount,
+              context: hybridContext.context,
             });
 
             let llmMessages = await convertToModelMessages(body.messages ?? []);
 
-            // Strip out complex Vercel AI SDK parts (like item_reference) that crash the OpenAI provider
             llmMessages = llmMessages.map((m: any) => {
               if (Array.isArray(m.content)) {
                 const filtered = m.content.filter((part: any) =>
-                  ['text', 'image', 'tool-call', 'tool-result'].includes(part.type)
+                  ["text", "image", "tool-call", "tool-result"].includes(part.type)
                 );
-                // If it's completely empty after filtering, provide a fallback empty string to pass ModelMessage schema
                 if (filtered.length === 0) {
-                  return { ...m, content: '' };
+                  return { ...m, content: "" };
                 }
-                // Convert pure text arrays to string to avoid schema issues
-                if (filtered.every((p: any) => p.type === 'text')) {
-                  return { ...m, content: filtered.map((p: any) => p.text).join('') };
+                if (filtered.every((p: any) => p.type === "text")) {
+                  return { ...m, content: filtered.map((p: any) => p.text).join("") };
                 }
                 return { ...m, content: filtered };
               }
               return m;
             });
 
-            // Import dynamically since this is a client component
-            const { createOpenAI } = await import('@ai-sdk/openai');
+            const { createOpenAI } = await import("@ai-sdk/openai");
 
             const ollamaProvider = createOpenAI({
-              baseURL: `${ollamaUrl.replace(/\/$/, '')}/v1`,
-              apiKey: 'ollama', // Optional, but required by SDK type signature
-              // @ts-expect-error - 'compatibility' flag may not exist in this older AI SDK version but is useful for compatible backends
-              compatibility: 'compatible'
+              baseURL: `${ollamaUrl.replace(/\/$/, "")}/v1`,
+              apiKey: "ollama",
+              // @ts-expect-error compatibility flag
+              compatibility: "compatible",
             });
 
             const result = streamText({
@@ -159,19 +278,25 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           }
         }
 
-        const customApiKey = typeof window !== "undefined" ? localStorage.getItem("dossara_groq_api_key") : null;
+        // 2. Direct Groq Provider
+        const customApiKey =
+          typeof window !== "undefined"
+            ? localStorage.getItem("dossara_groq_api_key")
+            : null;
+
         if (customApiKey && init?.body) {
           try {
             const body = JSON.parse(init.body as string);
-            // @ts-expect-error dangerouslyAllowBrowser is sometimes undocumented but required for client-side use
+            // @ts-expect-error dangerouslyAllowBrowser for client-side Groq
             const groq = createGroq({ apiKey: customApiKey, dangerouslyAllowBrowser: true });
 
             const systemPrompt = buildSystemPrompt({
-              docCount: body.docCount ?? 0,
-              docInventory: body.docInventory ?? "",
-              referencedDocCount: body.referencedDocCount ?? 0,
-              chunkCount: body.chunkCount ?? 0,
-              context: body.context ?? ""
+              docCount: hybridContext.docCount,
+              docInventory: hybridContext.docInventory,
+              referencedDocCount: hybridContext.referencedDocCount,
+              chunkCount: hybridContext.chunkCount,
+              webSourceCount: hybridContext.webSourceCount,
+              context: hybridContext.context,
             });
 
             let llmMessages = await convertToModelMessages(body.messages ?? []);
@@ -179,13 +304,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             llmMessages = llmMessages.map((m: any) => {
               if (Array.isArray(m.content)) {
                 const filtered = m.content.filter((part: any) =>
-                  ['text', 'image', 'tool-call', 'tool-result'].includes(part.type)
+                  ["text", "image", "tool-call", "tool-result"].includes(part.type)
                 );
                 if (filtered.length === 0) {
-                  return { ...m, content: '' };
+                  return { ...m, content: "" };
                 }
-                if (filtered.every((p: any) => p.type === 'text')) {
-                  return { ...m, content: filtered.map((p: any) => p.text).join('') };
+                if (filtered.every((p: any) => p.type === "text")) {
+                  return { ...m, content: filtered.map((p: any) => p.text).join("") };
                 }
                 return { ...m, content: filtered };
               }
@@ -205,26 +330,32 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           }
         }
 
-        // Default behavior
-        return fetch(input, init);
+        // 3. Default behavior (Cloudflare Worker proxy)
+        // Inject assembled hybrid context directly into the request payload
+        let newInit = init;
+        if (init?.body) {
+          try {
+            const parsed = JSON.parse(init.body as string);
+            parsed.context = hybridContext.context;
+            parsed.docInventory = hybridContext.docInventory;
+            parsed.docCount = hybridContext.docCount;
+            parsed.chunkCount = hybridContext.chunkCount;
+            parsed.referencedDocCount = hybridContext.referencedDocCount;
+            parsed.webSourceCount = hybridContext.webSourceCount;
+
+            newInit = {
+              ...init,
+              body: JSON.stringify(parsed),
+            };
+          } catch {
+            // Keep original init
+          }
+        }
+
+        return fetch(input, newInit);
       },
       body: {
         model: modelKey,
-        get context() {
-          return contextRef.current.context;
-        },
-        get docInventory() {
-          return contextRef.current.docInventory;
-        },
-        get docCount() {
-          return contextRef.current.docCount;
-        },
-        get chunkCount() {
-          return contextRef.current.chunkCount;
-        },
-        get referencedDocCount() {
-          return contextRef.current.referencedDocCount;
-        },
       },
     });
   }, [modelKey]);
@@ -235,14 +366,12 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     status,
     setMessages,
   } = useChat({
-    transport,
+    transport: transport as any,
     onError: (error) => {
-      let errorText =
-        "Something went wrong. Please try again later.";
+      let errorText = "Something went wrong. Please try again later.";
       let isRateLimit = false;
 
       try {
-        // AI SDK might wrap non-JSON responses in error.message
         if (error.message.toLowerCase().includes("rate limit") || error.message.includes("429")) {
           isRateLimit = true;
         }
@@ -257,11 +386,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             }
           }
         } else if (error.message && !error.message.includes("JSON")) {
-          // If it's a plain string like "Rate limit exceeded..."
-          errorText = error.message.replace(/.*?:\s*/, ""); // Strip "Error: "
+          errorText = error.message.replace(/.*?:\s*/, "");
         }
       } catch {
-        // Fall back to the default error text
+        // Fall back to default
       }
 
       setMessages((prev) => [
@@ -279,12 +407,12 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       }
     },
     onFinish: async ({ message }) => {
-      // Parse citations from the finished message
       const text = getMessageText(message);
       const citationMatch = text.match(CITATION_RE);
+      const webCitationMatch = text.match(WEB_CITATION_RE);
 
       let citations: Citation[] | null = null;
-      let cleanContent = text;
+      let webCitations: WebCitation[] | null = null;
 
       if (citationMatch) {
         try {
@@ -294,22 +422,39 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             next.set(message.id, citations!);
             return next;
           });
-          cleanContent = text
-            .replace(new RegExp("<!-- CITATIONS:\\s*\\[.*?\\](?:\\s*-->)?", "s"), "")
-            .trim();
         } catch {
-          // Ignore parse errors
+          // Ignore JSON parse error
         }
       }
 
+      if (webCitationMatch) {
+        try {
+          webCitations = JSON.parse(webCitationMatch[1]);
+          setStoredWebCitations((prev) => {
+            const next = new Map(prev);
+            next.set(message.id, webCitations!);
+            return next;
+          });
+        } catch {
+          // Ignore JSON parse error
+        }
+      }
+
+      const cleanContent = text
+        .replace(/<!--\s*CITATIONS:[\s\S]*?(?:-->|$)/g, "")
+        .replace(/<!--\s*WEB_CITATIONS:[\s\S]*?(?:-->|$)/g, "")
+        .trim();
+
       // Save assistant message to IndexedDB
       try {
-        if (!activeChatId) return;
+        const currentChatId = activeChatIdRef.current;
+        if (!currentChatId) return;
         await saveChatMessage({
-          chat_id: activeChatId,
+          chat_id: currentChatId,
           role: "assistant",
           content: cleanContent,
           citations,
+          webCitations,
           created_at: new Date().toISOString(),
         });
       } catch (err) {
@@ -320,7 +465,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
   const isLoading = status === "submitted" || status === "streaming";
 
-  // Load chat history from IndexedDB on mount
+  // Load chat history from IndexedDB on mount or activeChatId change
   useEffect(() => {
     if (!activeChatId) return;
     getChatMessages(activeChatId)
@@ -334,17 +479,21 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           }));
           setMessages(loaded);
 
-          // Load citations
+          // Load citations & web citations
           const citMap = new Map<string, Citation[]>();
+          const webCitMap = new Map<string, WebCitation[]>();
           msgs.forEach((m) => {
-            if (m.role === "assistant" && m.citations) {
-              citMap.set(`db-${m.id}`, m.citations);
+            if (m.role === "assistant") {
+              if (m.citations) citMap.set(`db-${m.id}`, m.citations);
+              if (m.webCitations) webCitMap.set(`db-${m.id}`, m.webCitations);
             }
           });
           setStoredCitations(citMap);
+          setStoredWebCitations(webCitMap);
         } else {
           setMessages([]);
           setStoredCitations(new Map());
+          setStoredWebCitations(new Map());
         }
       })
       .catch(console.error);
@@ -355,99 +504,29 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSend = useCallback(async () => {
-    if (!inputValue.trim() || isLoading || isEmbedding) return;
+  // handleSend sends the message immediately to useChat for instant (0ms) UI display
+  const handleSend = useCallback(() => {
+    if (!inputValue.trim() || isLoading) return;
 
     const userText = inputValue.trim();
     setInputValue("");
     setChatDraft(activeChatId, "");
-    setIsEmbedding(true);
 
-    try {
-      if (!activeChatId) return;
-      // 1. Save user message to IndexedDB
-      await saveChatMessage({
-        chat_id: activeChatId,
-        role: "user",
-        content: userText,
-        created_at: new Date().toISOString(),
-      });
+    // Set initial retrieval text
+    setRetrievalStatusText(
+      webSearchConfig.enabled ? "Searching documents & web…" : "Searching documents…"
+    );
 
-      // 2. Embed the query client-side
-      const queryEmbedding = await embed(userText);
-
-      // 3. Search for relevant chunks
-      const allDocs = await getDocuments(activeChatId);
-      const readyDocs = allDocs.filter(
-        (d: StoredDocument) => d.status === "ready"
-      );
-      const readyDocIds = readyDocs.map((d: StoredDocument) => d.id);
-
-      const results = await searchChunks(queryEmbedding, readyDocIds, TOP_K_CHUNKS);
-
-      // 4. Get all documents for context
-
-      // Build document inventory
-      const docInventory = readyDocs
-        .map(
-          (d: StoredDocument, i: number) =>
-            `${i + 1}. "${d.filename}" (${d.page_count ?? "?"} pages)`
-        )
-        .join("\n");
-
-      // Build doc id → filename map
-      const docMap = new Map(
-        allDocs.map((d: StoredDocument) => [d.id, d.filename])
-      );
-
-      // Build context block
-      const contextBlock = results
-        .map((r, i) => {
-          const filename = docMap.get(r.chunk.document_id) ?? "Unknown";
-          return `[Passage ${i + 1}] Document: "${filename}" (ID: ${r.chunk.document_id}) | Page: ${r.chunk.page_number}\n${r.chunk.content}`;
-        })
-        .join("\n\n---\n\n");
-
-      // Count unique documents referenced
-      const referencedDocIds = new Set(
-        results.map((r) => r.chunk.document_id)
-      );
-
-      // 5. Update context ref for transport
-      contextRef.current = {
-        context: contextBlock,
-        docInventory,
-        docCount: readyDocs.length,
-        chunkCount: results.length,
-        referencedDocCount: referencedDocIds.size,
-      };
-
-      // 6. Build chat history for LLM (limit to recent messages)
-      // The messages state already has the full history;
-      // we trim it for the API call via the transport body
-
-      setIsEmbedding(false);
-
-      // 7. Send to LLM via transport
-      sendMessage({ text: userText });
-    } catch (err) {
-      console.error("Failed to process message:", err);
-      setIsEmbedding(false);
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: `error-${Date.now()}`,
-          role: "assistant" as const,
-          parts: [
-            {
-              type: "text" as const,
-              text: "Failed to process your message. Please try again.",
-            },
-          ],
-        },
-      ]);
-    }
-  }, [inputValue, isLoading, isEmbedding, sendMessage, setMessages, activeChatId, setChatDraft]);
+    // sendMessage immediately renders the user message bubble in the UI
+    sendMessage({ text: userText });
+  }, [
+    inputValue,
+    isLoading,
+    sendMessage,
+    activeChatId,
+    setChatDraft,
+    webSearchConfig,
+  ]);
 
   // Handle textarea key events
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -464,6 +543,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       }
       setMessages([]);
       setStoredCitations(new Map());
+      setStoredWebCitations(new Map());
     } catch (err) {
       console.error("Failed to clear chat:", err);
     }
@@ -473,7 +553,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
     <div className="flex flex-col h-full glass-panel-solid overflow-hidden">
       {/* Header */}
       <div
-        className="px-5 py-4 border-b flex items-center justify-between"
+        className="px-5 py-3.5 border-b flex items-center justify-between"
         style={{ borderColor: "var(--border-subtle)" }}
       >
         <div className="flex items-center gap-3">
@@ -501,7 +581,9 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               Chat
             </h2>
             <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-              Ask about your documents
+              {webSearchConfig.enabled
+                ? "Hybrid: Local Documents + Web Search"
+                : "Local Document RAG"}
             </p>
           </div>
         </div>
@@ -510,18 +592,24 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           {isOllamaEnabled ? (
             <div
               className="text-xs px-3 py-1.5 rounded-lg font-medium"
-              style={{ background: "var(--secondary)", borderColor: "var(--border-subtle)", borderWidth: 1, color: "var(--text-primary)" }}
+              style={{
+                background: "var(--secondary)",
+                borderColor: "var(--border-subtle)",
+                borderWidth: 1,
+                color: "var(--text-primary)",
+              }}
             >
               ollama/{ollamaModelName}
             </div>
           ) : (
             <ModelSelector value={modelKey} onChange={setModelKey} />
           )}
+
           {messages.length > 0 && (
             <button
               onClick={clearChat}
-              className="btn-ghost text-xs px-2 py-1.5"
-              title="Clear chat"
+              className="btn-ghost text-xs p-1.5 rounded-lg"
+              title="Clear chat history"
             >
               <svg
                 className="w-4 h-4"
@@ -548,10 +636,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             className="flex-1 flex items-center justify-center h-full"
             style={{ color: "var(--text-muted)" }}
           >
-            <div className="text-center py-20 animate-fade-in">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-[var(--secondary)] border border-[var(--border-subtle)] flex items-center justify-center">
+            <div className="text-center py-16 animate-fade-in max-w-sm mx-auto px-4">
+              <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-[var(--secondary)] border border-[var(--border-subtle)] flex items-center justify-center shadow-xs">
                 <svg
-                  className="w-10 h-10 opacity-75"
+                  className="w-8 h-8 opacity-80"
                   style={{ color: "var(--primary)" }}
                   fill="none"
                   viewBox="0 0 24 24"
@@ -565,12 +653,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
                   />
                 </svg>
               </div>
-              <p className="text-sm font-medium mb-1" style={{ color: "var(--text-primary)" }}>
-                Start a conversation
+              <p className="text-sm font-semibold mb-1.5" style={{ color: "var(--text-primary)" }}>
+                Ask anything about your documents
               </p>
-              <p className="text-xs max-w-xs mx-auto" style={{ color: "var(--text-secondary)" }}>
-                Upload a document and ask questions about its content. Everything is
-                processed locally — your data never leaves this device.
+              <p className="text-xs leading-relaxed" style={{ color: "var(--text-secondary)" }}>
+                Upload files to query your private knowledge base, or toggle{" "}
+                <strong style={{ color: "var(--primary)" }}>Web Search</strong> to enrich answers
+                with real-time external information.
               </p>
             </div>
           </div>
@@ -579,30 +668,31 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         {messages.map((msg) => {
           const text = getMessageText(msg);
           const citations = storedCitations.get(msg.id);
+          const webCitations = storedWebCitations.get(msg.id);
 
           return (
             <ChatMessage
               key={msg.id}
               role={msg.role as "user" | "assistant"}
               content={text}
-              citations={
-                msg.role === "assistant" ? citations : undefined
-              }
+              citations={msg.role === "assistant" ? citations : undefined}
+              webCitations={msg.role === "assistant" ? webCitations : undefined}
             />
           );
         })}
 
-        {(isLoading || isEmbedding) && messages[messages.length - 1]?.role === "user" && (
+        {isLoading && messages[messages.length - 1]?.role === "user" && (
           <div className="flex gap-3 animate-fade-in">
             <div className="w-8 h-8 rounded-full bg-[var(--secondary)] border border-[var(--border-subtle)] flex items-center justify-center flex-shrink-0">
-              <span className="text-xs font-bold" style={{ color: "var(--primary)" }}>D</span>
+              <span className="text-xs font-bold" style={{ color: "var(--primary)" }}>
+                D
+              </span>
             </div>
-            <div className="bg-transparent px-4 py-3 rounded-2xl" style={{ color: "var(--text-primary)" }}>
-              {isEmbedding ? (
-                <p className="text-xs" style={{ color: "var(--text-muted)" }}>
-                  Searching documents…
-                </p>
-              ) : (
+            <div
+              className="bg-transparent px-4 py-3 rounded-2xl"
+              style={{ color: "var(--text-primary)" }}
+            >
+              <div className="flex items-center gap-2">
                 <div className="flex gap-1.5 items-center h-5">
                   <span
                     className="w-2 h-2 rounded-full animate-pulse"
@@ -626,7 +716,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
                     }}
                   />
                 </div>
-              )}
+                <span className="text-xs" style={{ color: "var(--text-muted)" }}>
+                  {retrievalStatusText}
+                </span>
+              </div>
             </div>
           </div>
         )}
@@ -634,11 +727,26 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Composer Input Area */}
       <div
-        className="p-4 border-t"
+        className="p-4 border-t space-y-2.5"
         style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
       >
+        {/* Controls Toolbar: Web Search Toggle */}
+        <div className="flex items-center justify-between gap-2 px-1">
+          <div className="flex items-center gap-2">
+            <WebSearchToggle
+              config={webSearchConfig}
+              onConfigChange={handleWebSearchConfigChange}
+            />
+          </div>
+
+          <span className="text-[11px] hidden sm:inline-block" style={{ color: "var(--text-muted)" }}>
+            {webSearchConfig.enabled ? "Hybrid Retrieval Active" : "Local Documents Only"}
+          </span>
+        </div>
+
+        {/* Text Input Row */}
         <div className="flex gap-3 items-stretch">
           <textarea
             ref={inputRef}
@@ -648,9 +756,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               setChatDraft(activeChatId, e.target.value);
             }}
             onKeyDown={handleKeyDown}
-            placeholder="Ask about your documents…"
+            placeholder={
+              webSearchConfig.enabled
+                ? "Ask about your documents and search the web…"
+                : "Ask about your documents…"
+            }
             rows={1}
-            className="input-base flex-1 resize-none min-h-[42px] max-h-[120px] bg-[var(--secondary)] focus:bg-[var(--bg-primary)]"
+            className="input-base flex-1 resize-none min-h-[42px] max-h-[120px] bg-[var(--secondary)] focus:bg-[var(--bg-primary)] py-2.5"
             style={{
               height: "auto",
               overflow: inputValue.split("\n").length > 1 ? "auto" : "hidden",
@@ -659,8 +771,9 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           <button
             type="button"
             onClick={handleSend}
-            disabled={!inputValue.trim() || isLoading || isEmbedding}
+            disabled={!inputValue.trim() || isLoading}
             className="btn-primary px-4 flex-shrink-0 flex items-center justify-center"
+            title="Send Message (Enter)"
           >
             <svg
               className="w-4 h-4"
@@ -678,16 +791,26 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
           </button>
         </div>
       </div>
+
       {/* Rate Limit Prompt Dialog */}
       {showRateLimitPrompt && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in" style={{ background: "var(--backdrop-overlay)" }}>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm animate-fade-in"
+          style={{ background: "var(--backdrop-overlay)" }}
+        >
           <div className="bg-[var(--bg-primary)] border border-[var(--border-subtle)] p-6 rounded-2xl w-[400px] max-w-[90vw] shadow-2xl">
-            <h2 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>Usage Limit Reached</h2>
+            <h2 className="text-lg font-bold mb-2" style={{ color: "var(--text-primary)" }}>
+              Usage Limit Reached
+            </h2>
             <p className="text-xs mb-6" style={{ color: "var(--text-secondary)" }}>
-              You've exceeded the free demo limit. Would you like to enter your own Groq API key to continue using the app natively with unmetered usage?
+              You&apos;ve exceeded the free demo limit. Would you like to enter your own Groq API key
+              or configure custom search endpoints to continue with unmetered usage?
             </p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowRateLimitPrompt(false)} className="btn-ghost px-4 py-2 text-sm">
+              <button
+                onClick={() => setShowRateLimitPrompt(false)}
+                className="btn-ghost px-4 py-2 text-sm"
+              >
                 Not now
               </button>
               <button

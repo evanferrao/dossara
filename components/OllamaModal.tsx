@@ -84,6 +84,15 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     window.location.reload();
   };
 
+  const handleSwitchToDemo = () => {
+    setIsEnabled(false);
+    localStorage.setItem("dossara_ollama_enabled", "false");
+    localStorage.removeItem("dossara_custom_model");
+    localStorage.removeItem("dossara_groq_api_key");
+    localStorage.removeItem("dossara_selected_model");
+    window.location.reload();
+  };
+
   const handleTest = async (): Promise<boolean> => {
     setTestStatus("testing");
     setTestMessage("");
@@ -355,17 +364,31 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
           </div>
         </div>
 
-        <div className="flex justify-end gap-2 mt-2">
-          <button onClick={onClose} className="btn-ghost px-4 py-2 text-sm">
-            Cancel
-          </button>
-          <button 
-            onClick={handleSave} 
-            disabled={isPrecaching}
-            className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        <div className="flex justify-between items-center gap-2 mt-4 pt-2">
+          <button
+            type="button"
+            onClick={handleSwitchToDemo}
+            className="btn-danger px-3 py-2 text-sm"
           >
-            {isPrecaching ? "Loading embeddings..." : "Save & Reload"}
+            Back to Demo API
           </button>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-ghost px-4 py-2 text-sm"
+            >
+              Cancel
+            </button>
+            <button 
+              type="button"
+              onClick={handleSave} 
+              disabled={isPrecaching}
+              className="btn-primary px-4 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isPrecaching ? "Loading embeddings..." : "Save & Reload"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
