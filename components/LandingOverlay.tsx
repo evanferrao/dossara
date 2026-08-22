@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const GITHUB_URL =
   process.env.NEXT_PUBLIC_GITHUB_SOURCE ??
@@ -8,6 +8,11 @@ const GITHUB_URL =
 
 export function LandingOverlay({ children, onOpenOllama }: { children: React.ReactNode; onOpenOllama?: () => void }) {
   const [dismissed, setDismissed] = useState(false);
+  const [isOllamaEnabled, setIsOllamaEnabled] = useState(false);
+
+  useEffect(() => {
+    setIsOllamaEnabled(localStorage.getItem("dossara_ollama_enabled") === "true");
+  }, []);
 
   if (dismissed) {
     return <>{children}</>;
@@ -67,42 +72,66 @@ export function LandingOverlay({ children, onOpenOllama }: { children: React.Rea
           {/* Buttons */}
           <div className="flex flex-col items-center gap-3 w-full max-w-lg">
             <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
-              {/* Experience Demo — primary action */}
-              <button
-                onClick={() => {
-                  localStorage.setItem("dossara_ollama_enabled", "false");
-                  setDismissed(true);
-                }}
-                className="btn-primary w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer shadow-sm"
-              >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
+              {isOllamaEnabled ? (
+                <button
+                  onClick={() => setDismissed(true)}
+                  className="btn-primary w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer shadow-sm"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z"
-                  />
-                </svg>
-                Experience Demo
-              </button>
-              <button
-                onClick={() => {
-                  setDismissed(true);
-                  if (onOpenOllama) onOpenOllama();
-                }}
-                className="w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer transition-all bg-[var(--secondary)] border border-[var(--border-subtle)] hover:bg-[var(--secondary-hover)] hover:border-[var(--border-medium)]"
-                style={{ color: "var(--text-primary)" }}
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--primary)" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-                Enable Local Ollama
-              </button>
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z"
+                    />
+                  </svg>
+                  Enter Workspace
+                </button>
+              ) : (
+                <>
+                  {/* Experience Demo — primary action */}
+                  <button
+                    onClick={() => {
+                      localStorage.setItem("dossara_ollama_enabled", "false");
+                      setDismissed(true);
+                    }}
+                    className="btn-primary w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer shadow-sm"
+                  >
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 010 1.972l-11.54 6.347a1.125 1.125 0 01-1.667-.986V5.653z"
+                      />
+                    </svg>
+                    Experience Demo
+                  </button>
+                  <button
+                    onClick={() => {
+                      setDismissed(true);
+                      if (onOpenOllama) onOpenOllama();
+                    }}
+                    className="w-full flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-medium text-sm cursor-pointer transition-all bg-[var(--secondary)] border border-[var(--border-subtle)] hover:bg-[var(--secondary-hover)] hover:border-[var(--border-medium)]"
+                    style={{ color: "var(--text-primary)" }}
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} style={{ color: "var(--primary)" }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                    Enable Local Ollama
+                  </button>
+                </>
+              )}
             </div>
             <a
               href={GITHUB_URL}
