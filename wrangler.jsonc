@@ -5,7 +5,9 @@
 	"main": "cloudflare/workers.js",
 	"vars": {
 		"MAX_CHAT_PER_IP_PER_DAY": "5",
-		"ALLOWED_ORIGIN": "*"
+		// Comma-separated origin allowlist. Supports wildcard subdomains (e.g. "*.dossara.pages.dev").
+		// Set to "*" for local development only.
+		"ALLOWED_ORIGINS": "https://dossara.evanferrao.com,https://dossara.evanferrao.win,https://dossara.boxinaclosedbox.win,https://dossara.pages.dev,https://*.dossara.pages.dev"
 	},
 	"kv_namespaces": [
 		{

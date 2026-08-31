@@ -65,17 +65,71 @@ ${
 ${context || "No matching context found for this query."}`;
 }
 
+/**
+ * Check whether `origin` matches any entry in the ALLOWED_ORIGINS allowlist.
+ * Supports exact matches and wildcard patterns (e.g. "https://*.dossara.pages.dev").
+ */
+function isOriginAllowed(origin, allowedList) {
+  for (const entry of allowedList) {
+    if (entry === origin) return true;
+    if (entry.includes("*")) {
+      const pattern = "^" + entry.replace(/[-[\]/{}()+?.\\^$|]/g, "\\$&").replace(/\*/g, "[a-zA-Z0-9-]+") + "$";
+      if (new RegExp(pattern).test(origin)) return true;
+    }
+  }
+  return false;
+}
+
 function getCorsHeaders(request, env) {
-  const origin = request?.headers?.get("Origin") || "*";
-  const allowed = env?.ALLOWED_ORIGIN || "*";
+  const raw = env?.ALLOWED_ORIGINS || env?.ALLOWED_ORIGIN || "*";
+
+  // Wildcard: allow everything (dev-only)
+  if (raw === "*") {
+    return {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
+    };
+  }
+
+  // Parse comma-separated allowlist
+  const allowedList = raw.split(",").map((s) => s.trim()).filter(Boolean);
+  const requestOrigin = request?.headers?.get("Origin") || "";
+
+  if (requestOrigin && isOriginAllowed(requestOrigin, allowedList)) {
+    return {
+      "Access-Control-Allow-Origin": requestOrigin,
+      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
+      "Vary": "Origin",
+    };
+  }
+
+  // Origin not in allowlist — omit Access-Control-Allow-Origin so the browser blocks it
   return {
-    "Access-Control-Allow-Origin": allowed === "*" ? origin : allowed,
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
+    "Vary": "Origin",
   };
 }
 
+/**
+ * Validate that the request has a JSON Content-Type header.
+ * Returns a 415 Response if invalid, or null if valid.
+ */
+function validateJsonContentType(request, corsHeaders) {
+  const ct = request.headers.get("Content-Type") || "";
+  if (!ct.includes("application/json")) {
+    return new Response(
+      JSON.stringify({ error: "UNSUPPORTED_MEDIA_TYPE", message: "Content-Type must be application/json." }),
+      { status: 415, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  return null;
+}
+
 // In-memory rate limiting fallback store (L1 cache / test fallback)
+const FALLBACK_STORE_MAX_SIZE = 10_000;
 const fallbackStore = new Map();
 
 function getDailyResetInfo() {
@@ -238,6 +292,19 @@ async function enforceRateLimit(request, env, corsHeaders) {
   }
 
   // 4. In-memory rate limiting fallback store (local isolate / tests)
+  // Prune stale entries if the store exceeds the size cap
+  if (fallbackStore.size > FALLBACK_STORE_MAX_SIZE) {
+    const now = Date.now();
+    for (const [k, v] of fallbackStore) {
+      if (v.resetAt <= now) fallbackStore.delete(k);
+    }
+    // If still over capacity after pruning expired entries, drop oldest half
+    if (fallbackStore.size > FALLBACK_STORE_MAX_SIZE) {
+      const keysToDelete = [...fallbackStore.keys()].slice(0, Math.floor(fallbackStore.size / 2));
+      for (const k of keysToDelete) fallbackStore.delete(k);
+    }
+  }
+
   for (const key of clientKeys) {
     const memoryKey = `${key}:${dateKey}`;
     let entry = fallbackStore.get(memoryKey);
@@ -261,6 +328,9 @@ async function handleWebSearch(request, env, corsHeaders) {
   if (request.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
+
+  const ctError = validateJsonContentType(request, corsHeaders);
+  if (ctError) return ctError;
 
   let body;
   try {
@@ -387,9 +457,20 @@ async function handleChat(request, env, corsHeaders) {
     return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
 
-  try {
-    const body = await request.json();
+  const ctError = validateJsonContentType(request, corsHeaders);
+  if (ctError) return ctError;
 
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return new Response(
+      JSON.stringify({ error: "INVALID_REQUEST", message: "Invalid JSON body." }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+
+  try {
     const groq = createGroq({ apiKey: env.GROQ_API_KEY });
     const modelId = body.model || "llama-3.1-8b-instant";
 
@@ -423,8 +504,9 @@ async function handleChat(request, env, corsHeaders) {
       headers: newHeaders,
     });
   } catch (error) {
+    // Log full error server-side but return a generic message to the client
     console.error("Chat error:", error);
-    return new Response(JSON.stringify({ error: error.message || "Internal Server Error" }), {
+    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

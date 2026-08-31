@@ -4,17 +4,51 @@ import worker from "../cloudflare/workers.js";
 
 const WORKER_URL = process.env.NEXT_PUBLIC_WORKER_URL || "http://localhost:8787";
 
-test("Worker - OPTIONS CORS preflight", async () => {
+test("Worker - OPTIONS CORS preflight (allowed origin)", async () => {
+  const allowedOrigin = "https://dossara.evanferrao.com";
   const req = new Request(`${WORKER_URL}/api/web-search`, {
     method: "OPTIONS",
-    headers: { Origin: "http://localhost:3000" },
+    headers: { Origin: allowedOrigin },
   });
 
-  const res = await worker.fetch(req, {}, {});
+  const env = {
+    ALLOWED_ORIGINS: "https://dossara.evanferrao.com,https://dossara.pages.dev,https://*.dossara.pages.dev",
+  };
+  const res = await worker.fetch(req, env, {});
   assert.equal(res.status, 204);
-  assert.equal(res.headers.get("Access-Control-Allow-Origin"), "http://localhost:3000");
+  assert.equal(res.headers.get("Access-Control-Allow-Origin"), allowedOrigin);
   assert.match(res.headers.get("Access-Control-Allow-Methods") || "", /POST/);
   assert.match(res.headers.get("Access-Control-Allow-Headers") || "", /X-Client-ID/);
+  assert.equal(res.headers.get("Vary"), "Origin");
+});
+
+test("Worker - OPTIONS CORS preflight (wildcard subdomain match)", async () => {
+  const req = new Request(`${WORKER_URL}/api/web-search`, {
+    method: "OPTIONS",
+    headers: { Origin: "https://abc123.dossara.pages.dev" },
+  });
+
+  const env = {
+    ALLOWED_ORIGINS: "https://dossara.evanferrao.com,https://*.dossara.pages.dev",
+  };
+  const res = await worker.fetch(req, env, {});
+  assert.equal(res.status, 204);
+  assert.equal(res.headers.get("Access-Control-Allow-Origin"), "https://abc123.dossara.pages.dev");
+});
+
+test("Worker - OPTIONS CORS preflight (disallowed origin)", async () => {
+  const req = new Request(`${WORKER_URL}/api/web-search`, {
+    method: "OPTIONS",
+    headers: { Origin: "https://evil-site.com" },
+  });
+
+  const env = {
+    ALLOWED_ORIGINS: "https://dossara.evanferrao.com,https://*.dossara.pages.dev",
+  };
+  const res = await worker.fetch(req, env, {});
+  assert.equal(res.status, 204);
+  // Disallowed origin should NOT get an Access-Control-Allow-Origin header
+  assert.equal(res.headers.get("Access-Control-Allow-Origin"), null);
 });
 
 test("Worker - GET /health endpoint", async () => {
