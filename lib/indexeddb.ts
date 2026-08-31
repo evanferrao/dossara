@@ -483,8 +483,11 @@ export async function clearChatMessages(chatId: string): Promise<void> {
       tx.oncomplete = () => resolve();
       tx.onerror = () => reject(tx.error);
     } else {
-      // Fallback
-      store.clear().onsuccess = () => resolve();
+      // Fallback: clear all messages (no chat_id index available)
+      const clearReq = store.clear();
+      clearReq.onerror = () => reject(clearReq.error);
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
     }
   });
 }

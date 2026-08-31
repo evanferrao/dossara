@@ -21,6 +21,18 @@ export default function Home() {
   const [docWidthPercent, setDocWidthPercent] = useState(40);
   const [isDragging, setIsDragging] = useState(false);
 
+  // SSR-safe media query: defaults to true to match desktop layout,
+  // then corrects on mount to avoid hydration mismatch.
+  const [isMdScreen, setIsMdScreen] = useState(true);
+
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    setIsMdScreen(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMdScreen(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
   useEffect(() => {
     if (!isDragging) return;
 
@@ -214,8 +226,8 @@ export default function Home() {
               activeTab === "documents" ? "flex" : "hidden"
             } md:flex flex-col w-full min-h-0 min-w-0 pr-1.5 md:pr-0`}
             style={{ 
-              width: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${docWidthPercent}% - 6px)` : '100%',
-              flexBasis: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${docWidthPercent}% - 6px)` : '100%',
+              width: isMdScreen ? `calc(${docWidthPercent}% - 6px)` : '100%',
+              flexBasis: isMdScreen ? `calc(${docWidthPercent}% - 6px)` : '100%',
               flexShrink: 0
             }}
           >
@@ -237,8 +249,8 @@ export default function Home() {
               activeTab === "chat" ? "flex" : "hidden"
             } md:flex flex-col w-full min-h-0 min-w-0 pl-1.5 md:pl-0`}
             style={{ 
-              width: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
-              flexBasis: typeof window !== 'undefined' && window.innerWidth >= 768 ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
+              width: isMdScreen ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
+              flexBasis: isMdScreen ? `calc(${100 - docWidthPercent}% - 6px)` : '100%',
               flexShrink: 0
             }}
           >

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import { DocumentProvider } from "@/context/DocumentContext";
+import { ChatProvider } from "@/context/ChatContext";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { PwaRegister } from "@/components/PwaRegister";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,10 +29,6 @@ export const metadata: Metadata = {
   keywords: ["PDF", "AI", "chat", "documents", "RAG", "privacy", "local", "browser"],
   manifest: "/manifest.json",
 };
-
-import { ChatProvider } from "@/context/ChatContext";
-import { ThemeProvider } from "@/context/ThemeContext";
-import { PwaRegister } from "@/components/PwaRegister";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
