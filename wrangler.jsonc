@@ -1,5 +1,16 @@
 {
-  "name": "dossara-proxy",
-  "compatibility_date": "2026-08-15",
-  "main": "cloudflare/workers.js"
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "dossara-proxy",
+	"compatibility_date": "2026-08-15",
+	"main": "cloudflare/workers.js",
+	"vars": {
+		"MAX_CHAT_PER_IP_PER_DAY": "5",
+		"ALLOWED_ORIGIN": "*"
+	},
+	"kv_namespaces": [
+		{
+			"binding": "RATE_LIMIT_KV",
+			"id": "2608adcd1cc5489490114369b50c29bb"
+		}
+	]
 }

@@ -4,6 +4,7 @@ import type {
   WebSearchResult,
   WebSearchOptions,
 } from "./types";
+import { getClientId } from "../client-id";
 
 export class TavilyWorkerProvider implements WebSearchProviderInterface {
   readonly providerType: WebSearchProviderType = "tavily-worker";
@@ -34,11 +35,17 @@ export class TavilyWorkerProvider implements WebSearchProviderInterface {
       ? `${this.workerUrl}/api/web-search`
       : "/api/web-search";
 
+    const clientId = getClientId();
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
+    if (clientId) {
+      headers["X-Client-ID"] = clientId;
+    }
+
     const response = await fetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         query: trimmedQuery,
         maxResults: options?.maxResults ?? 5,

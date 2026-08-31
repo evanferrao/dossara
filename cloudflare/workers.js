@@ -75,82 +75,179 @@ function getCorsHeaders(request, env) {
   };
 }
 
-// In-memory rate limiting fallback store
+// In-memory rate limiting fallback store (L1 cache / test fallback)
 const fallbackStore = new Map();
 
-function getNextDayResetMs() {
+function getDailyResetInfo() {
   const now = new Date();
-  return Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1);
+  const year = now.getUTCFullYear();
+  const month = String(now.getUTCMonth() + 1).padStart(2, "0");
+  const day = String(now.getUTCDate()).padStart(2, "0");
+  const dateKey = `${year}-${month}-${day}`;
+
+  const nextResetMs = Date.UTC(year, now.getUTCMonth(), now.getUTCDate() + 1);
+  const nowMs = now.getTime();
+  const retryAfterSecs = Math.max(1, Math.ceil((nextResetMs - nowMs) / 1000));
+
+  return { dateKey, nextResetMs, retryAfterSecs };
+}
+
+function getClientKeys(request) {
+  const keys = [];
+
+  // 1. Cloudflare Connecting IP (most trustworthy on Cloudflare Workers)
+  const cfIp = request.headers.get("cf-connecting-ip")?.trim();
+  if (cfIp) {
+    keys.push(`ip:${cfIp}`);
+  }
+
+  // 2. Client ID (persistent browser identifier)
+  const clientId = request.headers.get("x-client-id")?.trim();
+  if (clientId) {
+    keys.push(`cid:${clientId}`);
+  }
+
+  // 3. Fallback to X-Forwarded-For or X-Real-IP if no CF-Connecting-IP
+  if (!cfIp) {
+    const xff = request.headers.get("x-forwarded-for");
+    if (xff) {
+      const firstIp = xff.split(",")[0].trim();
+      if (firstIp) keys.push(`ip:${firstIp}`);
+    }
+    const realIp = request.headers.get("x-real-ip")?.trim();
+    if (realIp && !keys.includes(`ip:${realIp}`)) {
+      keys.push(`ip:${realIp}`);
+    }
+  }
+
+  if (keys.length === 0) {
+    keys.push("ip:anonymous-client");
+  }
+
+  return keys;
+}
+
+function createRateLimitResponse(maxRequests, retryAfterSecs, resetMs, corsHeaders) {
+  return new Response(
+    JSON.stringify({
+      error: "RATE_LIMITED",
+      message: `Usage limit reached — This demo project allows up to ${maxRequests} requests per day across chat & search to manage API costs. Set your own API key in settings for unmetered access.`,
+      retryAfter: retryAfterSecs,
+    }),
+    {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json",
+        "Retry-After": String(retryAfterSecs),
+        "X-RateLimit-Limit": String(maxRequests),
+        "X-RateLimit-Remaining": "0",
+        "X-RateLimit-Reset": String(Math.ceil(resetMs / 1000)),
+      },
+    }
+  );
 }
 
 /**
  * Shared rate limiter for /api/chat and /api/web-search.
  */
 async function enforceRateLimit(request, env, corsHeaders) {
-  const clientKey =
-    request.headers.get("cf-connecting-ip") ||
-    request.headers.get("x-forwarded-for") ||
-    "anonymous-client";
+  const maxRequests = parseInt(
+    env.MAX_CHAT_PER_IP_PER_DAY || "5",
+    10
+  );
+
+  if (maxRequests <= 0) {
+    return null;
+  }
+
+  const clientKeys = getClientKeys(request);
+  const { dateKey, nextResetMs, retryAfterSecs } = getDailyResetInfo();
 
   // 1. Native Cloudflare Rate Limiting binding (if configured)
   if (env.DOSSARA_RATE_LIMITER && typeof env.DOSSARA_RATE_LIMITER.limit === "function") {
     try {
-      const { success } = await env.DOSSARA_RATE_LIMITER.limit({ key: clientKey });
-      if (!success) {
-        return new Response(
-          JSON.stringify({
-            error: "RATE_LIMITED",
-            message: "Too many requests. Please try again later.",
-          }),
-          {
-            status: 429,
-            headers: { ...corsHeaders, "Content-Type": "application/json" },
-          }
-        );
+      for (const key of clientKeys) {
+        const { success } = await env.DOSSARA_RATE_LIMITER.limit({ key });
+        if (!success) {
+          return createRateLimitResponse(maxRequests, retryAfterSecs, nextResetMs, corsHeaders);
+        }
       }
-      return null;
     } catch (err) {
-      console.warn("Cloudflare rate limiter error, falling back to memory:", err);
+      console.warn("Cloudflare rate limiter binding error:", err);
     }
   }
 
-  // 2. Shared in-memory / daily rate limiter fallback
-  const maxRequests = parseInt(
-    env.MAX_REQUESTS_PER_CLIENT || env.MAX_CHAT_PER_IP_PER_DAY || "10",
-    10
-  );
-
-  if (maxRequests > 0) {
-    const now = Date.now();
-    let entry = fallbackStore.get(clientKey);
-
-    if (!entry || now >= entry.resetAt) {
-      entry = { count: 0, resetAt: getNextDayResetMs() };
-      fallbackStore.set(clientKey, entry);
-    }
-
-    entry.count++;
-
-    if (entry.count > maxRequests) {
-      const retryAfterSecs = Math.ceil((entry.resetAt - now) / 1000);
-      return new Response(
-        JSON.stringify({
-          error: "RATE_LIMITED",
-          message: `Usage limit reached — This demo project allows up to ${maxRequests} requests per day across chat & search to manage API costs. Set your own API key in settings for unmetered access.`,
-          retryAfter: retryAfterSecs,
-        }),
-        {
-          status: 429,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-            "Retry-After": String(retryAfterSecs),
-            "X-RateLimit-Limit": String(maxRequests),
-            "X-RateLimit-Remaining": "0",
-            "X-RateLimit-Reset": String(Math.ceil(entry.resetAt / 1000)),
-          },
+  // 2. Cloudflare KV Namespace (if bound: RATE_LIMIT_KV / DOSSARA_KV / KV)
+  const kv = env.RATE_LIMIT_KV || env.DOSSARA_KV || env.KV;
+  if (kv && typeof kv.get === "function" && typeof kv.put === "function") {
+    try {
+      let isLimited = false;
+      for (const key of clientKeys) {
+        const kvKey = `ratelimit:${key}:${dateKey}`;
+        const currentCountStr = await kv.get(kvKey);
+        const currentCount = parseInt(currentCountStr || "0", 10);
+        if (currentCount >= maxRequests) {
+          isLimited = true;
+        } else {
+          await kv.put(kvKey, String(currentCount + 1), {
+            expirationTtl: Math.max(60, retryAfterSecs + 3600),
+          });
         }
-      );
+      }
+      if (isLimited) {
+        return createRateLimitResponse(maxRequests, retryAfterSecs, nextResetMs, corsHeaders);
+      }
+    } catch (err) {
+      console.warn("Cloudflare KV rate limiter error:", err);
+    }
+  }
+
+  // 3. Cloudflare Edge Cache API (available in Cloudflare Workers edge runtime)
+  if (typeof caches !== "undefined" && caches.default) {
+    try {
+      const cache = caches.default;
+      let isLimited = false;
+      for (const key of clientKeys) {
+        const cacheUrl = `https://rate-limit.internal/${encodeURIComponent(key)}/${dateKey}`;
+        const cacheReq = new Request(cacheUrl);
+        const cachedRes = await cache.match(cacheReq);
+        let cachedCount = 0;
+        if (cachedRes) {
+          const text = await cachedRes.text();
+          cachedCount = parseInt(text || "0", 10);
+        }
+        if (cachedCount >= maxRequests) {
+          isLimited = true;
+        } else {
+          const nextRes = new Response(String(cachedCount + 1), {
+            headers: {
+              "Content-Type": "text/plain",
+              "Cache-Control": `public, max-age=${retryAfterSecs}`,
+            },
+          });
+          await cache.put(cacheReq, nextRes);
+        }
+      }
+      if (isLimited) {
+        return createRateLimitResponse(maxRequests, retryAfterSecs, nextResetMs, corsHeaders);
+      }
+    } catch (err) {
+      // Cache API may not be available in non-CF environments (unit tests); gracefully continue
+    }
+  }
+
+  // 4. In-memory rate limiting fallback store (local isolate / tests)
+  for (const key of clientKeys) {
+    const memoryKey = `${key}:${dateKey}`;
+    let entry = fallbackStore.get(memoryKey);
+    if (!entry) {
+      entry = { count: 0, resetAt: nextResetMs };
+      fallbackStore.set(memoryKey, entry);
+    }
+    entry.count++;
+    if (entry.count > maxRequests) {
+      return createRateLimitResponse(maxRequests, retryAfterSecs, nextResetMs, corsHeaders);
     }
   }
 

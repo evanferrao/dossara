@@ -21,6 +21,7 @@ import {
   loadWebSearchConfig,
   saveWebSearchConfig,
 } from "@/lib/settings/web-search-settings";
+import { getClientId } from "@/lib/client-id";
 import {
   saveChatMessage,
   getChatMessages,
@@ -331,8 +332,14 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         }
 
         // 3. Default behavior (Cloudflare Worker proxy)
-        // Inject assembled hybrid context directly into the request payload
-        let newInit = init;
+        // Inject assembled hybrid context directly into the request payload and attach client ID
+        let newInit = init || {};
+        const headers = new Headers(newInit.headers);
+        const clientId = getClientId();
+        if (clientId) {
+          headers.set("X-Client-ID", clientId);
+        }
+
         if (init?.body) {
           try {
             const parsed = JSON.parse(init.body as string);
@@ -344,12 +351,21 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             parsed.webSourceCount = hybridContext.webSourceCount;
 
             newInit = {
-              ...init,
+              ...newInit,
+              headers,
               body: JSON.stringify(parsed),
             };
           } catch {
-            // Keep original init
+            newInit = {
+              ...newInit,
+              headers,
+            };
           }
+        } else {
+          newInit = {
+            ...newInit,
+            headers,
+          };
         }
 
         return fetch(input, newInit);
