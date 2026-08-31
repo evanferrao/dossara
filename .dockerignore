@@ -6,5 +6,12 @@ README.md
 .next
 .git
 .github
+.env*
 .env*.local
 .vercel
+.wrangler
+tests
+dummy.pdf
+*.tsbuildinfo
+CLAUDE.md
+AGENTS.md

@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# test fixtures
+dummy.pdf
+
 # cloudflare wrangler
 .wrangler/
 
