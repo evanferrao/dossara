@@ -1,0 +1,14 @@
+# Cloudflare Worker Local Environment Variables (.dev.vars)
+# Used by `wrangler dev` to pass environment variables and secrets to cloudflare/workers.js
+
+# Comma-separated list of allowed origins (supports *.pages.dev)
+ALLOWED_ORIGINS="https://dossara.yourdomain.com,https://dossara.pages.dev,https://*.dossara.pages.dev"
+
+# Daily request limit per IP
+MAX_CHAT_PER_IP_PER_DAY=5
+
+# Groq API Key (required for default LLM proxy)
+GROQ_API_KEY="gsk_..."
+
+# Tavily API Key (optional for web search proxy)
+TAVILY_API_KEY="tvly-..."
