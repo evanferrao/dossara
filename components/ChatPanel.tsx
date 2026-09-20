@@ -10,7 +10,14 @@ import type { WebCitation } from "./WebCitationBadge";
 import { ModelSelector } from "./ModelSelector";
 import { WebSearchToggle } from "./WebSearchToggle";
 import type { ModelKey } from "@/lib/constants";
-import { TOP_K_LOCAL, TOP_K_WEB, DEFAULT_MODEL, MODELS } from "@/lib/constants";
+import {
+  TOP_K_LOCAL,
+  TOP_K_WEB,
+  DEFAULT_MODEL,
+  MODELS,
+  MAX_GROQ_PROMPT_CHARS,
+  PROMPT_TRUNCATION_NOTE,
+} from "@/lib/constants";
 import { buildSystemPrompt } from "@/lib/prompt";
 import { useDocuments } from "@/context/DocumentContext";
 import { useChats } from "@/context/ChatContext";
@@ -185,11 +192,13 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               let webResults: any[] = [];
 
               if (isWebSearchOn) {
+                // Sanitize search query to prevent Tavily 400 Bad Request on oversized prompts
+                const sanitizedWebQuery = userQuery.slice(0, 400).trim();
                 const webProvider = getWebSearchProvider(currentSearchConfig);
                 const [localRes, webRes] = await Promise.all([
                   retrieveLocal(userQuery, currentChatId, TOP_K_LOCAL),
                   webProvider
-                    .search(userQuery, {
+                    .search(sanitizedWebQuery, {
                       maxResults: currentSearchConfig.maxResults || TOP_K_WEB,
                       timeRange: currentSearchConfig.timeRange,
                     })
@@ -239,7 +248,18 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               context: hybridContext.context,
             });
 
-            let llmMessages = await convertToModelMessages(body.messages ?? []);
+            const normalizedOllamaMessages = (body.messages ?? []).map((m: any, idx: number) => {
+              if (!m.parts && typeof m.content === "string") {
+                return {
+                  id: m.id || `msg-${idx}`,
+                  role: m.role || "user",
+                  parts: [{ type: "text", text: m.content }],
+                };
+              }
+              return m;
+            });
+
+            let llmMessages = await convertToModelMessages(normalizedOllamaMessages);
 
             llmMessages = llmMessages.map((m: any) => {
               if (Array.isArray(m.content)) {
@@ -300,7 +320,18 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               context: hybridContext.context,
             });
 
-            let llmMessages = await convertToModelMessages(body.messages ?? []);
+            const normalizedGroqMessages = (body.messages ?? []).map((m: any, idx: number) => {
+              if (!m.parts && typeof m.content === "string") {
+                return {
+                  id: m.id || `msg-${idx}`,
+                  role: m.role || "user",
+                  parts: [{ type: "text", text: m.content }],
+                };
+              }
+              return m;
+            });
+
+            let llmMessages = await convertToModelMessages(normalizedGroqMessages);
 
             llmMessages = llmMessages.map((m: any) => {
               if (Array.isArray(m.content)) {
@@ -311,9 +342,15 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
                   return { ...m, content: "" };
                 }
                 if (filtered.every((p: any) => p.type === "text")) {
-                  return { ...m, content: filtered.map((p: any) => p.text).join("") };
+                  let text = filtered.map((p: any) => p.text).join("");
+                  if (text.length > MAX_GROQ_PROMPT_CHARS) {
+                    text = text.slice(0, MAX_GROQ_PROMPT_CHARS) + PROMPT_TRUNCATION_NOTE;
+                  }
+                  return { ...m, content: text };
                 }
                 return { ...m, content: filtered };
+              } else if (typeof m.content === "string" && m.content.length > MAX_GROQ_PROMPT_CHARS) {
+                return { ...m, content: m.content.slice(0, MAX_GROQ_PROMPT_CHARS) + PROMPT_TRUNCATION_NOTE };
               }
               return m;
             });
@@ -324,7 +361,10 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
               messages: llmMessages,
             });
 
-            return result.toUIMessageStreamResponse();
+            return (result.toUIMessageStreamResponse as any)({
+              getErrorMessage: (err: any) =>
+                err?.message || (typeof err === "string" ? err : "An error occurred during inference."),
+            });
           } catch (error) {
             console.error("Direct API error:", error);
             throw error;
@@ -349,6 +389,27 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             parsed.chunkCount = hybridContext.chunkCount;
             parsed.referencedDocCount = hybridContext.referencedDocCount;
             parsed.webSourceCount = hybridContext.webSourceCount;
+
+            // Budget message content lengths for Groq proxy to stay within free-tier TPM
+            if (Array.isArray(parsed.messages)) {
+              parsed.messages = parsed.messages.map((m: any) => {
+                if (typeof m.content === "string" && m.content.length > MAX_GROQ_PROMPT_CHARS) {
+                  return { ...m, content: m.content.slice(0, MAX_GROQ_PROMPT_CHARS) + PROMPT_TRUNCATION_NOTE };
+                }
+                if (Array.isArray(m.parts)) {
+                  return {
+                    ...m,
+                    parts: m.parts.map((p: any) => {
+                      if (p.type === "text" && typeof p.text === "string" && p.text.length > MAX_GROQ_PROMPT_CHARS) {
+                        return { ...p, text: p.text.slice(0, MAX_GROQ_PROMPT_CHARS) + PROMPT_TRUNCATION_NOTE };
+                      }
+                      return p;
+                    }),
+                  };
+                }
+                return m;
+              });
+            }
 
             newInit = {
               ...newInit,
@@ -388,21 +449,36 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
       let isRateLimit = false;
 
       try {
-        if (error.message.toLowerCase().includes("rate limit") || error.message.includes("429")) {
-          isRateLimit = true;
-        }
+        const rawMessage = error.message || "";
+        const lower = rawMessage.toLowerCase();
 
-        const jsonMatch = error.message.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const parsed = JSON.parse(jsonMatch[0]);
-          if (parsed.message) {
-            errorText = parsed.message;
-            if (errorText.toLowerCase().includes("rate limit")) {
-              isRateLimit = true;
+        if (
+          lower.includes("rate limit") ||
+          lower.includes("rate_limit") ||
+          lower.includes("rate_limited") ||
+          lower.includes("tpm") ||
+          lower.includes("tokens per minute") ||
+          lower.includes("too many requests") ||
+          lower.includes("request too large") ||
+          lower.includes("429")
+        ) {
+          isRateLimit = true;
+          errorText =
+            "Rate limit reached for the AI model (Tokens Per Minute limit exceeded). Please shorten your message, wait a moment, or upload large documents to the Document panel for RAG processing.";
+        } else {
+          // Attempt to extract JSON from error message if available
+          const jsonMatch = rawMessage.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            const parsed = JSON.parse(jsonMatch[0]);
+            if (parsed.message) {
+              errorText = parsed.message;
+            } else if (parsed.error && typeof parsed.error === "string") {
+              errorText = parsed.error;
             }
+          } else if (rawMessage && !rawMessage.includes("JSON")) {
+            // Strip leading technical prefixes like "Error: " or "APICallError: "
+            errorText = rawMessage.replace(/^[A-Za-z0-9_]+Error:\s*/, "").replace(/^Error:\s*/, "");
           }
-        } else if (error.message && !error.message.includes("JSON")) {
-          errorText = error.message.replace(/.*?:\s*/, "");
         }
       } catch {
         // Fall back to default

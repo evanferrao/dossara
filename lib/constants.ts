@@ -30,3 +30,8 @@ export const MODELS = (
 export type ModelKey = string;
 export const DEFAULT_MODEL: ModelKey = MODELS[0];
 
+/** Maximum character budget for direct Groq / worker prompts to stay within free-tier TPM limits (≈ 4,000 tokens) */
+export const MAX_GROQ_PROMPT_CHARS = Number(process.env.MAX_GROQ_PROMPT_CHARS ?? 16000);
+export const PROMPT_TRUNCATION_NOTE =
+  "\n\n[Note: Input truncated to fit model token limits. For analyzing long documents, please upload them to the Document panel for full RAG retrieval.]";
+

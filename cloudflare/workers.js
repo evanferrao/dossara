@@ -483,7 +483,45 @@ async function handleChat(request, env, corsHeaders) {
       context: body.context ?? "",
     });
 
-    const llmMessages = await convertToModelMessages(body.messages ?? []);
+    const normalizedMessages = (body.messages ?? []).map((m, idx) => {
+      if (!m.parts && typeof m.content === "string") {
+        return {
+          id: m.id || `msg-${idx}`,
+          role: m.role || "user",
+          parts: [{ type: "text", text: m.content }],
+        };
+      }
+      return m;
+    });
+
+    let llmMessages = await convertToModelMessages(normalizedMessages);
+
+    // Ensure content parts are stringified and budgeted to prevent 429 TPM overages
+    const MAX_GROQ_PROMPT_CHARS = 16000;
+    const TRUNCATION_NOTE =
+      "\n\n[Note: Input truncated to fit model token limits. For analyzing long documents, please upload them to the Document panel for full RAG retrieval.]";
+
+    llmMessages = llmMessages.map((m) => {
+      if (Array.isArray(m.content)) {
+        const filtered = m.content.filter((part) =>
+          ["text", "image", "tool-call", "tool-result"].includes(part.type)
+        );
+        if (filtered.length === 0) {
+          return { ...m, content: "" };
+        }
+        if (filtered.every((p) => p.type === "text")) {
+          let text = filtered.map((p) => p.text).join("");
+          if (text.length > MAX_GROQ_PROMPT_CHARS) {
+            text = text.slice(0, MAX_GROQ_PROMPT_CHARS) + TRUNCATION_NOTE;
+          }
+          return { ...m, content: text };
+        }
+        return { ...m, content: filtered };
+      } else if (typeof m.content === "string" && m.content.length > MAX_GROQ_PROMPT_CHARS) {
+        return { ...m, content: m.content.slice(0, MAX_GROQ_PROMPT_CHARS) + TRUNCATION_NOTE };
+      }
+      return m;
+    });
 
     const result = streamText({
       model: groq(modelId),
@@ -491,7 +529,12 @@ async function handleChat(request, env, corsHeaders) {
       messages: llmMessages,
     });
 
-    const streamResponse = result.toUIMessageStreamResponse();
+    const streamResponse = result.toUIMessageStreamResponse({
+      getErrorMessage: (err) =>
+        (err && typeof err === "object" && err.message)
+          ? err.message
+          : String(err || "An error occurred during inference."),
+    });
 
     const newHeaders = new Headers(streamResponse.headers);
     Object.entries(corsHeaders).forEach(([key, value]) => {
@@ -504,12 +547,21 @@ async function handleChat(request, env, corsHeaders) {
       headers: newHeaders,
     });
   } catch (error) {
-    // Log full error server-side but return a generic message to the client
     console.error("Chat error:", error);
-    return new Response(JSON.stringify({ error: "Internal Server Error" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    const statusCode =
+      error?.statusCode ||
+      (error?.status >= 400 && error?.status < 600 ? error.status : 500);
+    const errorMessage = error?.message || "Internal Server Error";
+    return new Response(
+      JSON.stringify({
+        error: error?.name || "CHAT_ERROR",
+        message: errorMessage,
+      }),
+      {
+        status: statusCode,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
   }
 }
 

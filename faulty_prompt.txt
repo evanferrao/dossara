@@ -1,0 +1,7288 @@
+Experian Credit Report
+Experian Report Number (ERN): 1788275513968
+Unique Transaction ID: 2399355306
+Report Created: 01-09-2026
+CURRENT APPLICATION INFORMATION
+These are the details you give us when you apply for your Experian Credit Report.
+Name
+
+Evan Ferrao
+
+Mobile Phone
+
+7588724933
+
+Telephone
+
+-
+
+Passport Number
+
+-
+
+PAN
+
+AISPF9092K
+
+Email
+
+evanferrao@gmail.com
+
+Voter ID
+
+-
+
+Driving License
+
+-
+
+Aadhaar Number
+
+-
+
+Ration Card
+
+-
+
+EXPERIAN CREDIT SCORE
+Your Experian Credit Report is summarized in the form of Experian Credit Score which ranges from 300 - 900.
+Score Factors
+YOUR EXPERIAN
+CREDIT SCORE
+
+1.
+
+Recency :
+
+Recent Credit Account Defaults
+
+2.
+
+Leverage :
+
+Credit Accounts with on-time re-payment history
+
+768
+
+3.
+
+Coverage :
+
+Non-delinquent and delinquent Credit Accounts
+
+Range: 300 – 900
+
+4.
+
+Delinquency Status :
+
+Defaults on Credit Accounts (current & recent periodic intervals)
+
+REPORT SUMMARY
+Credit Account Summary
+
+Current Balance Amount Summary
+
+Credit Enquiry Summary
+
+Total number of Accounts
+
+23
+
+Total Current Bal. amt
+
+6,887
+
+Last 7 days credit enquiries
+
+0
+
+Active Accounts
+
+20
+
+SF/WD/WO/Settled amt
+
+0
+
+Last 30 days credit enquiries
+
+1
+
+Closed Accounts
+
+3
+
+Secured Accounts amt
+
+202
+
+Last 90 days credit enquiries
+
+1
+
+CC/CO
+
+-
+
+Unsecured Accounts amt
+
+6,685
+
+Last 180 days credit enquiries
+
+2
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 1 of 21
+
+t Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+SUMMARY: CREDIT ACCOUNT INFORMATION
+This section displays summary of all your reported credit accounts found in the Experian Credit Bureau database.
+Lender
+
+Account type
+
+Account No
+
+Ownership
+
+Date Reported Account
+Status
+
+Date Opened
+
+Sanction Amt Current
+/
+Balance
+Highest
+Credit
+
+Amount
+Overdue
+
+IDFC FIRST BANK
+LIMITED
+
+CREDIT
+CARDS
+
+20000012051724
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260616
+
+8,846
+
+176
+
+0
+
+Acct 2 HDFC Bank Ltd
+
+CREDIT
+CARDS
+
+1501027848593369
+
+Individual
+
+15-08-2026
+
+ACTIVE
+
+20260615
+
+71,262
+
+305
+
+0
+
+Acct 3 IndusInd Bank Limited
+
+CREDIT
+CARDS
+
+7227226542795634496
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260512
+
+9,970
+
+2,148
+
+0
+
+Acct 4 RBL Bank
+
+CREDIT
+CARDS
+
+0007470510007723509
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260507
+
+148
+
+0
+
+0
+
+CREDIT
+CARDS
+
+SLCC917719395213
+
+Individual
+
+16-08-2026
+
+ACTIVE
+
+20260424
+
+8,867
+
+2,312
+
+0
+
+CREDIT
+CARDS
+
+0000000035600116
+
+Individual
+
+10-07-2026
+
+ACTIVE
+
+20260423
+
+112
+
+1,745
+
+0
+
+SECURED
+CREDIT
+CARD
+
+596515
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260418
+
+1,03,500
+
+0
+
+0
+
+Acct 8 Yes Bank
+
+CREDIT
+CARDS
+
+0001005160002097017
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260218
+
+539
+
+0
+
+0
+
+Acct 9 ICICI Bank
+
+CREDIT
+CARDS
+
+0000000035098067
+
+Individual
+
+30-06-2026
+
+ACTIVE
+
+20260212
+
+13,197
+
+0
+
+0
+
+Acct 10 Yes Bank
+
+CREDIT
+CARDS
+
+0001006070005096438
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260210
+
+5,821
+
+0
+
+0
+
+Acct 1
+
+SLICE SMALL
+Acct 5 FINANCE BANK
+
+LIMITED
+Acct 6 ICICI Bank
+
+The Suryoday Microfinance Private Ltd
+
+Acct 7
+
+Acct 11
+
+The South Indian Bank
+Ltd
+
+CONSUMER
+LOAN
+
+VAS26E000122642
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260129
+
+4,000
+
+0
+
+0
+
+Acct 12
+
+CapFloat Financial
+Services Pvt Ltd
+
+CONSUMER
+LOAN
+
+VAS26E000122642
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20260129
+
+1,000
+
+0
+
+0
+
+CREDIT
+CARDS
+
+0007470450001898405
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20250925
+
+8,409
+
+-
+
+0
+
+SECURED
+CREDIT
+CARD
+
+ACC_105372153337848476 Individual
+
+31-07-2026
+
+ACTIVE
+
+20250623
+
+4,788
+
+0
+
+0
+
+Acct 15 BOBCARD LIMITED
+
+CREDIT
+CARDS
+
+7933211004847414
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20240107
+
+12,330
+
+0
+
+0
+
+Acct 16 BOBCARD LIMITED
+
+CREDIT
+CARDS
+
+7930521000009014
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20230907
+
+5,693
+
+0
+
+0
+
+Acct 17 Punjab National Bank
+
+CREDIT
+CARDS
+
+0000001957622000
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20230802
+
+32,618
+
+0
+
+0
+
+Acct 13 RBL Bank
+
+Acct 14
+
+Utkarsh Small Finance
+Bank Limited
+
+Acct 18
+
+IDFC FIRST BANK
+LIMITED
+
+SECURED
+CREDIT
+CARD
+
+20300005064381
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20221215
+
+14,114
+
+0
+
+0
+
+Acct 19
+
+Kotak Mahindra Bank
+Limited
+
+SECURED
+CREDIT
+CARD
+
+9406420002020379
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20221209
+
+18,544
+
+0
+
+0
+
+Acct 20
+
+SBM Bank (Mauritius)
+Ltd
+
+SECURED
+CREDIT
+CARD
+
+2964929525189707307
+
+Individual
+
+31-07-2026
+
+ACTIVE
+
+20221107
+
+52,000
+
+202
+
+0
+
+Acct 21
+
+Snapmint Financial
+Services Pvt Ltd
+
+CONSUMER
+LOAN
+
+4953545111202506
+
+Individual
+
+31-07-2026
+
+CLOSED
+
+20251122
+
+7,101
+
+0
+
+0
+
+CREDIT
+CARDS
+
+6528590000182915
+
+Individual
+
+20-07-2023
+
+CLOSED
+
+20230223
+
+196
+
+0
+
+0
+
+SECURED
+CREDIT
+CARD
+
+669E7A25-E351-452DA1B4-9
+
+Individual
+
+28-02-2026
+
+CLOSED
+
+20221129
+
+3,889
+
+0
+
+0
+
+Acct 22 Punjab National Bank
+
+Acct 23
+
+SBM Bank (Mauritius)
+Ltd
+
+CREDIT ACCOUNT INFORMATION DETAILS
+This section has information based on the details provided to Experian by all our member banks, credit / financial institutions and other credit grantors with whom you have a credit / loan account.
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 2 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+CREDIT CARDS
+
+IDFC FIRST BANK LIMITED
+
+Acct 1
+
+Evan Ferrao
+Address 1
+
+7-B-603-EDEN-ROSE-BEVERLY-PARK-KANA KIACOMPLEX-OPP-CINEMA-THEATER-MIRA- RD-EAST, THANE, MAHARASHTRA, Maharashtra
+401107
+
+Address 2
+
+7 B-603, EDEN ROSE, BEVERLY PARK, KANAKIA COMPLEX, OPPOSITE CINEMAX THEATRE, MIRA ROAD EAST, OPPOSITE Cinemax Theatre
+Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account details
+
+Account Number
+
+20000012051724
+
+Date Reported
+
+20260731
+
+Credit Limit Amt
+
+77,000
+
+Date Opened
+
+16-06-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+8,846
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+46.200
+
+Current Balance
+
+176
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+-
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+0
+
+0
+
+2026
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+HDFC Bank Ltd
+
+Acct 2
+
+Ferrao Evan
+Address 1
+
+7B/603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX OPP CINEMAX THEATRE MIRA ROAD EAST Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+1501027848593369 Date Reported
+
+Account details
+
+20260815
+
+Credit Limit Amt
+
+3,00,000
+
+Date Opened
+
+15-06-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+71,262
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+305
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+30-07-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 3 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+2026
+
+Aug
+
+Jul
+
+Jun
+
+0
+
+0
+
+0
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type
+
+Mobile
+
+Phone Number Extension
+
+917588724933 -
+
+Phone Type
+
+Mobile
+
+Phone Number Extension
+
+917588724933 -
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+IndusInd Bank Limited
+
+Acct 3
+
+Evan Ferrao
+
+7 B-603, EDEN ROSE,BEVERLY PARK, KANAKIA COMPLEX,MIRA ROAD EAST,MIRA-BHAYANDER THANE,OPPOSITE CINEMAX THEATRE
+MIRA Bhayander 401107 Maharashtra 401107
+
+Address 1
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+7227226542795634496 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+1,22,000
+
+Date Opened
+
+12-05-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+9,970
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+2,148
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+30-07-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+0
+
+0
+
+0
+
+2026
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 4 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+CREDIT CARDS
+
+RBL Bank
+
+Acct 4
+
+Evan Ferrao Mr
+Address 1
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX THANE Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0007470510007723509 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+33,000
+
+Date Opened
+
+07-05-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+148
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+42.000
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+29-05-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+0
+
+0
+
+0
+
+2026
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Gender
+
+Male
+
+Mobile
+
+7588724933 -
+
+Occupation Email
+address
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Mobile
+
+7588724933 -
+
+Extension
+
+-
+
+EVANFERRAO@EVANFERRAO.WIN
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+SLICE SMALL FINANCE BANK LIMITED
+
+Acct 5
+
+Evan Ferrao
+Address 1
+
+C/O,TED FERRAO,7 B-603, EDEN ROSE ,BEVERLY PARK, KANAKIA COMPLEX,MIRA ROAD EAST,OPPOSITE CINEMAX THEATRE,MIRA Bhayander,mira Road,thane,maharashtra Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+SLCC917719395213 Date Reported
+
+Account details
+
+20260816
+
+Credit Limit Amt
+
+26,000
+
+Date Opened
+
+24-04-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+8,867
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+2,312
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+29-07-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 5 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+2026
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+ICICI Bank
+
+Acct 6
+
+Ferrao Evan
+Address 1
+
+7 B 603 EDEN ROSE BEVERLY PARK KANAKIA C OMPLEX OPPOSITE CINEMAX THEATRE MIRA ROA D EAST Maharashtra 401107
+
+Address 2
+
+EDEN ROSE 7B BEVERLY PARK KANAKIA COMPLE X MIRA ROAD EAST Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0000000035600116 Date Reported
+
+20260710
+
+Credit Limit Amt
+
+1,30,000
+
+Date Opened
+
+23-04-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+112
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+1,745
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+24-04-2026
+
+SuitFiled Willful Default
+
+No Suit filed
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+0
+
+0
+
+2026
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 6 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+SECURED CREDIT CARD
+
+The Suryoday Micro-finance Private Ltd
+
+Acct 7
+
+Evan Ferrao
+Address 1
+
+C/O,TED FERRAO, 7 B-603, EDEN ROSE,BEVERLY PARK, KANAKIA COMPLEX, OPPO Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account details
+
+Account Number
+
+596515
+
+Date Reported
+
+20260731
+
+Credit Limit Amt
+
+1,03,500
+
+Date Opened
+
+18-04-2026
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+1
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+1,03,500
+
+Total Write-off Amt
+
+0
+
+Rate of Interest
+
+2.950
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+115000
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+14-07-2026
+
+SuitFiled Willful Default
+
+No Suit filed
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Mar
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Yes Bank
+
+Acct 8
+
+Ferrao Evan
+Address 1
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX MIRA ROAD MOVIE MAX Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+0001005160002097017 Date Reported
+
+Account details
+
+20260731
+
+Credit Limit Amt
+
+0
+
+Date Opened
+
+18-02-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+539
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+21-02-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 7 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type Phone Number
+
+Mobile
+
+Extension
+
+00917588724933 -
+
+Phone Type Phone Number
+
+Mobile
+
+Extension
+
+00917588724933 -
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+ICICI Bank
+
+Acct 9
+
+Ferrao Evan
+Address 1
+
+7 B 603 EDEN ROSE BEVERLY PARK KANAKIA C OMPLEX OPPOSITE CINEMAX THEATRE MIRA ROA D EAST Maharashtra 401107
+
+Address 2
+
+EDEN ROSE 7B BEVERLY PARK KANAKIA COMPLE X MIRA ROAD EAST Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0000000035098067 Date Reported
+
+20260630
+
+Credit Limit Amt
+
+1,30,000
+
+Date Opened
+
+12-02-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+13,197
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+16-05-2026
+
+SuitFiled Willful Default
+
+No Suit filed
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 8 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+CREDIT CARDS
+
+Yes Bank
+
+Acct 10
+
+Ferrao Evan
+Address 1
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX MIRA ROAD MOVIE MAX Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0001006070005096438 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+58,000
+
+Date Opened
+
+10-02-2026
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+5,821
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+28-03-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type Phone Number
+
+Mobile
+
+Extension
+
+00917588724933 -
+
+Phone Type Phone Number
+
+Mobile
+
+Extension
+
+00917588724933 -
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CONSUMER LOAN
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+The South Indian Bank Ltd
+
+Acct 11
+
+Evan Ferrao
+Address 1
+
+7 B 603 EDEN RO E BEVERLY PARK KANAKIA COMPLEX MIRA ROAD EA T MIRA BHAYANDER VA AI MAHARASHTRA Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+VAS26E000122642 Date Reported
+
+Account details
+
+20260731
+
+Credit Limit Amt
+
+-
+
+EMI
+
+-
+
+Date Opened
+
+29-01-2026
+
+Loan Type
+
+CONSUMER
+LOAN
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+4,000
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+02-03-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 9 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+9082551049
+
+-
+
+Mobile
+
+9082551049
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CONSUMER LOAN
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+CapFloat Financial Services Pvt Ltd
+
+Acct 12
+
+Evan Ferrao
+Address 1
+
+7 B 603 EDEN RO E BEVERLY PARK KANAKIA COMPLEX MIRA ROAD EA T MIRA BHAYANDER VA AI MAHARASHTRA Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+VAS26E000122642 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+-
+
+Date Opened
+
+29-01-2026
+
+Loan Type
+
+CONSUMER
+LOAN
+
+EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+1,000
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+02-03-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+9082551049
+
+-
+
+Mobile
+
+9082551049
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 10 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+CREDIT CARDS
+
+RBL Bank
+
+Acct 13
+
+Evan Ferrao Mr
+Address 1
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX THANE Maharashtra 401107
+
+Address 2
+
+HNO 7 B 603 EDEN R OSEBEVERLY PARK KANAKIA COMPLEXMIRA THANE Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0007470450001898405 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+33,000
+
+Date Opened
+
+25-09-2025
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+8,409
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+40.200
+
+Current Balance
+
+-
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+02-07-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Gender
+
+Male
+
+Mobile
+
+7588724933 -
+
+Occupation Email
+address
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Mobile
+
+7588724933 -
+
+Extension
+
+-
+
+EVANFERRAO@EVANFERRAO.WIN
+
+SECURED CREDIT CARD
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Utkarsh Small Finance Bank Limited
+
+Acct 14
+
+Evan Ferrao
+Address 1
+
+7 B-603, EDEN ROSE, BEVERLY PARK,, KANAKIA COMPLEX, MIRA ROAD EAST,, OPPOSITE CINEMAX THEATRE, THANE, THANE, India
+Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+ACC_105372153337848476 Date Reported
+
+Account details
+
+20260731
+
+Credit Limit Amt
+
+4,788
+
+Date Opened
+
+23-06-2025
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+4,788
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+30-07-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 11 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type
+
+Mobile
+
+Occupation Email
+address
+
+Phone
+Number
+
+Extension
+
+7588724933
+
+-
+
+-
+
+-
+
+Phone Type
+
+Phone Number Extension
+
+Mobile
+
+7588724933
+
+Mobile
+
+917588724933 -
+
+-
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+BOBCARD LIMITED
+
+Acct 15
+
+Evan Ferrao
+Address 1
+
+7B603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX MIRA RD EAST OPP CINEMAX THEATRE THANE 401107 Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+7933211004847414 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+20,000
+
+Date Opened
+
+07-01-2024
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+12,330
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+27-03-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 12 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+CREDIT CARDS
+
+BOBCARD LIMITED
+
+Acct 16
+
+Evan Ferrao
+Address 1
+
+7B603 EDEN ROSE BEVERLY PARK KANAKIA COMPLEX MIRA RD EAST OPP CINEMAX THEATRE THANE 401107 Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+7930521000009014 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+20,000
+
+Date Opened
+
+07-09-2023
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Highest Credit
+
+5,693
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+01-10-2025
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Punjab National Bank
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Acct 17
+
+Evan Ferrao
+Address 1
+
+7 B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLE X MIRA ROAD EAST COMPLEX MIRA ROAD EAST Mumbai Maharashtra 401107
+
+Address 2
+
+7 B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLE X MIRA ROAD EAST Mumbai Maharashtra 401107
+
+Address 3
+
+7 B 603 EDEN ROSE BEVERLY PARK KANA COMPLEX MIRA ROAD EAST Mumbai Maharashtra 401107
+
+Credit Account details
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 13 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+0000001957622000 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+64,000
+
+Date Opened
+
+02-08-2023
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+1
+
+Ownership
+
+Individual
+
+Highest Credit
+
+32,618
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+35.890
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+31-12-2024
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+2023
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of Birth
+
+15-07-2004
+
+Phone Type
+
+Phone Number
+
+Extension
+
+Phone Type
+
+Phone Number Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+Occupation
+
+-
+
+-
+
+-
+
+Email address
+
+-
+
+SECURED CREDIT CARD
+
+-
+
+ID Type
+
+Date Date
+ID
+of
+of
+Number
+issue Expiry
+
+PAN
+
+-
+
+-
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+IDFC FIRST BANK LIMITED
+
+Acct 18
+
+Evan Ferrao
+Address 1
+
+7-B-603-EDEN-ROSE-BEVERLY-PARK-KANA KIACOMPLEX-OPP-CINEMA-THEATER-MIRA- RD-EAST, THANE, MAHARASHTRA, Maharashtra
+401107
+
+Address 2
+
+7 B-603, EDEN ROSE, BEVERLY PARK, KANAKIA COMPLEX, OPPOSITE CINEMAX THEATRE, MIRA ROAD EAST, OPPOSITE Cinemax Theatre
+Maharashtra 401107
+
+Address 3
+
+7-B-603-EDEN-ROSE-BEVERLY-PARK-KANAKIACO MPLEX-OPP-CINEMA-THEATER-MIRA-RD-EAST, T HANE, MAHARASHTRA Maharashtra
+401107
+
+Address 4
+
+7 B-603, EDEN ROSE, BEVERLY PARKKANAKIA COMPLEX, OPPOSITE CINEMAXTHEATRE, MIRA R OAD EAST Maharashtra 401107
+
+Address 5
+
+7 B-603, EDEN ROSE, BEVERLY PARKKANAKIA COMPLEX, OPPOSITE CI Nemaxtheatre, Mira R Maharashtra 401107
+
+Address 6
+
+7B, 603, EDEN ROSE, BEVERLY PARK,KANAKIA COMPLEX, MIRA ROAD East,thane Maharashtra 401107
+
+Address 7
+
+7 B-603, EDEN ROSE, BEVERLY PARK,KANAKIA COMPLEX, OPPOSITE C Inemaxtheatre, Mira Maharashtra 401107
+
+Credit Account details
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 14 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+Account terms
+
+Account description
+
+Account Number
+
+20300005064381
+
+Account details
+
+Date Reported
+
+20260731
+
+Credit Limit Amt
+
+25,000
+
+EMI
+
+-
+
+Date Opened
+
+15-12-2022
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+14,114
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+9.000
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+-
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2023
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+SECURED CREDIT CARD
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Kotak Mahindra Bank Limited
+
+Acct 19
+
+Evan Ferrao
+Address 1
+
+7 B 603 EDEN ROSE BEVERLY PAR K KANAKIA COMPLEX MIRA ROAD E AST OPPOSITE CINEMAX THEATRE M MUMBAI Maharashtra 401107
+
+Address 2
+
+7 B-603, EDEN ROSE,BEVERLY PAR K, KANAKIA COMPLEX,MIRA ROAD E AST, OPPOSITE CINEMAX THEATRE,M THANE Maharashtra 401107
+
+Address 3
+
+7 B-603 EDEN ROSEBEVERLY PARK KANAKIA COMPLEXMIRA ROAD MIRA-BHAYANDER THANE Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account Number
+
+Account description
+
+9406420002020379 Date Reported
+
+Account details
+
+20260731
+
+Credit Limit Amt
+
+1,30,400
+
+EMI
+
+-
+
+Date Opened
+
+09-12-2022
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+18,544
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+10-06-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 15 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2023
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Office phone 7588724933
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+SECURED CREDIT CARD
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+SBM Bank (Mauritius) Ltd
+
+Acct 20
+
+Ferrao Evan
+Address 1
+
+7B, 603, EDEN ROSE BEVERLY PARK, KANAKIA COMPLEX, MIRA ROAD MOVIE MAX MUMBAI Maharashtra 401107
+
+Address 2
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA CO MPLEX MIRA ROAD MOVIE MAX MUMBAI Maharashtra 401107
+
+Address 3
+
+7B 603 EDEN ROSE BEVERLY PARK KANAKIA CO MPLEX MIRA ROAD MOVIE MAX Maharashtra 401107
+
+Address 4
+
+7B, 603, EDEN ROSE BEVERLY PARK, KANAKIA COMPLEX, MIRA ROAD MOVIE MAX Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+2964929525189707307 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+52,000
+
+Date Opened
+
+07-11-2022
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+EMI
+
+-
+
+Date Closed
+
+-
+
+Account Status
+
+ACTIVE
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+52,000
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+202
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+52000
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+01-10-2025
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2023
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 16 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type
+
+Phone Number Extension
+
+Phone Type
+
+Phone Number Extension
+
+Mobile
+
+917588724933 -
+
+Mobile
+
+917588724933 -
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+7588724933
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CONSUMER LOAN
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Snapmint Financial Services Pvt Ltd
+
+Acct 21
+
+Mr Evan Ferrao
+Address 1
+
+7 B-603 EDEN ROSE BEVERLY PARKKANAKIA COMPLEX MIRA ROAD EASTOPPOSITE CINEMAX THEATRE THANE THANE MAHARASHTRA
+401107 Maharashtra 401107
+
+Address 2
+
+7 B-603 EDEN ROSE BEVERLY PARKKANAKIA CO MPLEX MIRA ROAD EASTOPPOSITE CINEMAX THE ATRE THANE THANE MAHARASHTRA
+401107 Maharashtra 401107
+
+Address 3
+
+7 B-603 EDEN ROSE BEVERLY PARKKANAKIA CO MPLEX MIRA ROAD EASTOPPOSITE CINEMAX THE ATRE THANE Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+4953545111202506 Date Reported
+
+20260731
+
+Credit Limit Amt
+
+-
+
+Date Opened
+
+22-11-2025
+
+Loan Type
+
+CONSUMER
+LOAN
+
+EMI
+
+-
+
+Date Closed
+
+31-07-2026
+
+Account Status
+
+CLOSED
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+7,101
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+27-03-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+Feb
+
+Jan
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2026
+2025
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+CREDIT CARDS
+
+Punjab National Bank
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Acct 22
+
+Evan Ferrao
+Address 1
+
+7 B 603 EDEN ROSE BEVERLY PARK KANAKIA COMPLE X MIRA ROAD EAST Th Maharashtra 401107
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 17 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+Credit Account details
+Account terms
+
+Account description
+
+Account Number
+
+Account details
+
+6528590000182915 Date Reported
+
+20230720
+
+Credit Limit Amt
+
+64,000
+
+Date Opened
+
+23-02-2023
+
+Loan Type
+
+CREDIT CARDS EMI
+
+-
+
+Date Closed
+
+10-07-2023
+
+Account Status
+
+CLOSED
+
+Repayment Tenure
+
+1
+
+Ownership
+
+Individual
+
+Highest Credit
+
+196
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+05-07-2023
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+2023
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+0
+
+0
+
+0
+
+0
+
+Feb
+
+Jan
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Phone Type
+
+Phone
+Number
+
+Extension
+
+Gender
+
+Male
+
+Mobile
+
+7588724933
+
+-
+
+Mobile
+
+7588724933
+
+-
+
+-
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+SECURED CREDIT CARD
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+SBM Bank (Mauritius) Ltd
+
+Acct 23
+
+Ferrao Evan
+Address 1
+
+7 B-603 EDEN ROSE MIRA ROAD EAST BEVERLY PARK KANAKIA COMPLEX MIRA-BHAYANDER THANE Maharashtra 401107
+
+Address 2
+
+7 B 603 EDEN ROSE MIRA ROAD EAST BEVERLY PARK KANAKIA COMPLEX MIRA BHAYANDER THA NE Maharashtra 401107
+
+Credit Account details
+Account terms
+
+Account description
+
+Account details
+
+Account Number
+
+669E7A25E351-452DA1B4-9
+
+Date Reported
+
+20260228
+
+Credit Limit Amt
+
+22,500
+
+Date Opened
+
+29-11-2022
+
+Loan Type
+
+SECURED
+CREDIT CARD
+
+EMI
+
+-
+
+Date Closed
+
+09-02-2026
+
+Account Status
+
+CLOSED
+
+Repayment Tenure
+
+0
+
+Ownership
+
+Individual
+
+Sanctioned Amt
+
+3,889
+
+Total Write-off Amt
+
+-
+
+Rate of Interest
+
+-
+
+Current Balance
+
+0
+
+Principal Write-off
+
+-
+
+Value of Collateral
+
+-
+
+Amount Overdue
+
+0
+
+Settlement Amt
+
+-
+
+Type of Collateral
+
+-
+
+Last Payment Date
+
+09-02-2026
+
+SuitFiled Willful Default
+
+-
+
+Credit Facility Status
+
+-
+
+Payment History
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 18 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+
+DPD
+
+Dec
+
+Nov
+
+Oct
+
+Sep
+
+Aug
+
+Jul
+
+Jun
+
+May
+
+Apr
+
+Mar
+
+2026
+
+Feb
+
+Jan
+
+0
+
+0
+
+2025
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2024
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+2023
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+0
+
+Consumer Personal details on the Credit Account
+
+Date of
+Birth
+
+15-07-2004
+
+Gender
+
+Male
+
+Phone Type
+
+Phone Number Extension
+
+Phone Type
+
+Phone Number Extension
+
+Mobile
+
+917588724933 -
+
+Mobile
+
+917588724933 -
+
+-
+
+-
+
+917588724933 -
+
+-
+
+Occupation Email
+address
+
+EVANFERRAO@GMAIL.COM
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Date Date
+of
+of
+issue Expiry
+
+ID Type
+
+ID Number
+
+PAN
+
+AISPF9092K -
+
+-
+
+Passport
+
+-
+
+-
+
+-
+
+Voter ID
+
+-
+
+-
+
+-
+
+Aadhaar/UID -
+
+-
+
+-
+
+Driving
+License
+
+-
+
+-
+
+-
+
+Ration Card
+
+-
+
+-
+
+-
+
+Page 19 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+CREDIT ENQUIRIES
+
+Records Found: 4
+
+This section shows the names of the credit institutions that have processed a credit / loan application for you.
+Evan Ferrao
+Address 1
+
+Date of Birth
+
+Cr Enq 1
+
+15-07-2004
+
+PAN
+
+AISPF9092K
+
+ERN
+
+1785937728763
+
+Telephone
+
+-
+
+Passport Number
+
+-
+
+Search Type
+
+Personal Loan
+
+Mobile Phone
+
+7588724933
+
+Voter ID
+
+-
+
+Credit Institution Name
+
+R K BANSAL FINANCE
+PRIVATE LIMITED
+
+Gender
+
+Male
+
+Driving License
+
+-
+
+Application date
+
+05-08-2026
+
+Marital Status
+
+-
+
+Ration Card
+
+-
+
+Amount applied for
+
+5,000
+
+Duration of Agreement
+
+6
+
+Email
+
+-
+
+Evan Ferrao
+Address 1
+
+Cr Enq 2
+
+Date of Birth
+
+15-07-2004
+
+PAN
+
+AISPF9092K
+
+ERN
+
+1777100574012
+
+Telephone
+
+-
+
+Passport Number
+
+-
+
+Search Type
+
+Credit Card
+
+Mobile Phone
+
+7588724933
+
+Voter ID
+
+-
+
+Credit Institution Name
+
+Federal Bank
+
+Gender
+
+Male
+
+Driving License
+
+-
+
+Application date
+
+25-04-2026
+
+Marital Status
+
+-
+
+Ration Card
+
+-
+
+Amount applied for
+
+10,000
+
+Email
+
+-
+
+Duration of Agreement
+
+0
+
+Evan Ferrao
+Address 1
+
+Date of Birth
+
+Cr Enq 3
+
+15-07-2004
+
+PAN
+
+AISPF9092K
+
+ERN
+
+1770467431013
+
+Telephone
+
+-
+
+Passport Number
+
+-
+
+Search Type
+
+Credit Card
+
+Mobile Phone
+
+7588724933
+
+Voter ID
+
+-
+
+Credit Institution Name
+
+Yes Bank
+
+Gender
+
+Male
+
+Driving License
+
+-
+
+Application date
+
+07-02-2026
+
+Marital Status
+
+-
+
+Ration Card
+
+-
+
+Amount applied for
+
+1,00,000
+
+Email
+
+EVANFERRAO@GMAIL.COM
+
+Duration of Agreement
+
+12
+
+Evan Ferrao
+Address 1
+
+Cr Enq 4
+
+Date of Birth
+
+15-07-2004
+
+PAN
+
+AISPF9092K
+
+ERN
+
+1769693216326
+
+Telephone
+
+-
+
+Passport Number
+
+-
+
+Search Type
+
+Consumer Search
+
+Mobile Phone
+
+-
+
+Voter ID
+
+-
+
+Credit Institution Name
+
+CapFloat Financial Services Pvt
+Ltd
+
+Gender
+
+Male
+
+Driving License
+
+-
+
+Application date
+
+29-01-2026
+
+Marital Status
+
+-
+
+Ration Card
+
+-
+
+Amount applied for
+
+60,000
+
+Email
+
+-
+
+Duration of Agreement
+
+12
+
+CONTACTING US
+
+If you find a discrepancy in your report, it is important to quickly raise it with your lender.Under the Credit Information Companies (Regulation) Act 2005 and as per the guidelines set by the Reserve
+Bank of India, Experian Credit Information Company of India Private Limited is not authorized to change any data in your credit information report without authorisation from your lender. However, we
+would be happy to help you with this process. If you would like us to help please visit https://consumer.experian.in/ECV-OLN/ to raise a dispute regarding the discrepancy.
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 20 of 21
+
+Experian Credit Report
+Experian Report Number (ERN) : 1788275513968
+Unique Transaction ID: 2399355306
+LEGEND
+
+Active: Credit Accounts that do not have 'Date Closed' populated.
+Closed : Credit accounts that have 'Date Closed' populated.
+CO: Entity ceased while account was open.
+CC: Entity ceased while account was closed.
+DPD : Days Past Due. Number of days that have passed from the agreed payment due date of EMI.
+DPD '0' : The number '0' in the circle indicates that the Payment is made as agreed and the credit account is up to date.
+DPD >0 : The number in the circle indicates the "Days Past Due" reported by the respective lender.
+When the below alphabets are shown in the DPD table, it means the lender is reporting Asset Classification and indicates the following:
+S : Standard: An account which is overdue for less than 90 days is considered as a Standard asset as per RBI guidelines.
+M : Special Mention: These accounts are "Standard" assets but for some discrepancy the lending organization would like to monitor this account closely.
+B : Substandard: An account which is overdue by 90 days for a period of less than or equal to 12 months is classified as Substandard asset as per RBI guidelines
+D : Doubtful: An account which is overdue by 90 days for more than 12 months is classified as doubtful asset as per RBI guidelines.
+L : Loss: An account where loss has been identified but the amount has not been written off, wholly or partially is classified as Loss asset as per RBI guidelines.
+<---------- END OF REPORT ---------->
+Experian Credit Information Company of India Private Limited ("ECICI") is registered as a Credit Information Company with the Reserve Bank of India. ECICI has empanelled several credit institutions /
+specified users ("Members") with it, from whom it collects information / data for the bureau operations. The current Experian Credit Information Report and Experian Credit Score ("Report") is a
+reflection of this information / data as submitted by the Member to ECICI. The Report may thus be limited to the information / data contributed by the Member. The information / data provided in the
+Report is as current and up to date as provided by the Members. The Report is not a guarantee of any particular outcome and you may therefore not use any information, in full or in part, as the sole basis
+for any decision you take. ECICI does not accept any responsibility for any loss that may arise to you from relying on the information / data in the Report. ECICI will use all reasonable skill and care in the
+supply of the information / data to you. However since we obtain the information / data from the Member, ECICI cannot guarantee or warranty that the information contained in the Report is complete,
+accurate, up-to-date or error-free. Any information contained herein does not reflect the views of ECICI or its directors or employees.
+This message contains legally privileged and/or confidential information. If you are not the intended recipient(s) of this message, you are hereby notified that any dissemination, distribution or copying of
+this Report is strictly prohibited. If you have received this Report in error, please notify the sender immediately and delete this Report from your computer and all your records.
+
+© Experian Ltd, 2026. All rights reserved.
+
+pd4ml evaluation copy. visit http://pd4ml.com
+
+Page 21 of 21
+
+
