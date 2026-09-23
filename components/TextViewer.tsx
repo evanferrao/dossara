@@ -5,6 +5,7 @@ import { useDocuments } from "@/context/DocumentContext";
 import { getDocumentFromCache } from "@/lib/indexeddb";
 import { extractOdt, extractText } from "@/lib/extractors";
 import ReactMarkdown from "react-markdown";
+import { isSafeUrl } from "@/lib/security";
 
 export function TextViewer() {
   const { activeDocumentId, documents } = useDocuments();
@@ -79,7 +80,28 @@ export function TextViewer() {
         <div className="flex-1 overflow-auto p-8">
           <div className="max-w-4xl mx-auto prose text-[var(--text-primary)] prose-headings:text-[var(--text-primary)] prose-p:text-[var(--text-primary)] prose-strong:text-[var(--text-primary)] prose-a:text-[var(--primary)] prose-code:bg-[var(--secondary)] prose-code:text-[var(--text-primary)] prose-pre:bg-[var(--secondary)] prose-pre:text-[var(--text-primary)]">
             {ext === "md" ? (
-              <ReactMarkdown>{content}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  a: ({ node: _node, href, children, ...props }) => {
+                    const safe = isSafeUrl(href);
+                    if (!safe) {
+                      return <span className="underline opacity-80">{children}</span>;
+                    }
+                    return (
+                      <a
+                        href={href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        {...props}
+                      >
+                        {children}
+                      </a>
+                    );
+                  },
+                }}
+              >
+                {content}
+              </ReactMarkdown>
             ) : (
               <pre className="whitespace-pre-wrap font-sans text-sm text-[var(--text-primary)] bg-transparent border-0">
                 {content}

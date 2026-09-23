@@ -1,3 +1,5 @@
+import { generateUUID } from "./uuid";
+
 const CLIENT_ID_KEY = "dossara_client_id";
 
 /**
@@ -12,11 +14,7 @@ export function getClientId(): string {
   try {
     let id = localStorage.getItem(CLIENT_ID_KEY);
     if (!id) {
-      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
-        id = crypto.randomUUID();
-      } else {
-        id = `cid_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
-      }
+      id = generateUUID();
       localStorage.setItem(CLIENT_ID_KEY, id);
     }
     return id;

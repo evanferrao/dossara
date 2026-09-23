@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { precacheEmbeddingModel } from "@/lib/embeddings";
+import { isValidOllamaUrl } from "@/lib/security";
 
 type Platform = "linux" | "mac" | "windows";
 
@@ -66,6 +67,11 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   const handleSave = async () => {
     if (isEnabled) {
+      if (!isValidOllamaUrl(ollamaUrl)) {
+        setTestStatus("error");
+        setTestMessage("Invalid Ollama URL. Must be a valid http:// or https:// URL.");
+        return;
+      }
       const success = await handleTest();
       if (!success) {
         return;
@@ -97,6 +103,12 @@ export function OllamaModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
     setTestStatus("testing");
     setTestMessage("");
     setAvailableModels([]);
+
+    if (!isValidOllamaUrl(ollamaUrl)) {
+      setTestStatus("error");
+      setTestMessage("Invalid Ollama URL. Must be a valid http:// or https:// URL.");
+      return false;
+    }
 
     try {
       const formattedUrl = ollamaUrl.trim().replace(/\/+$/, "");

@@ -34,6 +34,7 @@ import {
   getChatMessages,
   clearChatMessages,
 } from "@/lib/indexeddb";
+import { isValidOllamaUrl } from "@/lib/security";
 
 /**
  * Extract text content from a UIMessage's parts array.
@@ -234,8 +235,11 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
         if (ollamaEnabled && init?.body) {
           try {
             const body = JSON.parse(init.body as string);
-            const ollamaUrl =
+            const rawOllamaUrl =
               localStorage.getItem("dossara_ollama_url") || "http://localhost:11434";
+            const ollamaUrl = isValidOllamaUrl(rawOllamaUrl)
+              ? rawOllamaUrl
+              : "http://localhost:11434";
             const ollamaModel =
               localStorage.getItem("dossara_ollama_model") || "llama3";
 

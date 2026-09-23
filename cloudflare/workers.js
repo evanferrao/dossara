@@ -80,6 +80,13 @@ function isOriginAllowed(origin, allowedList) {
   return false;
 }
 
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Cross-Origin-Opener-Policy": "same-origin",
+};
+
 function getCorsHeaders(request, env) {
   const raw = env?.ALLOWED_ORIGINS || env?.ALLOWED_ORIGIN || "*";
 
@@ -89,6 +96,7 @@ function getCorsHeaders(request, env) {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
+      ...SECURITY_HEADERS,
     };
   }
 
@@ -102,6 +110,7 @@ function getCorsHeaders(request, env) {
       "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
       "Vary": "Origin",
+      ...SECURITY_HEADERS,
     };
   }
 
@@ -110,6 +119,7 @@ function getCorsHeaders(request, env) {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Client-ID",
     "Vary": "Origin",
+    ...SECURITY_HEADERS,
   };
 }
 
@@ -342,12 +352,17 @@ async function handleWebSearch(request, env, corsHeaders) {
     );
   }
 
-  const query = (body.query || "").trim();
+  let query = (body.query || "").trim();
   if (!query) {
     return new Response(
       JSON.stringify({ error: "INVALID_REQUEST", message: "A search query is required." }),
       { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
+  }
+
+  // Security: Enforce maximum query length (400 chars) to prevent ReDoS / payload abuse
+  if (query.length > 400) {
+    query = query.slice(0, 400).trim();
   }
 
   if (!env.TAVILY_API_KEY) {
@@ -472,18 +487,20 @@ async function handleChat(request, env, corsHeaders) {
 
   try {
     const groq = createGroq({ apiKey: env.GROQ_API_KEY });
-    const modelId = body.model || "llama-3.1-8b-instant";
+    const rawModel = typeof body.model === "string" ? body.model.trim() : "";
+    const modelId = /^[a-zA-Z0-9_.:/-]{1,100}$/.test(rawModel) ? rawModel : "llama-3.1-8b-instant";
 
     const systemPrompt = buildSystemPrompt({
-      docCount: body.docCount ?? 0,
-      docInventory: body.docInventory ?? "",
-      referencedDocCount: body.referencedDocCount ?? 0,
-      chunkCount: body.chunkCount ?? 0,
-      webSourceCount: body.webSourceCount ?? 0,
-      context: body.context ?? "",
+      docCount: Math.max(0, Number(body.docCount) || 0),
+      docInventory: typeof body.docInventory === "string" ? body.docInventory.slice(0, 5000) : "",
+      referencedDocCount: Math.max(0, Number(body.referencedDocCount) || 0),
+      chunkCount: Math.max(0, Number(body.chunkCount) || 0),
+      webSourceCount: Math.max(0, Number(body.webSourceCount) || 0),
+      context: typeof body.context === "string" ? body.context : "",
     });
 
-    const normalizedMessages = (body.messages ?? []).map((m, idx) => {
+    const rawMessages = Array.isArray(body.messages) ? body.messages.slice(-50) : [];
+    const normalizedMessages = rawMessages.map((m, idx) => {
       if (!m.parts && typeof m.content === "string") {
         return {
           id: m.id || `msg-${idx}`,

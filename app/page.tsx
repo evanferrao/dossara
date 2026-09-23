@@ -40,7 +40,7 @@ export default function Home() {
       // Calculate new width relative to the window width
       const sidebarWidth = isSidebarOpen ? 256 : 0; // 64 * 4px = 256px
       const availableWidth = window.innerWidth - sidebarWidth - 24; // 24px for padding
-      let mouseX = e.clientX - sidebarWidth - 12; // 12px for left padding
+      const mouseX = e.clientX - sidebarWidth - 12; // 12px for left padding
       
       let newPercent = (mouseX / availableWidth) * 100;
       // Constrain between 20% and 80%

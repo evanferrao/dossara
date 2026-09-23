@@ -4,6 +4,7 @@ import { useDocuments } from "@/context/DocumentContext";
 import { CitationBadge } from "./CitationBadge";
 import { WebCitationBadge, type WebCitation } from "./WebCitationBadge";
 import ReactMarkdown from "react-markdown";
+import { isSafeUrl } from "@/lib/security";
 
 export interface Citation {
   documentId: string;
@@ -122,15 +123,24 @@ export function ChatMessage({
                     {...props}
                   />
                 ),
-                a: ({ node, ...props }) => (
-                  <a
-                    className="underline hover:opacity-80 font-medium"
-                    style={{ color: "var(--primary)" }}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    {...props}
-                  />
-                ),
+                a: ({ node: _node, href, children, ...props }) => {
+                  const safe = isSafeUrl(href);
+                  if (!safe) {
+                    return <span className="underline opacity-80">{children}</span>;
+                  }
+                  return (
+                    <a
+                      href={href}
+                      className="underline hover:opacity-80 font-medium"
+                      style={{ color: "var(--primary)" }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      {...props}
+                    >
+                      {children}
+                    </a>
+                  );
+                },
               }}
             >
               {displayContent}

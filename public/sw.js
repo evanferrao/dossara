@@ -30,17 +30,23 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
       return cache.match(event.request).then((cachedResponse) => {
-        const fetchPromise = fetch(event.request).then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            cache.put(event.request, networkResponse.clone());
-          }
-          return networkResponse;
-        }).catch(() => {
-          // Ignore network errors on fetch
+        const fetchPromise = fetch(event.request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              cache.put(event.request, networkResponse.clone());
+            }
+            return networkResponse;
+          });
+
+        if (cachedResponse) {
+          // Revalidate in background, ignore offline errors
+          fetchPromise.catch(() => {});
+          return cachedResponse;
+        }
+
+        return fetchPromise.catch(() => {
+          return new Response("Offline", { status: 503, statusText: "Service Unavailable" });
         });
-        
-        // Return cached response immediately if available, while fetching in background
-        return cachedResponse || fetchPromise;
       });
     })
   );

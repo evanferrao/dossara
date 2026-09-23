@@ -19,6 +19,7 @@ import {
   type StoredChunk,
 } from "@/lib/indexeddb";
 import { PAGES_PER_BATCH } from "@/lib/constants";
+import { sanitizeFilename } from "@/lib/security";
 
 
 export interface ProcessingState {
@@ -58,6 +59,13 @@ export function useProcessDocument(): UseProcessDocumentReturn {
       isProcessingRef.current = true;
 
       try {
+        const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          throw new Error("File exceeds maximum allowed size of 50 MB.");
+        }
+
+        const sanitized = sanitizeFilename(file.name);
+
         // 1. Save PDF blob to IndexedDB
         await saveDocumentToCache(documentId, file);
 
@@ -65,7 +73,7 @@ export function useProcessDocument(): UseProcessDocumentReturn {
         const doc: StoredDocument = {
           id: documentId,
           chat_id: chatId,
-          filename: file.name,
+          filename: sanitized,
           status: "processing",
           page_count: null,
           cursor: 0,

@@ -62,6 +62,12 @@ export function UploadDropzone() {
       const ext = file.name.split('.').pop()?.toLowerCase() || '';
       const allowedExts = ['pdf', 'docx', 'odt', 'txt', 'md', 'csv'];
       
+      const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setState({ phase: "failed", error: "File exceeds maximum allowed size (50 MB)." });
+        return;
+      }
+
       if (!allowedExts.includes(ext)) {
         setState({ phase: "failed", error: `Please upload a supported file (${allowedExts.join(', ')})` });
         return;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { sanitizeUrl, isSafeUrl } from "@/lib/security";
 
 export interface WebCitation {
   title: string;
@@ -26,10 +27,12 @@ export function WebCitationBadge({ citation, index }: WebCitationBadgeProps) {
 
   const title = citation.title || hostname || "Web Source";
   const displayTitle = title.length > 28 ? title.slice(0, 25) + "…" : title;
+  const safeHref = sanitizeUrl(citation.url, "#");
+  const isFaviconSafe = citation.favicon && isSafeUrl(citation.favicon);
 
   return (
     <a
-      href={citation.url}
+      href={safeHref}
       target="_blank"
       rel="noopener noreferrer"
       className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
@@ -41,7 +44,7 @@ export function WebCitationBadge({ citation, index }: WebCitationBadgeProps) {
       title={`${citation.title}\n${citation.url}`}
     >
       {/* Favicon or Globe Icon */}
-      {citation.favicon && !faviconFailed ? (
+      {isFaviconSafe && !faviconFailed ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={citation.favicon}
