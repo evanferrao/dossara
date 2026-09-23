@@ -95,7 +95,7 @@ Dossara is a document intelligence platform built with Next.js 16 that implement
 ### 2. RAG (Retrieval-Augmented Generation) Pipeline
 The core intelligence of the application:
 
-1. **Chunking** — Extracted page text is split into overlapping chunks (~2000 chars with 200-char overlap) using sentence-boundary-aware splitting to avoid cutting mid-sentence
+1. **Chunking** — Extracted page text is split using a token-aware hierarchical chunker (~1000 chars / max 256 tokens with ~25-token / 100-char overlap) aligned with the 256-token context limit of `all-MiniLM-L6-v2` to avoid truncation
 2. **Embedding** — Each chunk is embedded into a 384-dimensional vector using the `all-MiniLM-L6-v2` model running **locally on the server** via `@xenova/transformers` + `onnxruntime-node` — no external embedding API calls
 3. **Storage** — Chunks and their embeddings are stored in Supabase with an **HNSW index** for fast approximate nearest-neighbor search
 4. **Retrieval** — When the user asks a question, their query is embedded and the top-K most similar chunks are retrieved via a **pgvector cosine similarity RPC** (`match_chunks`)
@@ -194,8 +194,11 @@ All tunable parameters are exposed as environment variables with sensible defaul
 |---|---|---|
 | `EMBEDDING_MODEL` | `Xenova/all-MiniLM-L6-v2` | Hugging Face model for embeddings |
 | `EMBEDDING_DIMENSIONS` | `384` | Embedding vector dimensions |
-| `CHUNK_SIZE` | `2000` | Max characters per text chunk |
-| `CHUNK_OVERLAP` | `200` | Overlap between consecutive chunks |
+| `EMBEDDING_MAX_TOKENS` | `256` | Maximum token sequence length of the embedding model |
+| `CHUNK_MAX_TOKENS` | `256` | Max tokens per chunk (strictly bounded by model context) |
+| `CHUNK_TOKEN_OVERLAP` | `25` | Overlap in tokens between consecutive chunks |
+| `CHUNK_SIZE` | `1000` | Max characters per text chunk (~4 chars/token heuristic) |
+| `CHUNK_OVERLAP` | `100` | Overlap in characters between consecutive chunks |
 | `TOP_K_CHUNKS` | `5` | Number of chunks retrieved for context |
 | `HISTORY_LIMIT` | `10` | Chat history messages included in LLM prompt |
 | `PAGES_PER_BATCH` | `10` | PDF pages processed per batch |

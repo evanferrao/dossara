@@ -8,7 +8,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { chunkPages } from "@/lib/chunker";
-import { embed } from "@/lib/embeddings";
+import { embed, getTokenizer } from "@/lib/embeddings";
 import { extractDocx, extractOdt, extractText } from "@/lib/extractors";
 import {
   saveDocumentToCache,
@@ -104,7 +104,7 @@ export function useProcessDocument(): UseProcessDocumentReturn {
             const page = await pdf.getPage(i);
             const textContent = await page.getTextContent();
             const text = textContent.items
-              .map((item: any) => ("str" in item ? item.str : ""))
+              .map((item) => (typeof item === "object" && item !== null && "str" in item ? String((item as { str: unknown }).str) : ""))
               .join(" ");
             allPageTexts.push(text);
           }
@@ -136,6 +136,15 @@ export function useProcessDocument(): UseProcessDocumentReturn {
           pageCount: totalPages,
         });
 
+        // Pre-load tokenizer for token-aware chunking
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let tokenizer: any = null;
+        try {
+          tokenizer = await getTokenizer();
+        } catch (e) {
+          console.warn("Failed to load tokenizer for chunking, using token estimator fallback:", e);
+        }
+
         for (
           let batchStart = 0;
           batchStart < totalPages;
@@ -144,8 +153,8 @@ export function useProcessDocument(): UseProcessDocumentReturn {
           const batchEnd = Math.min(batchStart + PAGES_PER_BATCH, totalPages);
           const batchPages = allPageTexts.slice(batchStart, batchEnd);
 
-          // Chunk the batch
-          const chunks = chunkPages(batchPages, batchStart + 1); // pages are 1-indexed
+          // Chunk the batch with token awareness
+          const chunks = chunkPages(batchPages, batchStart + 1, { tokenizer });
 
           if (chunks.length > 0) {
             // Generate embeddings one at a time to keep memory bounded

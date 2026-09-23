@@ -1,8 +1,20 @@
 import { EMBEDDING_MODEL } from "./constants";
 
-// Lazy-loaded singleton pipeline
+// Lazy-loaded singleton pipeline and tokenizer
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let pipelineInstance: any = null;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let tokenizerInstance: any = null;
+
+async function loadTransformers() {
+  if (typeof window !== "undefined" || typeof self !== "undefined") {
+    // Dynamically import the pre-bundled web version to avoid SSR and Turbopack issues
+    // @ts-expect-error - dist file doesn't have dedicated TS declarations
+    return await import("@xenova/transformers/dist/transformers.min.js");
+  } else {
+    return await import("@xenova/transformers");
+  }
+}
 
 /**
  * Returns a cached feature-extraction pipeline.
@@ -11,14 +23,27 @@ let pipelineInstance: any = null;
  */
 async function getPipeline() {
   if (!pipelineInstance) {
-    // Dynamically import the pre-bundled web version to avoid SSR and Turbopack issues
-    // @ts-ignore
-    const transformers = await import("@xenova/transformers/dist/transformers.min.js");
+    const transformers = await loadTransformers();
     transformers.env.allowLocalModels = false;
-    
     pipelineInstance = await transformers.pipeline("feature-extraction", EMBEDDING_MODEL);
   }
   return pipelineInstance;
+}
+
+/**
+ * Returns a cached tokenizer instance for token-aware chunking.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function getTokenizer(): Promise<any> {
+  if (pipelineInstance?.tokenizer) {
+    return pipelineInstance.tokenizer;
+  }
+  if (!tokenizerInstance) {
+    const transformers = await loadTransformers();
+    transformers.env.allowLocalModels = false;
+    tokenizerInstance = await transformers.AutoTokenizer.from_pretrained(EMBEDDING_MODEL);
+  }
+  return tokenizerInstance;
 }
 
 /**

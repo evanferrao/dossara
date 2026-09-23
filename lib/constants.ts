@@ -1,10 +1,18 @@
 export const EMBEDDING_MODEL = process.env.EMBEDDING_MODEL ?? "Xenova/all-MiniLM-L6-v2";
 export const EMBEDDING_DIMENSIONS = Number(process.env.EMBEDDING_DIMENSIONS ?? 384);
 
-/** Approximate max tokens per chunk (≈ 4 chars/token heuristic → 2000 chars) */
-export const CHUNK_SIZE = Number(process.env.CHUNK_SIZE ?? 2000);
+/** Maximum sequence length supported by Xenova/all-MiniLM-L6-v2 */
+export const EMBEDDING_MAX_TOKENS = 256;
+
+/** Target maximum tokens per chunk (bounded by EMBEDDING_MAX_TOKENS = 256) */
+export const CHUNK_MAX_TOKENS = Number(process.env.CHUNK_MAX_TOKENS ?? 256);
+/** Overlap in tokens between consecutive chunks (≈ 10 % of CHUNK_MAX_TOKENS) */
+export const CHUNK_TOKEN_OVERLAP = Number(process.env.CHUNK_TOKEN_OVERLAP ?? 25);
+
+/** Approximate max characters per chunk (≈ 4 chars/token heuristic for 256 tokens → ~1000 chars) */
+export const CHUNK_SIZE = Number(process.env.CHUNK_SIZE ?? 1000);
 /** Overlap between consecutive chunks (≈ 10 % of CHUNK_SIZE) */
-export const CHUNK_OVERLAP = Number(process.env.CHUNK_OVERLAP ?? 200);
+export const CHUNK_OVERLAP = Number(process.env.CHUNK_OVERLAP ?? 100);
 
 /** Number of PDF pages to process per batch */
 export const PAGES_PER_BATCH = Number(process.env.PAGES_PER_BATCH ?? 10);
