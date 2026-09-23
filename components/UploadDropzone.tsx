@@ -73,6 +73,23 @@ export function UploadDropzone() {
         return;
       }
 
+      // Secondary MIME type validation to prevent extension spoofing
+      const allowedMimeTypes = new Set([
+        'application/pdf',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.oasis.opendocument.text',
+        'text/plain',
+        'text/markdown',
+        'text/x-markdown',
+        'text/csv',
+        'application/csv',
+        'application/octet-stream', // Some browsers report this for .md/.csv
+      ]);
+      if (file.type && !allowedMimeTypes.has(file.type)) {
+        setState({ phase: "failed", error: "File type does not match its extension. Please upload a valid document." });
+        return;
+      }
+
       try {
         const documentId = generateUUID();
 

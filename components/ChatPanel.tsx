@@ -298,7 +298,8 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
 
             return result.toUIMessageStreamResponse();
           } catch (error) {
-            console.error("Ollama API error:", error);
+            // Log generic message to avoid leaking API keys in error objects
+            console.error("Ollama API error:", error instanceof Error ? error.message : "Unknown error");
             throw error;
           }
         }
@@ -370,7 +371,8 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
                 err?.message || (typeof err === "string" ? err : "An error occurred during inference."),
             });
           } catch (error) {
-            console.error("Direct API error:", error);
+            // Log generic message to avoid leaking API keys in error objects
+            console.error("Direct API error:", error instanceof Error ? error.message : "Unknown error");
             throw error;
           }
         }
@@ -604,7 +606,9 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
   const handleSend = useCallback(() => {
     if (!inputValue.trim() || isLoading) return;
 
-    const userText = inputValue.trim();
+    // Enforce max input length to prevent excessive memory use
+    const MAX_INPUT_LENGTH = 50_000;
+    const userText = inputValue.trim().slice(0, MAX_INPUT_LENGTH);
     setInputValue("");
     setChatDraft(activeChatId, "");
 
@@ -859,6 +863,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             }
             rows={1}
             className="input-base flex-1 resize-none min-h-[42px] max-h-[120px] bg-[var(--secondary)] focus:bg-[var(--bg-primary)] py-2.5"
+            maxLength={50000}
             style={{
               height: "auto",
               overflow: inputValue.split("\n").length > 1 ? "auto" : "hidden",

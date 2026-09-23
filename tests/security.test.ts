@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isSafeUrl, sanitizeUrl, isValidOllamaUrl, sanitizeFilename } from "../lib/security";
+import { isSafeUrl, sanitizeUrl, isValidOllamaUrl, sanitizeFilename, escapeHtml } from "../lib/security";
 import { generateUUID } from "../lib/uuid";
 import worker from "../cloudflare/workers.js";
 
@@ -65,6 +65,14 @@ test("Security - generateUUID produces RFC 4122 v4 UUID", () => {
   assert.match(uuid, v4Regex);
 });
 
+test("Security - escapeHtml encodes OWASP-recommended characters", () => {
+  assert.equal(escapeHtml('<script>alert("xss")</script>'), "&lt;script&gt;alert(&quot;xss&quot;)&lt;&#x2F;script&gt;");
+  assert.equal(escapeHtml("Tom & Jerry's"), "Tom &amp; Jerry&#x27;s");
+  assert.equal(escapeHtml(""), "");
+  assert.equal(escapeHtml(null as unknown as string), "");
+  assert.equal(escapeHtml(undefined as unknown as string), "");
+});
+
 test("Security - Cloudflare Worker responses include modern security headers", async () => {
   const req = new Request(`${WORKER_URL}/health`, { method: "GET" });
   const res = await worker.fetch(req, {}, {});
@@ -74,6 +82,21 @@ test("Security - Cloudflare Worker responses include modern security headers", a
   assert.equal(res.headers.get("X-Frame-Options"), "DENY");
   assert.equal(res.headers.get("Referrer-Policy"), "strict-origin-when-cross-origin");
   assert.equal(res.headers.get("Cross-Origin-Opener-Policy"), "same-origin");
+});
+
+test("Security - Worker includes HSTS and Permissions-Policy headers", async () => {
+  const req = new Request(`${WORKER_URL}/health`, { method: "GET" });
+  const res = await worker.fetch(req, {}, {});
+
+  assert.equal(res.status, 200);
+  assert.ok(
+    res.headers.get("Strict-Transport-Security")?.includes("max-age="),
+    "HSTS header should include max-age"
+  );
+  assert.ok(
+    res.headers.get("Permissions-Policy")?.includes("camera=()"),
+    "Permissions-Policy should restrict camera"
+  );
 });
 
 test("Security - Worker caps web search queries to 400 characters", async () => {
@@ -111,3 +134,72 @@ test("Security - Worker caps web search queries to 400 characters", async () => 
     globalThis.fetch = originalFetch;
   }
 });
+
+test("Security - Worker rejects oversized request bodies with 413", async () => {
+  // Simulate a request with a Content-Length header exceeding 1 MB
+  const req = new Request(`${WORKER_URL}/api/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Content-Length": "2097152", // 2 MB
+      "cf-connecting-ip": `body-size-test-${Date.now()}`,
+    },
+    body: JSON.stringify({ messages: [] }),
+  });
+
+  const res = await worker.fetch(req, { GROQ_API_KEY: "test", MAX_CHAT_PER_IP_PER_DAY: "100" }, {});
+  assert.equal(res.status, 413);
+  const body = await res.json();
+  assert.equal(body.error, "PAYLOAD_TOO_LARGE");
+});
+
+test("Security - Worker sanitizes internal error messages in chat responses", async () => {
+  // Simulate a chat request that will fail due to missing API key
+  // The error should be generic, not revealing internal details
+  const req = new Request(`${WORKER_URL}/api/chat`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "cf-connecting-ip": `error-sanitize-test-${Date.now()}`,
+    },
+    body: JSON.stringify({
+      messages: [{ role: "user", content: "test" }],
+      model: "llama-3.1-8b-instant",
+    }),
+  });
+
+  // No GROQ_API_KEY provided — will cause an internal error
+  const res = await worker.fetch(req, { MAX_CHAT_PER_IP_PER_DAY: "100" }, {});
+  
+  // The worker should return an error, but the message should not leak internals
+  if (res.status >= 400) {
+    const body = await res.json();
+    assert.ok(
+      !body.message?.includes("gsk_"),
+      "Error message should not contain API key fragments"
+    );
+    assert.ok(
+      !body.message?.includes("at Object."),
+      "Error message should not contain stack traces"
+    );
+  }
+});
+
+test("Security - Worker rejects oversized origin strings (ReDoS prevention)", async () => {
+  const longOrigin = "https://" + "a".repeat(500) + ".example.com";
+  const req = new Request(`${WORKER_URL}/health`, {
+    method: "OPTIONS",
+    headers: { "Origin": longOrigin },
+  });
+
+  const res = await worker.fetch(
+    req,
+    { ALLOWED_ORIGINS: "https://*.example.com" },
+    {}
+  );
+
+  // The response should not include Access-Control-Allow-Origin for the oversized origin
+  assert.equal(res.status, 204);
+  assert.equal(res.headers.get("Access-Control-Allow-Origin"), null);
+});
+

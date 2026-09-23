@@ -70,6 +70,8 @@ ${context || "No matching context found for this query."}`;
  * Supports exact matches and wildcard patterns (e.g. "https://*.dossara.pages.dev").
  */
 function isOriginAllowed(origin, allowedList) {
+  // Guard against extremely long origin strings to prevent ReDoS
+  if (!origin || origin.length > 256) return false;
   for (const entry of allowedList) {
     if (entry === origin) return true;
     if (entry.includes("*")) {
@@ -85,7 +87,12 @@ const SECURITY_HEADERS = {
   "X-Frame-Options": "DENY",
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Cross-Origin-Opener-Policy": "same-origin",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
 };
+
+/** Maximum allowed request body size in bytes (1 MB). */
+const MAX_BODY_BYTES = 1_048_576;
 
 function getCorsHeaders(request, env) {
   const raw = env?.ALLOWED_ORIGINS || env?.ALLOWED_ORIGIN || "*";
@@ -133,6 +140,21 @@ function validateJsonContentType(request, corsHeaders) {
     return new Response(
       JSON.stringify({ error: "UNSUPPORTED_MEDIA_TYPE", message: "Content-Type must be application/json." }),
       { status: 415, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+  return null;
+}
+
+/**
+ * Validate that the request body does not exceed the maximum allowed size.
+ * Returns a 413 Response if too large, or null if within limits.
+ */
+function validateBodySize(request, corsHeaders) {
+  const contentLength = parseInt(request.headers.get("Content-Length") || "0", 10);
+  if (contentLength > MAX_BODY_BYTES) {
+    return new Response(
+      JSON.stringify({ error: "PAYLOAD_TOO_LARGE", message: "Request body exceeds the 1 MB limit." }),
+      { status: 413, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
   return null;
@@ -339,6 +361,9 @@ async function handleWebSearch(request, env, corsHeaders) {
     return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
 
+  const sizeError = validateBodySize(request, corsHeaders);
+  if (sizeError) return sizeError;
+
   const ctError = validateJsonContentType(request, corsHeaders);
   if (ctError) return ctError;
 
@@ -472,6 +497,9 @@ async function handleChat(request, env, corsHeaders) {
     return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
   }
 
+  const sizeError = validateBodySize(request, corsHeaders);
+  if (sizeError) return sizeError;
+
   const ctError = validateJsonContentType(request, corsHeaders);
   if (ctError) return ctError;
 
@@ -568,7 +596,19 @@ async function handleChat(request, env, corsHeaders) {
     const statusCode =
       error?.statusCode ||
       (error?.status >= 400 && error?.status < 600 ? error.status : 500);
-    const errorMessage = error?.message || "Internal Server Error";
+
+    // Sanitize error messages to prevent leaking internal details
+    // (connection strings, API key fragments, stack traces)
+    const rawMessage = error?.message || "";
+    const safePatterns = [
+      /rate.?limit/i, /too many requests/i, /tokens? per minute/i,
+      /model.?not.?found/i, /invalid.?api.?key/i, /unauthorized/i,
+      /context.?length/i, /request.?too.?large/i,
+    ];
+    const errorMessage = safePatterns.some(p => p.test(rawMessage))
+      ? rawMessage
+      : "An error occurred while processing your request.";
+
     return new Response(
       JSON.stringify({
         error: error?.name || "CHAT_ERROR",

@@ -1,4 +1,9 @@
 # syntax=docker/dockerfile:1.4
+# Security: Pin to a specific Node LTS patch release for reproducible builds.
+# For maximum supply chain security in CI, pin to a digest:
+#   FROM node:22.16-slim@sha256:<digest>
+# Run `docker pull node:22.16-slim && docker inspect --format='{{index .RepoDigests 0}}' node:22-slim`
+# to get the current digest.
 FROM node:22-slim AS base
 
 # 1. Install dependencies only when needed

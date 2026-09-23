@@ -38,32 +38,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${inter.variable} ${jetbrainsMono.variable} h-full`}
     >
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  var saved = localStorage.getItem('dossara_theme');
-                  var isDark = true;
-                  if (saved === 'light') {
-                    isDark = false;
-                  } else if (saved === 'dark') {
-                    isDark = true;
-                  } else if (saved === 'system') {
-                    isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  }
-                  if (isDark) {
-                    document.documentElement.classList.add('dark');
-                    document.documentElement.setAttribute('data-theme', 'dark');
-                  } else {
-                    document.documentElement.classList.remove('dark');
-                    document.documentElement.setAttribute('data-theme', 'light');
-                  }
-                } catch (e) {}
-              })();
-            `,
-          }}
+        {/* Content Security Policy — restrict resource loading to known origins */}
+        <meta
+          httpEquiv="Content-Security-Policy"
+          content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.workers.dev https://api.tavily.com https://cdn.jsdelivr.net https://huggingface.co http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:; frame-ancestors 'none';"
         />
+        {/* External theme init script — prevents FOUC without requiring unsafe-inline */}
+        <script src="/theme-init.js" />
       </head>
       <body
         className="min-h-full flex flex-col antialiased"

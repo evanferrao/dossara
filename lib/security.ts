@@ -67,3 +67,18 @@ export function sanitizeFilename(filename: string): string {
 
   return cleaned || "document";
 }
+
+/**
+ * Encode HTML special characters to prevent XSS when inserting raw text into HTML.
+ * Covers the OWASP-recommended set: & < > " ' /
+ */
+export function escapeHtml(str: string): string {
+  if (!str || typeof str !== "string") return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
+    .replace(/\//g, "&#x2F;");
+}
