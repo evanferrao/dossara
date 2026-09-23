@@ -1,10 +1,56 @@
 import * as mammoth from "mammoth";
 import JSZip from "jszip";
 
+/** Approximate characters per simulated document page (≈ 500-600 words) */
+export const CHARS_PER_SIMULATED_PAGE = 2500;
+
+/**
+ * Split continuous text into logical "pages" based on paragraph boundaries.
+ * Preserves paragraphs where possible, ensuring non-PDF documents (DOCX, ODT, TXT, MD)
+ * have realistic page counts for batch processing and accurate citation references.
+ */
+export function splitTextIntoPages(
+  text: string,
+  charsPerPage: number = CHARS_PER_SIMULATED_PAGE
+): string[] {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return [];
+  }
+
+  if (trimmed.length <= charsPerPage) {
+    return [trimmed];
+  }
+
+  const paragraphs = trimmed.split(/\n{2,}/);
+  const pages: string[] = [];
+  let currentPage: string[] = [];
+  let currentLen = 0;
+
+  for (const para of paragraphs) {
+    const paraTrimmed = para.trim();
+    if (!paraTrimmed) continue;
+
+    if (currentLen > 0 && currentLen + paraTrimmed.length > charsPerPage) {
+      pages.push(currentPage.join("\n\n"));
+      currentPage = [paraTrimmed];
+      currentLen = paraTrimmed.length;
+    } else {
+      currentPage.push(paraTrimmed);
+      currentLen += paraTrimmed.length + 2;
+    }
+  }
+
+  if (currentPage.length > 0) {
+    pages.push(currentPage.join("\n\n"));
+  }
+
+  return pages.length > 0 ? pages : [trimmed];
+}
+
 /**
  * Extract text from a DOCX file using mammoth.
- * Returns an array of strings, simulating pages (we'll just use one big chunk or split by some heuristic if needed,
- * but for simplicity, we return an array of paragraphs or one single string wrapped in an array).
+ * Returns an array of simulated pages split along paragraph boundaries.
  */
 export async function extractDocx(file: File): Promise<string[]> {
   const arrayBuffer = await file.arrayBuffer();
@@ -12,9 +58,7 @@ export async function extractDocx(file: File): Promise<string[]> {
   const result = await mammoth.extractRawText({ arrayBuffer });
   const text = result.value || "";
   
-  // To simulate "pages" for chunking, we can split by double newlines or just return it as one big page
-  // The chunker will handle splitting long strings anyway.
-  return [text];
+  return splitTextIntoPages(text);
 }
 
 /**
@@ -42,7 +86,7 @@ export async function extractOdt(file: File): Promise<string[]> {
     .map(node => node.textContent?.trim() || "")
     .filter(text => text.length > 0);
 
-  return [textNodes.join("\n\n")];
+  return splitTextIntoPages(textNodes.join("\n\n"));
 }
 
 /**
@@ -50,5 +94,5 @@ export async function extractOdt(file: File): Promise<string[]> {
  */
 export async function extractText(file: File): Promise<string[]> {
   const text = await file.text();
-  return [text];
+  return splitTextIntoPages(text);
 }

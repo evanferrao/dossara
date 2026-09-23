@@ -1,13 +1,17 @@
 import type { LocalRetrievalResult, HybridContextPayload } from "./types";
 import type { WebSearchResult } from "../web-search/types";
 import type { StoredDocument } from "../indexeddb";
-import { MAX_WEB_CONTENT_CHARS_PER_RESULT } from "../constants";
+import {
+  MAX_WEB_CONTENT_CHARS_PER_RESULT,
+  MAX_TOTAL_CONTEXT_CHARS,
+} from "../constants";
 
 export interface BuildContextParams {
   localResults?: LocalRetrievalResult[];
   webResults?: WebSearchResult[];
   readyDocs?: StoredDocument[];
   maxWebContentChars?: number;
+  maxTotalContextChars?: number;
 }
 
 export function buildHybridContext(params: BuildContextParams): HybridContextPayload {
@@ -16,6 +20,7 @@ export function buildHybridContext(params: BuildContextParams): HybridContextPay
     webResults = [],
     readyDocs = [],
     maxWebContentChars = MAX_WEB_CONTENT_CHARS_PER_RESULT,
+    maxTotalContextChars = MAX_TOTAL_CONTEXT_CHARS,
   } = params;
 
   // 1. Build document inventory for user's uploaded files
@@ -57,8 +62,13 @@ export function buildHybridContext(params: BuildContextParams): HybridContextPay
     webSections.push(`### EXTERNAL WEB SOURCES\n${formattedWeb}`);
   }
 
-  // 4. Combine sections
-  const combinedContext = [...localSections, ...webSections].join("\n\n====================\n\n");
+  // 4. Combine sections with overall context budgeting
+  let combinedContext = [...localSections, ...webSections].join("\n\n====================\n\n");
+  if (combinedContext.length > maxTotalContextChars) {
+    combinedContext =
+      combinedContext.slice(0, maxTotalContextChars) +
+      "\n\n[Note: Additional retrieved context truncated to fit model token limits.]";
+  }
 
   const referencedDocIds = new Set(localResults.map((r) => r.documentId));
 

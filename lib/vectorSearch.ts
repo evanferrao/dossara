@@ -6,7 +6,7 @@
  * brute-force search is <10ms — no need for HNSW indexing.
  */
 
-import { getAllChunks, type StoredChunk } from "./indexeddb";
+import { getChunksByDocumentId, type StoredChunk } from "./indexeddb";
 
 export interface SearchResult {
   chunk: StoredChunk;
@@ -18,6 +18,9 @@ export interface SearchResult {
  * Returns a value between -1 and 1 (1 = identical direction).
  */
 export function cosineSimilarity(a: number[], b: number[]): number {
+  if (!a || !b || a.length === 0 || a.length !== b.length) {
+    return 0;
+  }
   let dot = 0;
   let normA = 0;
   let normB = 0;
@@ -31,7 +34,7 @@ export function cosineSimilarity(a: number[], b: number[]): number {
 }
 
 /**
- * Search all stored chunks for the most similar to the query embedding.
+ * Search stored chunks of target documents for the most similar to the query embedding.
  * Returns the top-K results sorted by descending similarity.
  */
 export async function searchChunks(
@@ -39,14 +42,19 @@ export async function searchChunks(
   documentIds: string[],
   topK: number = 5
 ): Promise<SearchResult[]> {
-  const allChunks = await getAllChunks();
-
-  if (allChunks.length === 0 || documentIds.length === 0) {
+  if (documentIds.length === 0 || !queryEmbedding || queryEmbedding.length === 0) {
     return [];
   }
 
-  // Filter chunks by valid document IDs
-  const validChunks = allChunks.filter(chunk => documentIds.includes(chunk.document_id));
+  // Fetch only chunks belonging to the specified documents using IndexedDB index
+  const chunkArrays = await Promise.all(
+    documentIds.map((id) => getChunksByDocumentId(id))
+  );
+  const validChunks = chunkArrays.flat();
+
+  if (validChunks.length === 0) {
+    return [];
+  }
 
   // Score every chunk
   const scored: SearchResult[] = validChunks.map((chunk) => ({

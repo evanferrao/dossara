@@ -1,4 +1,4 @@
-import { EMBEDDING_MODEL } from "./constants";
+import { EMBEDDING_MODEL, EMBEDDING_MAX_TOKENS } from "./constants";
 
 // Lazy-loaded singleton pipeline and tokenizer
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,6 +26,9 @@ async function getPipeline() {
     const transformers = await loadTransformers();
     transformers.env.allowLocalModels = false;
     pipelineInstance = await transformers.pipeline("feature-extraction", EMBEDDING_MODEL);
+    if (pipelineInstance?.tokenizer) {
+      pipelineInstance.tokenizer.model_max_length = EMBEDDING_MAX_TOKENS;
+    }
   }
   return pipelineInstance;
 }
@@ -42,6 +45,9 @@ export async function getTokenizer(): Promise<any> {
     const transformers = await loadTransformers();
     transformers.env.allowLocalModels = false;
     tokenizerInstance = await transformers.AutoTokenizer.from_pretrained(EMBEDDING_MODEL);
+    if (tokenizerInstance) {
+      tokenizerInstance.model_max_length = EMBEDDING_MAX_TOKENS;
+    }
   }
   return tokenizerInstance;
 }

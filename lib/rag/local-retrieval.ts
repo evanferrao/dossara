@@ -2,7 +2,7 @@ import { embed } from "../embeddings";
 import { searchChunks } from "../vectorSearch";
 import { getDocuments, type StoredDocument } from "../indexeddb";
 import type { LocalRetrievalResult } from "./types";
-import { TOP_K_CHUNKS } from "../constants";
+import { TOP_K_CHUNKS, CHUNK_SIZE } from "../constants";
 
 export async function retrieveLocal(
   query: string,
@@ -26,8 +26,9 @@ export async function retrieveLocal(
     return { results: [], readyDocs: [] };
   }
 
-  // 2. Embed the query client-side
-  const queryEmbedding = await embed(trimmed);
+  // 2. Embed the query client-side (bounded by model context / CHUNK_SIZE)
+  const queryToEmbed = trimmed.length > CHUNK_SIZE ? trimmed.slice(0, CHUNK_SIZE) : trimmed;
+  const queryEmbedding = await embed(queryToEmbed);
 
   // 3. Search chunks with cosine similarity
   const rawResults = await searchChunks(queryEmbedding, readyDocIds, topK);

@@ -22,7 +22,11 @@ export const TOP_K_CHUNKS = Number(process.env.TOP_K_CHUNKS ?? 5);
 export const TOP_K_LOCAL = TOP_K_CHUNKS;
 export const TOP_K_WEB = Number(process.env.TOP_K_WEB ?? 5);
 export const MAX_WEB_CONTENT_CHARS_PER_RESULT = Number(
-  process.env.MAX_WEB_CONTENT_CHARS_PER_RESULT ?? 6000
+  process.env.MAX_WEB_CONTENT_CHARS_PER_RESULT ?? 2500
+);
+/** Maximum character budget for combined retrieved context (local + web) to stay within LLM TPM limits */
+export const MAX_TOTAL_CONTEXT_CHARS = Number(
+  process.env.MAX_TOTAL_CONTEXT_CHARS ?? 14000
 );
 export const WEB_MIN_SCORE = Number(process.env.WEB_MIN_SCORE ?? 0.5);
 
