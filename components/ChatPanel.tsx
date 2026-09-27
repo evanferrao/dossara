@@ -680,7 +680,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             >
               Chat
             </h2>
-            <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+            <p className="text-xs" style={{ color: "var(--text-muted)" }} suppressHydrationWarning>
               {webSearchConfig.enabled
                 ? "Hybrid: Local Documents + Web Search"
                 : "Local Document RAG"}
@@ -841,7 +841,7 @@ export function ChatPanel({ onOpenApiKeyModal }: ChatPanelProps) {
             />
           </div>
 
-          <span className="text-[11px] hidden sm:inline-block" style={{ color: "var(--text-muted)" }}>
+          <span className="text-[11px] hidden sm:inline-block" style={{ color: "var(--text-muted)" }} suppressHydrationWarning>
             {webSearchConfig.enabled ? "Hybrid Retrieval Active" : "Local Documents Only"}
           </span>
         </div>

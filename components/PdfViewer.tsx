@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, Component, type ReactNode } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
@@ -10,10 +10,58 @@ import { getDocumentFromCache } from "@/lib/indexeddb";
 // Configure the PDF.js worker from local public folder
 pdfjs.GlobalWorkerOptions.workerSrc = "/pdfjs/pdf.worker.min.mjs";
 
+interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class PdfErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error("PdfErrorBoundary caught:", error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex-1 flex items-center justify-center p-6 text-center">
+          <div className="max-w-xs">
+            <p className="text-sm font-medium mb-1" style={{ color: "var(--error)" }}>
+              Failed to display PDF
+            </p>
+            <p className="text-xs mb-3" style={{ color: "var(--text-muted)" }}>
+              {this.state.error?.message || "An unexpected error occurred while rendering the PDF."}
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="btn-ghost text-xs px-3 py-1.5 border border-[var(--border-subtle)]"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function PdfViewer() {
   const { activeDocumentId, activePdfPage, setActivePdfPage } = useDocuments();
   const [numPages, setNumPages] = useState<number | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfFile, setPdfFile] = useState<Blob | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pageInputValue, setPageInputValue] = useState("");
@@ -28,13 +76,12 @@ export function PdfViewer() {
   // Load PDF from IndexedDB when active document changes
   useEffect(() => {
     if (!activeDocumentId) {
-      setPdfUrl(null);
+      setPdfFile(null);
       setNumPages(null);
       return;
     }
 
     let cancelled = false;
-    let currentObjectUrl: string | null = null;
     
     setIsLoading(true);
     setError(null);
@@ -47,8 +94,7 @@ export function PdfViewer() {
         }
 
         if (!cancelled) {
-          currentObjectUrl = URL.createObjectURL(cachedBlob);
-          setPdfUrl(currentObjectUrl);
+          setPdfFile(cachedBlob);
           setIsLoading(false);
         }
       } catch (err: unknown) {
@@ -65,9 +111,6 @@ export function PdfViewer() {
 
     return () => {
       cancelled = true;
-      if (currentObjectUrl) {
-        URL.revokeObjectURL(currentObjectUrl);
-      }
     };
   }, [activeDocumentId]);
 
@@ -82,6 +125,10 @@ export function PdfViewer() {
     },
     []
   );
+
+  const onDocumentLoadError = useCallback((err: Error) => {
+    console.error("PDF load error:", err);
+  }, []);
 
   const goToPage = useCallback(
     (page: number) => {
@@ -146,74 +193,84 @@ export function PdfViewer() {
 
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-primary)]">
-      {/* Navigation bar */}
-      <div
-        className="flex items-center justify-between px-4 py-2 border-b"
-        style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
-      >
-        <button
-          onClick={() => goToPage(activePdfPage - 1)}
-          disabled={activePdfPage <= 1}
-          className="btn-ghost text-xs px-3 py-1.5 disabled:opacity-30"
+    <PdfErrorBoundary>
+      <div className="flex-1 flex flex-col min-h-0 bg-[var(--bg-primary)]">
+        {/* Navigation bar */}
+        <div
+          className="flex items-center justify-between px-4 py-2 border-b"
+          style={{ borderColor: "var(--border-subtle)", background: "var(--bg-primary)" }}
         >
-          ← Prev
-        </button>
+          <button
+            onClick={() => goToPage(activePdfPage - 1)}
+            disabled={activePdfPage <= 1}
+            className="btn-ghost text-xs px-3 py-1.5 disabled:opacity-30"
+          >
+            ← Prev
+          </button>
 
-        <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
-          <span>Page</span>
-          <input
-            type="text"
-            value={pageInputValue}
-            onChange={(e) => setPageInputValue(e.target.value)}
-            onKeyDown={handlePageInput}
-            onBlur={() => {
-              const page = parseInt(pageInputValue, 10);
-              if (!isNaN(page)) goToPage(page);
-              else setPageInputValue(String(activePdfPage));
-            }}
-            className="input-base text-center text-xs w-12 py-1 px-2"
-          />
-          <span>of {numPages ?? "…"}</span>
+          <div className="flex items-center gap-2 text-xs" style={{ color: "var(--text-secondary)" }}>
+            <span>Page</span>
+            <input
+              type="text"
+              value={pageInputValue}
+              onChange={(e) => setPageInputValue(e.target.value)}
+              onKeyDown={handlePageInput}
+              onBlur={() => {
+                const page = parseInt(pageInputValue, 10);
+                if (!isNaN(page)) goToPage(page);
+                else setPageInputValue(String(activePdfPage));
+              }}
+              className="input-base text-center text-xs w-12 py-1 px-2"
+            />
+            <span>of {numPages ?? "…"}</span>
+          </div>
+
+          <button
+            onClick={() => goToPage(activePdfPage + 1)}
+            disabled={!numPages || activePdfPage >= numPages}
+            className="btn-ghost text-xs px-3 py-1.5 disabled:opacity-30"
+          >
+            Next →
+          </button>
         </div>
 
-        <button
-          onClick={() => goToPage(activePdfPage + 1)}
-          disabled={!numPages || activePdfPage >= numPages}
-          className="btn-ghost text-xs px-3 py-1.5 disabled:opacity-30"
-        >
-          Next →
-        </button>
-      </div>
-
-      {/* PDF canvas */}
-      <div className="flex-1 overflow-auto flex items-start justify-center p-4">
-        {pdfUrl && (
-          <Document
-            file={pdfUrl}
-            options={documentOptions}
-            onLoadSuccess={onDocumentLoadSuccess}
-            loading={
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
-              </div>
-            }
-            error={
-              <p className="text-sm py-20 text-center" style={{ color: "var(--error)" }}>
-                Failed to load PDF
-              </p>
-            }
-          >
-            <Page
-              pageNumber={activePdfPage}
-              width={600}
+        {/* PDF canvas */}
+        <div className="flex-1 overflow-auto flex items-start justify-center p-4">
+          {pdfFile && (
+            <Document
+              key={activeDocumentId}
+              file={pdfFile}
+              options={documentOptions}
+              suspense={false}
+              onLoadSuccess={onDocumentLoadSuccess}
+              onLoadError={onDocumentLoadError}
               loading={
-                <div className="shimmer-bg w-[600px] h-[800px] rounded-lg" />
+                <div className="flex items-center justify-center py-20">
+                  <div className="w-8 h-8 rounded-full border-2 border-[var(--primary)]/30 border-t-[var(--primary)] animate-spin-slow" />
+                </div>
               }
-            />
-          </Document>
-        )}
+              error={
+                <div className="flex flex-col items-center justify-center py-20 text-center px-4">
+                  <p className="text-sm font-medium mb-1" style={{ color: "var(--error)" }}>
+                    Failed to load PDF
+                  </p>
+                  <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+                    Unable to parse or display this document.
+                  </p>
+                </div>
+              }
+            >
+              <Page
+                pageNumber={activePdfPage}
+                width={600}
+                loading={
+                  <div className="shimmer-bg w-[600px] h-[800px] rounded-lg" />
+                }
+              />
+            </Document>
+          )}
+        </div>
       </div>
-    </div>
+    </PdfErrorBoundary>
   );
 }

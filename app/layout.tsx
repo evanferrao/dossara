@@ -41,7 +41,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Content Security Policy — restrict resource loading to known origins */}
         <meta
           httpEquiv="Content-Security-Policy"
-          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.google.com; connect-src 'self' https://*.workers.dev https://api.tavily.com https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:;"
+          content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://www.google.com; connect-src 'self' blob: data: https://*.workers.dev https://api.tavily.com https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://cloudflareinsights.com https://*.cloudflareinsights.com http://localhost:* http://127.0.0.1:*; worker-src 'self' blob:; child-src 'self' blob:;"
         />
         {/* External theme init script — prevents FOUC without requiring unsafe-inline */}
         {/* eslint-disable-next-line @next/next/no-sync-scripts */}
